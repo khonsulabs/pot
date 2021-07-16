@@ -86,10 +86,13 @@ pub enum Kind {
     /// There will be twice as many total atoms, since each entry is a key/value
     /// pair.
     Map = 5,
-    /// A symbol. If argument is 0, a String atom will follow this atom. It
-    /// should be stored and given a unique symbol id, starting at 1. If the
-    /// argument is non-zero, the argument is the symbol id of a previously
-    /// emitted symbol.
+    /// A symbol. If the least-significant bit of the arg is 0, this is a new
+    /// symbol. The remaining bits of the arg contain the length in bytes. The
+    /// following bytes will contain the symbol bytes (UTF-8). It should be
+    /// stored and given a unique symbol id, starting at 0.
+    ///
+    /// If the least-significant bit of the arg is 1, the remaining bits are the
+    /// symbol id of a previously emitted symbol.
     Symbol = 6,
     /// A series of bytes. The argument is the length. The bytes follow.
     Bytes = 7,
@@ -118,9 +121,9 @@ pub fn write_none<W: WriteBytesExt>(writer: &mut W) -> std::io::Result<usize> {
     write_atom_header(writer, Kind::None, None)
 }
 
-/// Writes a [`Kind::Unit`] atom.
+/// Writes a [`Kind::None`] atom. Pot doesn't distinguish between a Unit and a None value.
 pub fn write_unit<W: WriteBytesExt>(writer: &mut W) -> std::io::Result<usize> {
-    write_atom_header(writer, Kind::None, None)
+    write_none(writer)
 }
 
 /// Writes an [`Kind::Int`] atom with the given value.
@@ -198,11 +201,9 @@ define_integer_write_fn!(Kind::UInt, u32, write_u32, u16, write_u16, "Writes an 
 define_integer_write_fn!(Kind::Int, i64, write_i64, i32, write_i32, "Writes an [`Kind::Int`] atom with the given value. Will attempt to write a smaller value if possible to do so.");
 define_integer_write_fn!(Kind::UInt, u64, write_u64, u32, write_u32, "Writes an [`Kind::UInt`] atom with the given value. Will attempt to write a smaller value if possible to do so.");
 
-/// Writes an [`Kind::String`] atom with the given value.
+/// Writes an [`Kind::Bytes`] atom with the bytes of the string.
 pub fn write_str<W: WriteBytesExt>(writer: &mut W, value: &str) -> std::io::Result<usize> {
-    let header_len = write_atom_header(writer, Kind::Bytes, Some(value.len() as u64))?;
-    writer.write_all(value.as_bytes())?;
-    Ok(value.len() + header_len)
+    write_bytes(writer, value.as_bytes())
 }
 
 /// Writes an [`Kind::Bytes`] atom with the given value.

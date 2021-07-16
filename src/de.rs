@@ -70,22 +70,21 @@ impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
         Ok(self.peeked_atom.as_ref().unwrap())
     }
 
+    #[allow(clippy::cast_possible_truncation)]
     fn visit_symbol<V>(&mut self, atom: &Atom<'_>, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        if atom.arg == 0 {
-            // New symbol
-            let name = self.read_atom()?;
-            if let Some(Nucleus::Bytes(name)) = name.nucleus {
-                let name = std::str::from_utf8(name)?;
-                self.symbols.push(name);
-                visitor.visit_borrowed_str(name)
-            } else {
-                Err(Error::InvalidData)
-            }
+        let is_id = atom.arg & 0b1 != 0;
+        let arg = atom.arg >> 1;
+        if is_id {
+            self.symbols.visit_symbol_id(arg, visitor)
         } else {
-            self.symbols.visit_symbol_id(atom.arg - 1, visitor)
+            // New symbol
+            let name = self.input.buffered_read_bytes(arg as usize)?;
+            let name = std::str::from_utf8(name)?;
+            self.symbols.push(name);
+            visitor.visit_borrowed_str(name)
         }
     }
 }

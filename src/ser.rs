@@ -42,16 +42,19 @@ impl<'a, W: WriteBytesExt + Debug> Serializer<'a, W> {
     fn write_symbol(&mut self, symbol: &'static str) -> Result<()> {
         let registered_symbol = self.symbol_map.find_or_add(symbol);
         if registered_symbol.new {
-            // Emit a symbol with 0 as the arg, then a string for the symbol.
-            self.bytes_written += format::write_atom_header(&mut self.output, Kind::Symbol, None)?;
-            self.bytes_written += format::write_str(&mut self.output, symbol)?;
+            // The arg is the length followed by a 0 bit.
+            let arg = (symbol.len() as u64) << 1;
+            self.bytes_written +=
+                format::write_atom_header(&mut self.output, Kind::Symbol, Some(arg))?;
+            self.output.write_all(symbol.as_bytes())?;
+            self.bytes_written += symbol.len() as usize;
             Ok(())
         } else {
-            // When a symbol was already emitted, just emit the id.
+            // When a symbol was already emitted, just emit the id followed by a 1 bit.
             self.bytes_written += format::write_atom_header(
                 &mut self.output,
                 Kind::Symbol,
-                Some(u64::from(registered_symbol.id)),
+                Some(u64::from((registered_symbol.id << 1) | 1)),
             )?;
             Ok(())
         }
@@ -446,7 +449,7 @@ impl SymbolMap {
                 new: false,
             },
             Err(position) => {
-                let id = self.symbols.len() as u32 + 1;
+                let id = self.symbols.len() as u32;
                 self.symbols.insert(position, (symbol_address, id));
                 RegisteredSymbol { id, new: true }
             }
