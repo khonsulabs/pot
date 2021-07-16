@@ -1,4 +1,6 @@
-use byteorder::{LittleEndian, ReadBytesExt, WriteBytesExt};
+use byteorder::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
+
+pub(crate) const CURRENT_VERSION: u8 = 0;
 
 use crate::{reader::Reader, Error};
 
@@ -113,6 +115,25 @@ impl Kind {
             7 => Ok(Self::Bytes),
             _ => Err(Error::InvalidData),
         }
+    }
+}
+
+/// Writes the Pot header. A u32 written in big endian. The first three bytes
+/// are 'Pot' (`0x506F74`), and the fourth byte is the version. The first
+/// version of Pot is 0.
+pub fn write_header<W: WriteBytesExt>(writer: &mut W, version: u8) -> std::io::Result<usize> {
+    writer.write_u32::<BigEndian>(0x506F_7400 | u32::from(version))?;
+    Ok(4)
+}
+
+#[allow(clippy::similar_names, clippy::cast_possible_truncation)]
+pub fn read_header<R: ReadBytesExt>(reader: &mut R) -> Result<u8, Error> {
+    let header = reader.read_u32::<BigEndian>()?;
+    if header & 0x506F_7400 == 0x506F_7400 {
+        let version = (header & 0xFF) as u8;
+        Ok(version)
+    } else {
+        Err(Error::InvalidData)
     }
 }
 

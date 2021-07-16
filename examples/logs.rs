@@ -109,19 +109,19 @@ fn main() -> anyhow::Result<()> {
     let mut sender_state = pot::ser::SymbolMap::default();
     let mut receiver_state = pot::de::SymbolMap::new();
     let mut payload_buffer = Vec::new();
-    logs.entries[0].serialize(&mut sender_state.serializer_for(&mut payload_buffer))?;
+    logs.entries[0].serialize(&mut sender_state.serializer_for(&mut payload_buffer)?)?;
     let first_transmission_length = payload_buffer.len();
     {
         assert_eq!(
-            &Log::deserialize(&mut receiver_state.deserializer_for_slice(&payload_buffer))?,
+            &Log::deserialize(&mut receiver_state.deserializer_for_slice(&payload_buffer)?)?,
             &logs.entries[0]
         );
     }
     let mut payload_buffer = Vec::new();
-    logs.entries[0].serialize(&mut sender_state.serializer_for(&mut payload_buffer))?;
+    logs.entries[0].serialize(&mut sender_state.serializer_for(&mut payload_buffer)?)?;
     let subsequent_transmission_length = payload_buffer.len();
     assert_eq!(
-        &Log::deserialize(&mut receiver_state.deserializer_for_slice(&payload_buffer))?,
+        &Log::deserialize(&mut receiver_state.deserializer_for_slice(&payload_buffer)?)?,
         &logs.entries[0]
     );
 

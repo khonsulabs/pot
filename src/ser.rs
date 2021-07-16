@@ -10,7 +10,7 @@ use serde::{ser, Serialize};
 use tracing::instrument;
 
 use crate::{
-    format::{self, Kind},
+    format::{self, Kind, CURRENT_VERSION},
     Error, Result,
 };
 
@@ -22,20 +22,17 @@ pub struct Serializer<'a, W: WriteBytesExt> {
 }
 
 impl<'a, W: WriteBytesExt + Debug> Serializer<'a, W> {
-    pub fn new(output: W) -> Self {
-        Self {
-            output,
-            bytes_written: 0,
-            symbol_map: SymbolMapRef::Owned(SymbolMap::default()),
-        }
+    pub fn new(output: W) -> Result<Self> {
+        Self::new_with_symbol_map(output, SymbolMapRef::Owned(SymbolMap::default()))
     }
 
-    fn new_with_symbol_map(output: W, symbol_map: SymbolMapRef<'a>) -> Self {
-        Self {
-            output,
-            bytes_written: 0,
+    fn new_with_symbol_map(mut output: W, symbol_map: SymbolMapRef<'a>) -> Result<Self> {
+        let bytes_written = format::write_header(&mut output, CURRENT_VERSION)?;
+        Ok(Self {
             symbol_map,
-        }
+            output,
+            bytes_written,
+        })
     }
 
     #[cfg_attr(feature = "tracing", instrument)]
@@ -425,7 +422,10 @@ struct RegisteredSymbol {
 }
 
 impl SymbolMap {
-    pub fn serializer_for<W: WriteBytesExt + Debug>(&mut self, output: W) -> Serializer<'_, W> {
+    pub fn serializer_for<W: WriteBytesExt + Debug>(
+        &mut self,
+        output: W,
+    ) -> Result<Serializer<'_, W>> {
         Serializer::new_with_symbol_map(output, SymbolMapRef::Borrowed(self))
     }
 

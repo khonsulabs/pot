@@ -29,7 +29,7 @@ where
     T: Serialize,
 {
     let mut output = Vec::default();
-    let mut serializer = ser::Serializer::new(&mut output);
+    let mut serializer = ser::Serializer::new(&mut output)?;
     value.serialize(&mut serializer)?;
     Ok(output)
 }
@@ -38,7 +38,7 @@ pub fn from_slice<'a, T>(s: &'a [u8]) -> Result<T>
 where
     T: Deserialize<'a>,
 {
-    let mut deserializer = de::Deserializer::from_slice(s);
+    let mut deserializer = de::Deserializer::from_slice(s)?;
     let t = T::deserialize(&mut deserializer)?;
     if deserializer.end_of_input() {
         Ok(t)

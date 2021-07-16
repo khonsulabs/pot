@@ -7,7 +7,7 @@ use serde::de::{self, DeserializeSeed, EnumAccess, MapAccess, SeqAccess, Variant
 use tracing::instrument;
 
 use crate::{
-    format::{self, Atom, Nucleus},
+    format::{self, Atom, Nucleus, CURRENT_VERSION},
     reader::{Reader, SliceReader},
     Error, Result,
 };
@@ -21,29 +21,21 @@ pub struct Deserializer<'s, 'de, R: Reader<'de>> {
 }
 
 impl<'s, 'de> Deserializer<'s, 'de, SliceReader<'de>> {
-    #[must_use]
-    pub fn from_slice(input: &'de [u8]) -> Self {
-        let mut symbols = SymbolMap::new();
-        // TODO make this configurable
-        symbols.reserve(1024);
-        Deserializer {
-            input: SliceReader::from(input),
-            symbols,
-            peeked_atom: None,
-            _phantom: PhantomData::default(),
-        }
+    pub fn from_slice(input: &'de [u8]) -> Result<Self> {
+        Self::from_slice_with_symbols(input, SymbolMap::new())
     }
 
-    #[must_use]
-    fn from_slice_with_symbols(input: &'de [u8], mut symbols: SymbolMap<'s, 'de>) -> Self {
+    fn from_slice_with_symbols(input: &'de [u8], mut symbols: SymbolMap<'s, 'de>) -> Result<Self> {
         // TODO make this configurable
         symbols.reserve(1024);
-        Deserializer {
+        let mut deserializer = Deserializer {
             input: SliceReader::from(input),
             symbols,
             peeked_atom: None,
             _phantom: PhantomData::default(),
-        }
+        };
+        deserializer.read_header()?;
+        Ok(deserializer)
     }
 
     #[must_use]
@@ -53,6 +45,15 @@ impl<'s, 'de> Deserializer<'s, 'de, SliceReader<'de>> {
 }
 
 impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
+    fn read_header(&mut self) -> Result<()> {
+        let version = format::read_header(&mut self.input)?;
+        if version == CURRENT_VERSION {
+            Ok(())
+        } else {
+            Err(Error::InvalidData)
+        }
+    }
+
     fn read_atom(&mut self) -> Result<Atom<'de>> {
         if let Some(peeked) = self.peeked_atom.take() {
             Ok(peeked)
@@ -696,7 +697,7 @@ impl<'de> SymbolMap<'static, 'de> {
     pub fn deserializer_for_slice<'a>(
         &'a mut self,
         slice: &'de [u8],
-    ) -> Deserializer<'a, 'de, SliceReader<'de>> {
+    ) -> Result<Deserializer<'a, 'de, SliceReader<'de>>> {
         Deserializer::from_slice_with_symbols(slice, self.persistent())
     }
 
