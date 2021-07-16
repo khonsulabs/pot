@@ -156,7 +156,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::Serializer for &'de mut Serial
 
     #[cfg_attr(feature = "tracing", instrument)]
     fn serialize_none(self) -> Result<()> {
-        self.bytes_written += format::write_atom_header(&mut self.output, Kind::None, None)?;
+        self.bytes_written += format::write_none(&mut self.output)?;
         Ok(())
     }
 
@@ -170,7 +170,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::Serializer for &'de mut Serial
 
     #[cfg_attr(feature = "tracing", instrument)]
     fn serialize_unit(self) -> Result<()> {
-        self.bytes_written += format::write_atom_header(&mut self.output, Kind::Unit, None)?;
+        self.bytes_written += format::write_unit(&mut self.output)?;
         Ok(())
     }
 
@@ -187,7 +187,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::Serializer for &'de mut Serial
         variant: &'static str,
     ) -> Result<()> {
         self.write_symbol(variant)?;
-        self.bytes_written += format::write_atom_header(&mut self.output, Kind::Unit, None)?;
+        self.bytes_written += format::write_none(&mut self.output)?;
         Ok(())
     }
 

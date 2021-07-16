@@ -9,19 +9,19 @@ pub fn write_atom_header<W: WriteBytesExt>(
     kind: Kind,
     arg: Option<u64>,
 ) -> std::io::Result<usize> {
-    // 8 + 64 total bits, with 3 in the first u8, and 7 in the remaining. Total
+    // 8 + 64 total bits, with 4 in the first u8, and 7 in the remaining. Total
     // of 10 bytes required. to store a u64::MAX.
     let mut bytes = [0_u8; 10];
-    // Kind is the first nibble.
-    let mut first_byte = (kind as u8) << 4;
+    // Kind is the 3 bits.
+    let mut first_byte = (kind as u8) << 5;
     let mut arg = arg.unwrap_or_default();
     if arg > 0 {
-        // Second nibble contains a bit denoting whether there are more bytes to
-        // read, and then 3 bits of arg
-        first_byte |= arg as u8 & 0b111;
-        arg >>= 3;
+        // The last 4 bits are the first 4 bits of the arg
+        first_byte |= arg as u8 & 0b1111;
+        arg >>= 4;
+        // If the arg requires more than 4 bits, set the 5th bit.
         if arg > 0 {
-            first_byte |= 0b1000;
+            first_byte |= 0b10000;
         }
     }
     bytes[0] = first_byte;
@@ -44,11 +44,11 @@ pub fn write_atom_header<W: WriteBytesExt>(
 /// Reads an atom header (kind and argument).
 pub fn read_atom_header<R: ReadBytesExt>(reader: &mut R) -> Result<(Kind, u64), Error> {
     let first_byte = reader.read_u8()?;
-    let kind = Kind::from_u8(first_byte >> 4)?;
-    let mut arg = u64::from(first_byte & 0b111);
-    if first_byte & 0b1000 > 0 {
+    let kind = Kind::from_u8(first_byte >> 5)?;
+    let mut arg = u64::from(first_byte & 0b1111);
+    if first_byte & 0b10000 > 0 {
         let mut bytes_read = 1;
-        let mut offset = 3;
+        let mut offset = 4;
         loop {
             let byte = reader.read_u8()?;
             bytes_read += 1;
@@ -91,14 +91,8 @@ pub enum Kind {
     /// argument is non-zero, the argument is the symbol id of a previously
     /// emitted symbol.
     Symbol = 6,
-    /// A UTF-8 encoded string. The argument is the length, in bytes. The
-    /// following bytes are the string.
-    String = 7,
     /// A series of bytes. The argument is the length. The bytes follow.
-    Bytes = 8,
-    /// A unit value. Included to ensure the ability to distinguish between
-    /// `None` and `Some(())`.
-    Unit = 9,
+    Bytes = 7,
 }
 
 impl Kind {
@@ -113,9 +107,7 @@ impl Kind {
             4 => Ok(Self::Sequence),
             5 => Ok(Self::Map),
             6 => Ok(Self::Symbol),
-            7 => Ok(Self::String),
-            8 => Ok(Self::Bytes),
-            9 => Ok(Self::Unit),
+            7 => Ok(Self::Bytes),
             _ => Err(Error::InvalidData),
         }
     }
@@ -128,7 +120,7 @@ pub fn write_none<W: WriteBytesExt>(writer: &mut W) -> std::io::Result<usize> {
 
 /// Writes a [`Kind::Unit`] atom.
 pub fn write_unit<W: WriteBytesExt>(writer: &mut W) -> std::io::Result<usize> {
-    write_atom_header(writer, Kind::Unit, None)
+    write_atom_header(writer, Kind::None, None)
 }
 
 /// Writes an [`Kind::Int`] atom with the given value.
@@ -208,7 +200,7 @@ define_integer_write_fn!(Kind::UInt, u64, write_u64, u32, write_u32, "Writes an 
 
 /// Writes an [`Kind::String`] atom with the given value.
 pub fn write_str<W: WriteBytesExt>(writer: &mut W, value: &str) -> std::io::Result<usize> {
-    let header_len = write_atom_header(writer, Kind::String, Some(value.len() as u64))?;
+    let header_len = write_atom_header(writer, Kind::Bytes, Some(value.len() as u64))?;
     writer.write_all(value.as_bytes())?;
     Ok(value.len() + header_len)
 }
@@ -454,7 +446,7 @@ impl Integer {
         reader: &mut R,
     ) -> Result<Self, Error> {
         match kind {
-            Kind::Unit | Kind::None => Ok(Self::U8(0)),
+            Kind::None => Ok(Self::U8(0)),
             Kind::Int => match byte_len + 1 {
                 1 => Ok(Self::I8(reader.read_i8()?)),
                 2 => Ok(Self::I16(reader.read_i16::<LittleEndian>()?)),
@@ -505,7 +497,7 @@ impl Integer {
 pub fn read_atom<'de, R: Reader<'de>>(reader: &mut R) -> Result<Atom<'de>, Error> {
     let (kind, arg) = read_atom_header(reader)?;
     Ok(match kind {
-        Kind::None | Kind::Sequence | Kind::Map | Kind::Symbol | Kind::Unit => Atom {
+        Kind::None | Kind::Sequence | Kind::Map | Kind::Symbol => Atom {
             kind,
             arg,
             nucleus: None,
@@ -528,14 +520,6 @@ pub fn read_atom<'de, R: Reader<'de>>(reader: &mut R) -> Result<Atom<'de>, Error
                 reader,
             )?)),
         },
-        Kind::String => {
-            let bytes = reader.buffered_read_bytes(arg as usize)?;
-            Atom {
-                kind,
-                arg,
-                nucleus: Some(Nucleus::String(std::str::from_utf8(bytes)?)),
-            }
-        }
         Kind::Bytes => {
             let bytes = reader.buffered_read_bytes(arg as usize)?;
             Atom {
@@ -641,8 +625,6 @@ pub enum Nucleus<'de> {
     Integer(Integer),
     /// A floating point value.
     Float(Float),
-    /// A string value.
-    String(&'de str),
     /// A buffer of bytes.
     Bytes(&'de [u8]),
 }

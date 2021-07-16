@@ -77,7 +77,8 @@ impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
         if atom.arg == 0 {
             // New symbol
             let name = self.read_atom()?;
-            if let Some(Nucleus::String(name)) = name.nucleus {
+            if let Some(Nucleus::Bytes(name)) = name.nucleus {
+                let name = std::str::from_utf8(name)?;
                 self.symbols.push(name);
                 visitor.visit_borrowed_str(name)
             } else {
@@ -134,22 +135,12 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             },
             Kind::Sequence => visitor.visit_seq(AtomList::new(self, atom.arg as usize)),
             Kind::Map => visitor.visit_map(AtomList::new(self, atom.arg as usize)),
-            Kind::Unit => visitor.visit_unit(),
             Kind::Symbol => self.visit_symbol(&atom, visitor),
-            Kind::String => {
-                if let Some(Nucleus::String(string)) = &atom.nucleus {
-                    visitor.visit_borrowed_str(string)
-                } else {
-                    Err(Error::InvalidData)
-                }
-            }
-            Kind::Bytes => {
-                if let Some(Nucleus::Bytes(bytes)) = &atom.nucleus {
-                    visitor.visit_borrowed_bytes(bytes)
-                } else {
-                    Err(Error::InvalidData)
-                }
-            }
+            Kind::Bytes => match &atom.nucleus {
+                Some(Nucleus::Bytes(bytes)) => visitor.visit_borrowed_bytes(bytes),
+                None => visitor.visit_none(),
+                _ => Err(Error::InvalidData),
+            },
         }
     }
 
@@ -179,7 +170,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::Unit | Kind::None => visitor.visit_i8(0),
+            Kind::None => visitor.visit_i8(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_i8(integer.as_i8()?)
@@ -197,7 +188,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::Unit | Kind::None => visitor.visit_i16(0),
+            Kind::None => visitor.visit_i16(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_i16(integer.as_i16()?)
@@ -216,7 +207,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::Unit | Kind::None => visitor.visit_i32(0),
+            Kind::None => visitor.visit_i32(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_i32(integer.as_i32()?)
@@ -235,7 +226,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::Unit | Kind::None => visitor.visit_i64(0),
+            Kind::None => visitor.visit_i64(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_i64(integer.as_i64()?)
@@ -254,7 +245,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::Unit | Kind::None => visitor.visit_u8(0),
+            Kind::None => visitor.visit_u8(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_u8(integer.as_u8()?)
@@ -273,7 +264,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::Unit | Kind::None => visitor.visit_u16(0),
+            Kind::None => visitor.visit_u16(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_u16(integer.as_u16()?)
@@ -292,7 +283,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::Unit | Kind::None => visitor.visit_u32(0),
+            Kind::None => visitor.visit_u32(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_u32(integer.as_u32()?)
@@ -311,7 +302,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::Unit | Kind::None => visitor.visit_u64(0),
+            Kind::None => visitor.visit_u64(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_u64(integer.as_u64()?)
@@ -390,8 +381,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::String | Kind::Bytes => match atom.nucleus {
-                Some(Nucleus::String(string)) => visitor.visit_borrowed_str(string),
+            Kind::Bytes => match atom.nucleus {
                 Some(Nucleus::Bytes(bytes)) => {
                     visitor.visit_borrowed_str(std::str::from_utf8(bytes)?)
                 }
@@ -448,7 +438,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         V: Visitor<'de>,
     {
         let atom = self.read_atom()?;
-        if atom.kind == Kind::Unit {
+        if atom.kind == Kind::None {
             visitor.visit_unit()
         } else {
             Err(Error::InvalidData)
@@ -659,7 +649,7 @@ impl<'a, 's, 'de, R: Reader<'de>> VariantAccess<'de> for &'a mut Deserializer<'s
 
     #[cfg_attr(feature = "tracing", instrument)]
     fn unit_variant(self) -> Result<()> {
-        if self.read_atom()?.kind == Kind::Unit {
+        if self.read_atom()?.kind == Kind::None {
             Ok(())
         } else {
             Err(Error::InvalidData)
