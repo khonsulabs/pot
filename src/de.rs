@@ -69,6 +69,24 @@ impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
 
         Ok(self.peeked_atom.as_ref().unwrap())
     }
+
+    fn visit_symbol<V>(&mut self, atom: &Atom<'_>, visitor: V) -> Result<V::Value>
+    where
+        V: Visitor<'de>,
+    {
+        if atom.arg == 0 {
+            // New symbol
+            let name = self.read_atom()?;
+            if let Some(Nucleus::String(name)) = name.nucleus {
+                self.symbols.push(name);
+                visitor.visit_borrowed_str(name)
+            } else {
+                Err(Error::InvalidData)
+            }
+        } else {
+            self.symbols.visit_symbol_id(atom.arg - 1, visitor)
+        }
+    }
 }
 
 impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer<'s, 'de, R> {
@@ -117,7 +135,21 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Sequence => visitor.visit_seq(AtomList::new(self, atom.arg as usize)),
             Kind::Map => visitor.visit_map(AtomList::new(self, atom.arg as usize)),
             Kind::Unit => visitor.visit_unit(),
-            Kind::Symbol | Kind::String | Kind::Bytes => todo!(),
+            Kind::Symbol => self.visit_symbol(&atom, visitor),
+            Kind::String => {
+                if let Some(Nucleus::String(string)) = &atom.nucleus {
+                    visitor.visit_borrowed_str(string)
+                } else {
+                    Err(Error::InvalidData)
+                }
+            }
+            Kind::Bytes => {
+                if let Some(Nucleus::Bytes(bytes)) = &atom.nucleus {
+                    visitor.visit_borrowed_bytes(bytes)
+                } else {
+                    Err(Error::InvalidData)
+                }
+            }
         }
     }
 
@@ -525,20 +557,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::Symbol => {
-                if atom.arg == 0 {
-                    // New symbol
-                    let name = self.read_atom()?;
-                    if let Some(Nucleus::String(name)) = name.nucleus {
-                        self.symbols.push(name);
-                        visitor.visit_borrowed_str(name)
-                    } else {
-                        Err(Error::InvalidData)
-                    }
-                } else {
-                    self.symbols.visit_symbol_id(atom.arg - 1, visitor)
-                }
-            }
+            Kind::Symbol => self.visit_symbol(&atom, visitor),
             _ => Err(Error::InvalidData),
         }
     }
