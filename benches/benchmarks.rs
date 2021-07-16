@@ -80,7 +80,7 @@ impl Backend {
 impl Display for Backend {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(match self {
-            Self::Pbor => "pbor",
+            Self::Pbor => "pot",
             Self::Cbor => "cbor",
             Self::Bincode => "bincode",
         })
@@ -100,12 +100,12 @@ fn bench_logs(c: &mut Criterion) {
     for backend in Backend::all() {
         let mut group = c.benchmark_group(format!("logs/{}", backend));
         let serialize = match backend {
-            Backend::Pbor => |logs| pbor::to_vec(logs).unwrap(),
+            Backend::Pbor => |logs| pot::to_vec(logs).unwrap(),
             Backend::Cbor => |logs| serde_cbor::to_vec(logs).unwrap(),
             Backend::Bincode => |logs| bincode::serialize(logs).unwrap(),
         };
         let deserialize = match backend {
-            Backend::Pbor => |logs| pbor::from_slice::<LogArchive>(logs).unwrap(),
+            Backend::Pbor => |logs| pot::from_slice::<LogArchive>(logs).unwrap(),
             Backend::Cbor => |logs| serde_cbor::from_slice(logs).unwrap(),
             Backend::Bincode => |logs| bincode::deserialize(logs).unwrap(),
         };
@@ -140,7 +140,7 @@ fn bench_logs(c: &mut Criterion) {
 }
 
 fn pbor_serialize_into(logs: &LogArchive, buffer: &mut Vec<u8>) {
-    logs.serialize(&mut pbor::ser::Serializer::new(buffer))
+    logs.serialize(&mut pot::ser::Serializer::new(buffer))
         .unwrap();
 }
 

@@ -1,4 +1,4 @@
-# `PliantDb` Binary Object Representation
+# Pot: The storage and network serialization format for BonsaiDb
 
 PBOR is an encoding format [being proposed](https://community.khonsulabs.com/t/towards-stabilization-serialization-format-s-for-pliantdb/71) for use within `PliantDb`. Its purpose is to provide an encoding format for `serde` that:
 

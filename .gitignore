@@ -1,6 +1,6 @@
 /target
 Cargo.lock
-*.pbor
+*.pot
 perf.data*
 flamegraph.svg
 .vscode

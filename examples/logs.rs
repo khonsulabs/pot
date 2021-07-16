@@ -73,7 +73,7 @@ fn main() -> anyhow::Result<()> {
     }
 
     // Encode without a persistent session
-    let pbor_bytes = pbor::to_vec(&logs)?;
+    let pbor_bytes = pot::to_vec(&logs)?;
     let bincode_bytes = bincode::serialize(&logs)?;
     let bincode_varint_bytes = bincode::DefaultOptions::default()
         .with_varint_encoding()
@@ -82,10 +82,7 @@ fn main() -> anyhow::Result<()> {
 
     cli_table::print_stdout(
         vec![
-            vec![
-                "pbor".cell(),
-                pbor_bytes.len().separate_with_commas().cell(),
-            ],
+            vec!["pot".cell(), pbor_bytes.len().separate_with_commas().cell()],
             vec![
                 "cbor".cell(),
                 cbor_bytes.len().separate_with_commas().cell(),
@@ -103,14 +100,14 @@ fn main() -> anyhow::Result<()> {
         .title(vec!["Format", "Bytes"]),
     )?;
 
-    // In pbor, you can also use a persistent encoding session to save more
+    // With Pot, you can also use a persistent encoding session to save more
     // bandwidth, as long as you guarantee payloads are serialized and
     // deserialized in a consistent order.
     //
     // In this situation, the payloads across a network are generally smaller,
     // so let's show the benefits by just encoding a single log entry.
-    let mut sender_state = pbor::ser::SymbolMap::default();
-    let mut receiver_state = pbor::de::SymbolMap::new();
+    let mut sender_state = pot::ser::SymbolMap::default();
+    let mut receiver_state = pot::de::SymbolMap::new();
     let mut payload_buffer = Vec::new();
     logs.entries[0].serialize(&mut sender_state.serializer_for(&mut payload_buffer))?;
     let first_transmission_length = payload_buffer.len();
@@ -143,7 +140,7 @@ fn main() -> anyhow::Result<()> {
 #[test]
 fn one_log() {
     let log = Log::generate(&mut thread_rng());
-    let bytes = pbor::to_vec(&log).unwrap();
-    let result = pbor::from_slice(&bytes).unwrap();
+    let bytes = pot::to_vec(&log).unwrap();
+    let result = pot::from_slice(&bytes).unwrap();
     assert_eq!(log, result);
 }
