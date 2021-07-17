@@ -401,7 +401,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         self.deserialize_str(visitor)
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(_visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     fn deserialize_bytes<V>(self, visitor: V) -> Result<V::Value>
     where
