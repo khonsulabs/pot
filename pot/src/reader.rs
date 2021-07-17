@@ -4,13 +4,16 @@ use byteorder::ReadBytesExt;
 
 use crate::Error;
 
+/// A reader that can temporarily buffer bytes read.
 pub trait Reader<'de>: ReadBytesExt + Debug {
+    /// Read exactly `length` bytes and return a reference to the buffer.
     fn buffered_read_bytes(&mut self, length: usize) -> Result<&'de [u8], Error>;
 }
 
+/// Reads data from a slice.
 #[allow(clippy::module_name_repetitions)]
 pub struct SliceReader<'a> {
-    pub data: &'a [u8],
+    pub(crate) data: &'a [u8],
 }
 
 impl<'a> Debug for SliceReader<'a> {
@@ -56,9 +59,10 @@ impl<'a> Read for SliceReader<'a> {
     }
 }
 
+/// A reader over [`ReadBytesExt`].
 #[allow(clippy::module_name_repetitions)]
 #[derive(Debug)]
 pub struct IoReader<R: ReadBytesExt + Debug> {
-    pub reader: R,
+    pub(crate) reader: R,
     buffer: Vec<u8>,
 }

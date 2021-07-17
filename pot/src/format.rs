@@ -1,6 +1,9 @@
 use byteorder::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
+use serde::de::Error as _;
 
 pub(crate) const CURRENT_VERSION: u8 = 0;
+
+use std::convert::TryFrom;
 
 use crate::{reader::Reader, Error};
 
@@ -59,7 +62,7 @@ pub fn read_atom_header<R: ReadBytesExt>(reader: &mut R) -> Result<(Kind, u64), 
             if byte & 0b1000_0000 == 0 {
                 break;
             } else if bytes_read == 9 {
-                return Err(Error::InvalidData);
+                return Err(Error::InvalidAtomHeader);
             }
         }
     }
@@ -126,6 +129,7 @@ pub fn write_header<W: WriteBytesExt>(writer: &mut W, version: u8) -> std::io::R
     Ok(4)
 }
 
+/// Reads a Pot header. See `write_header` for more information. Returns the version number contained within.
 #[allow(clippy::similar_names, clippy::cast_possible_truncation)]
 pub fn read_header<R: ReadBytesExt>(reader: &mut R) -> Result<u8, Error> {
     let header = reader.read_u32::<BigEndian>()?;
@@ -133,7 +137,7 @@ pub fn read_header<R: ReadBytesExt>(reader: &mut R) -> Result<u8, Error> {
         let version = (header & 0xFF) as u8;
         Ok(version)
     } else {
-        Err(Error::InvalidData)
+        Err(Error::IncompatibleVersion)
     }
 }
 
@@ -147,7 +151,7 @@ pub fn write_unit<W: WriteBytesExt>(writer: &mut W) -> std::io::Result<usize> {
     write_none(writer)
 }
 
-/// Writes an [`Kind::Int`] atom with the given value.
+/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
 pub fn write_i8<W: WriteBytesExt>(writer: &mut W, value: i8) -> std::io::Result<usize> {
     let header_len = write_atom_header(
         writer,
@@ -157,6 +161,78 @@ pub fn write_i8<W: WriteBytesExt>(writer: &mut W, value: i8) -> std::io::Result<
     writer
         .write_i8(value)
         .map(|_| std::mem::size_of::<i8>() + header_len)
+}
+
+/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+pub fn write_i16<W: WriteBytesExt>(writer: &mut W, value: i16) -> std::io::Result<usize> {
+    if let Ok(value) = i8::try_from(value) {
+        write_i8(writer, value)
+    } else {
+        let header_len = write_atom_header(writer, Kind::Int, Some(2 - 1))?;
+        writer
+            .write_i16::<LittleEndian>(value)
+            .map(|_| 2 + header_len)
+    }
+}
+
+/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+pub fn write_i24<W: WriteBytesExt>(writer: &mut W, value: i32) -> std::io::Result<usize> {
+    if let Ok(value) = i16::try_from(value) {
+        write_i16(writer, value)
+    } else {
+        let header_len = write_atom_header(writer, Kind::Int, Some(3 - 1))?;
+        writer
+            .write_i24::<LittleEndian>(value)
+            .map(|_| 3 + header_len)
+    }
+}
+
+/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+pub fn write_i32<W: WriteBytesExt>(writer: &mut W, value: i32) -> std::io::Result<usize> {
+    if value >= -(2_i32.pow(23)) && value < 2_i32.pow(23) {
+        write_i24(writer, value)
+    } else {
+        let header_len = write_atom_header(writer, Kind::Int, Some(4 - 1))?;
+        writer
+            .write_i32::<LittleEndian>(value)
+            .map(|_| 4 + header_len)
+    }
+}
+
+/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+pub fn write_i48<W: WriteBytesExt>(writer: &mut W, value: i64) -> std::io::Result<usize> {
+    if let Ok(value) = i32::try_from(value) {
+        write_i32(writer, value)
+    } else {
+        let header_len = write_atom_header(writer, Kind::Int, Some(6 - 1))?;
+        writer
+            .write_i48::<LittleEndian>(value)
+            .map(|_| 6 + header_len)
+    }
+}
+
+/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+pub fn write_i64<W: WriteBytesExt>(writer: &mut W, value: i64) -> std::io::Result<usize> {
+    if value >= -(2_i64.pow(47)) && value < 2_i64.pow(47) {
+        write_i48(writer, value)
+    } else {
+        let header_len = write_atom_header(writer, Kind::Int, Some(8 - 1))?;
+        writer
+            .write_i64::<LittleEndian>(value)
+            .map(|_| 8 + header_len)
+    }
+}
+
+/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+pub fn write_i128<W: WriteBytesExt>(writer: &mut W, value: i128) -> std::io::Result<usize> {
+    if let Ok(value) = i64::try_from(value) {
+        write_i64(writer, value)
+    } else {
+        let header_len = write_atom_header(writer, Kind::Int, Some(16 - 1))?;
+        writer
+            .write_i128::<LittleEndian>(value)
+            .map(|_| 16 + header_len)
+    }
 }
 
 /// Writes an [`Kind::UInt`] atom with the given value.
@@ -169,6 +245,82 @@ pub fn write_u8<W: WriteBytesExt>(writer: &mut W, value: u8) -> std::io::Result<
     writer
         .write_u8(value)
         .map(|_| std::mem::size_of::<u8>() + header_len)
+}
+
+/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+pub fn write_u16<W: WriteBytesExt>(writer: &mut W, value: u16) -> std::io::Result<usize> {
+    if let Ok(value) = u8::try_from(value) {
+        write_u8(writer, value)
+    } else {
+        let header_len = write_atom_header(
+            writer,
+            Kind::UInt,
+            Some(std::mem::size_of::<u16>() as u64 - 1),
+        )?;
+        writer
+            .write_u16::<LittleEndian>(value)
+            .map(|_| std::mem::size_of::<u16>() + header_len)
+    }
+}
+
+/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+pub fn write_u24<W: WriteBytesExt>(writer: &mut W, value: u32) -> std::io::Result<usize> {
+    if let Ok(value) = u16::try_from(value) {
+        write_u16(writer, value)
+    } else {
+        let header_len = write_atom_header(writer, Kind::UInt, Some(3 - 1))?;
+        writer
+            .write_u24::<LittleEndian>(value)
+            .map(|_| 3 + header_len)
+    }
+}
+
+/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+pub fn write_u32<W: WriteBytesExt>(writer: &mut W, value: u32) -> std::io::Result<usize> {
+    if value < 2_u32.pow(24) {
+        write_u24(writer, value)
+    } else {
+        let header_len = write_atom_header(writer, Kind::UInt, Some(4 - 1))?;
+        writer
+            .write_u32::<LittleEndian>(value)
+            .map(|_| std::mem::size_of::<u32>() + header_len)
+    }
+}
+
+/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+pub fn write_u48<W: WriteBytesExt>(writer: &mut W, value: u64) -> std::io::Result<usize> {
+    if let Ok(value) = u32::try_from(value) {
+        write_u32(writer, value)
+    } else {
+        let header_len = write_atom_header(writer, Kind::UInt, Some(6 - 1))?;
+        writer
+            .write_u48::<LittleEndian>(value)
+            .map(|_| 6 + header_len)
+    }
+}
+
+/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+pub fn write_u64<W: WriteBytesExt>(writer: &mut W, value: u64) -> std::io::Result<usize> {
+    if value < 2_u64.pow(48) {
+        write_u48(writer, value)
+    } else {
+        let header_len = write_atom_header(writer, Kind::UInt, Some(8 - 1))?;
+        writer
+            .write_u64::<LittleEndian>(value)
+            .map(|_| std::mem::size_of::<u64>() + header_len)
+    }
+}
+
+/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+pub fn write_u128<W: WriteBytesExt>(writer: &mut W, value: u128) -> std::io::Result<usize> {
+    if let Ok(value) = u64::try_from(value) {
+        write_u64(writer, value)
+    } else {
+        let header_len = write_atom_header(writer, Kind::UInt, Some(16 - 1))?;
+        writer
+            .write_u128::<LittleEndian>(value)
+            .map(|_| std::mem::size_of::<u128>() + header_len)
+    }
 }
 
 /// Writes an [`Kind::Float`] atom with the given value.
@@ -184,43 +336,22 @@ pub fn write_f32<W: WriteBytesExt>(writer: &mut W, value: f32) -> std::io::Resul
 }
 
 /// Writes an [`Kind::Float`] atom with the given value.
+#[allow(clippy::cast_possible_truncation, clippy::float_cmp)]
 pub fn write_f64<W: WriteBytesExt>(writer: &mut W, value: f64) -> std::io::Result<usize> {
-    let header_len = write_atom_header(
-        writer,
-        Kind::Float,
-        Some(std::mem::size_of::<f64>() as u64 - 1),
-    )?;
-    writer
-        .write_f64::<LittleEndian>(value)
-        .map(|_| std::mem::size_of::<f64>() + header_len)
+    let as_f32 = value as f32;
+    if f64::from(as_f32) == value {
+        write_f32(writer, as_f32)
+    } else {
+        let header_len = write_atom_header(
+            writer,
+            Kind::Float,
+            Some(std::mem::size_of::<f64>() as u64 - 1),
+        )?;
+        writer
+            .write_f64::<LittleEndian>(value)
+            .map(|_| std::mem::size_of::<f64>() + header_len)
+    }
 }
-
-macro_rules! define_integer_write_fn {
-    ($kind:expr, $type:ident, $write_fn:tt, $smaller_type:ident, $smaller_write_fn:ident, $docs:literal) => {
-        #[doc = $docs]
-        pub fn $write_fn<W: WriteBytesExt>(writer: &mut W, value: $type) -> std::io::Result<usize> {
-            if let Ok(value) = <$smaller_type as std::convert::TryFrom<$type>>::try_from(value) {
-                $smaller_write_fn(writer, value as $smaller_type)
-            } else {
-                let header_len = write_atom_header(
-                    writer,
-                    $kind,
-                    Some(std::mem::size_of::<$type>() as u64 - 1),
-                )?;
-                writer
-                    .$write_fn::<LittleEndian>(value)
-                    .map(|_| std::mem::size_of::<$type>() + header_len)
-            }
-        }
-    };
-}
-
-define_integer_write_fn!(Kind::Int, i16, write_i16, i8, write_i8, "Writes an [`Kind::Int`] atom with the given value. Will attempt to write a smaller value if possible to do so.");
-define_integer_write_fn!(Kind::UInt, u16, write_u16, u8, write_u8, "Writes an [`Kind::UInt`] atom with the given value. Will attempt to write a smaller value if possible to do so.");
-define_integer_write_fn!(Kind::Int, i32, write_i32, i16, write_i16, "Writes an [`Kind::Int`] atom with the given value. Will attempt to write a smaller value if possible to do so.");
-define_integer_write_fn!(Kind::UInt, u32, write_u32, u16, write_u16, "Writes an [`Kind::UInt`] atom with the given value. Will attempt to write a smaller value if possible to do so.");
-define_integer_write_fn!(Kind::Int, i64, write_i64, i32, write_i32, "Writes an [`Kind::Int`] atom with the given value. Will attempt to write a smaller value if possible to do so.");
-define_integer_write_fn!(Kind::UInt, u64, write_u64, u32, write_u32, "Writes an [`Kind::UInt`] atom with the given value. Will attempt to write a smaller value if possible to do so.");
 
 /// Writes an [`Kind::Bytes`] atom with the bytes of the string.
 pub fn write_str<W: WriteBytesExt>(writer: &mut W, value: &str) -> std::io::Result<usize> {
@@ -245,6 +376,8 @@ pub enum Integer {
     I32(i32),
     /// An i64 value.
     I64(i64),
+    /// An i128 value.
+    I128(i128),
     /// An u8 value.
     U8(u8),
     /// An u16 value.
@@ -253,6 +386,8 @@ pub enum Integer {
     U32(u32),
     /// An u64 value.
     U64(u64),
+    /// An u128 value.
+    U128(u128),
 }
 
 impl Integer {
@@ -302,9 +437,12 @@ impl Integer {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U32(_) | Self::I32(_) | Self::U64(_) | Self::I64(_) => {
-                Err(Error::ImpreciseCastWouldLoseData)
-            }
+            Self::U32(_)
+            | Self::I32(_)
+            | Self::U64(_)
+            | Self::I64(_)
+            | Self::U128(_)
+            | Self::I128(_) => Err(Error::ImpreciseCastWouldLoseData),
         }
     }
 
@@ -328,9 +466,12 @@ impl Integer {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U32(_) | Self::I32(_) | Self::U64(_) | Self::I64(_) => {
-                Err(Error::ImpreciseCastWouldLoseData)
-            }
+            Self::U32(_)
+            | Self::I32(_)
+            | Self::U64(_)
+            | Self::I64(_)
+            | Self::U128(_)
+            | Self::I128(_) => Err(Error::ImpreciseCastWouldLoseData),
         }
     }
 
@@ -350,7 +491,9 @@ impl Integer {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U64(_) | Self::I64(_) => Err(Error::ImpreciseCastWouldLoseData),
+            Self::U64(_) | Self::I64(_) | Self::U128(_) | Self::I128(_) => {
+                Err(Error::ImpreciseCastWouldLoseData)
+            }
         }
     }
 
@@ -382,7 +525,9 @@ impl Integer {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U64(_) | Self::I64(_) => Err(Error::ImpreciseCastWouldLoseData),
+            Self::U64(_) | Self::I64(_) | Self::U128(_) | Self::I128(_) => {
+                Err(Error::ImpreciseCastWouldLoseData)
+            }
         }
     }
 
@@ -400,6 +545,30 @@ impl Integer {
             Self::U64(value) => {
                 if *value < i64::MAX as u64 {
                     Ok(*value as i64)
+                } else {
+                    Err(Error::ImpreciseCastWouldLoseData)
+                }
+            }
+            Self::U128(_) | Self::I128(_) => Err(Error::ImpreciseCastWouldLoseData),
+        }
+    }
+
+    /// Returns the contained value as an i64, or an error if the value is unable to fit.
+    #[allow(clippy::cast_possible_wrap)]
+    pub const fn as_i128(&self) -> Result<i128, Error> {
+        match self {
+            Self::I8(value) => Ok(*value as i128),
+            Self::U8(value) => Ok(*value as i128),
+            Self::I16(value) => Ok(*value as i128),
+            Self::U16(value) => Ok(*value as i128),
+            Self::I32(value) => Ok(*value as i128),
+            Self::U32(value) => Ok(*value as i128),
+            Self::I64(value) => Ok(*value as i128),
+            Self::U64(value) => Ok(*value as i128),
+            Self::I128(value) => Ok(*value),
+            Self::U128(value) => {
+                if *value < i128::MAX as u128 {
+                    Ok(*value as i128)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
@@ -443,6 +612,54 @@ impl Integer {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
+            Self::U128(_) | Self::I128(_) => Err(Error::ImpreciseCastWouldLoseData),
+        }
+    }
+
+    /// Returns the contained value as an u64, or an error if the value is unable to fit.
+    #[allow(clippy::cast_sign_loss)]
+    pub const fn as_u128(&self) -> Result<u128, Error> {
+        match self {
+            Self::I8(value) => {
+                if *value >= 0 {
+                    Ok(*value as u128)
+                } else {
+                    Err(Error::ImpreciseCastWouldLoseData)
+                }
+            }
+            Self::U8(value) => Ok(*value as u128),
+            Self::I16(value) => {
+                if *value >= 0 {
+                    Ok(*value as u128)
+                } else {
+                    Err(Error::ImpreciseCastWouldLoseData)
+                }
+            }
+            Self::U16(value) => Ok(*value as u128),
+            Self::U32(value) => Ok(*value as u128),
+            Self::I32(value) => {
+                if *value >= 0 {
+                    Ok(*value as u128)
+                } else {
+                    Err(Error::ImpreciseCastWouldLoseData)
+                }
+            }
+            Self::U64(value) => Ok(*value as u128),
+            Self::I64(value) => {
+                if *value >= 0 {
+                    Ok(*value as u128)
+                } else {
+                    Err(Error::ImpreciseCastWouldLoseData)
+                }
+            }
+            Self::U128(value) => Ok(*value),
+            Self::I128(value) => {
+                if *value >= 0 {
+                    Ok(*value as u128)
+                } else {
+                    Err(Error::ImpreciseCastWouldLoseData)
+                }
+            }
         }
     }
 
@@ -453,10 +670,12 @@ impl Integer {
             Self::I16(value) => write_i16(writer, value),
             Self::I32(value) => write_i32(writer, value),
             Self::I64(value) => write_i64(writer, value),
+            Self::I128(value) => write_i128(writer, value),
             Self::U8(value) => write_u8(writer, value),
             Self::U16(value) => write_u16(writer, value),
             Self::U32(value) => write_u32(writer, value),
             Self::U64(value) => write_u64(writer, value),
+            Self::U128(value) => write_u128(writer, value),
         }
     }
 
@@ -476,7 +695,8 @@ impl Integer {
                 4 => Ok(Self::I32(reader.read_i32::<LittleEndian>()?)),
                 6 => Ok(Self::I64(reader.read_i48::<LittleEndian>()?)),
                 8 => Ok(Self::I64(reader.read_i64::<LittleEndian>()?)),
-                _ => Err(Error::InvalidData),
+                16 => Ok(Self::I128(reader.read_i128::<LittleEndian>()?)),
+                _ => Err(Error::custom("unsupported int byte count")),
             },
             Kind::UInt => match byte_len + 1 {
                 1 => Ok(Self::U8(reader.read_u8()?)),
@@ -485,9 +705,13 @@ impl Integer {
                 4 => Ok(Self::U32(reader.read_u32::<LittleEndian>()?)),
                 6 => Ok(Self::U64(reader.read_u48::<LittleEndian>()?)),
                 8 => Ok(Self::U64(reader.read_u64::<LittleEndian>()?)),
-                _ => Err(Error::InvalidData),
+                16 => Ok(Self::U128(reader.read_u128::<LittleEndian>()?)),
+                _ => Err(Error::custom("unsupported uint byte count")),
             },
-            _ => Err(Error::InvalidData),
+            other => Err(Error::custom(format!(
+                "expected integer, found {:?}",
+                other
+            ))),
         }
     }
 
@@ -632,10 +856,10 @@ impl Float {
             match byte_len + 1 {
                 4 => Ok(Self::F32(reader.read_f32::<LittleEndian>()?)),
                 8 => Ok(Self::F64(reader.read_f64::<LittleEndian>()?)),
-                _ => Err(Error::InvalidData),
+                _ => Err(Error::custom("unsupported float byte count")),
             }
         } else {
-            Err(Error::InvalidData)
+            Err(Error::custom(format!("expected float, got {:?}", kind)))
         }
     }
 }

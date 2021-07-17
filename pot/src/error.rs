@@ -4,33 +4,48 @@ use serde::{de, ser};
 
 use crate::format::Kind;
 
+/// All errors that `Pot` may return.
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    // One or more variants that can be created by data structures through the
-    // `ser::Error` and `de::Error` traits. For example the Serialize impl for
-    // Mutex<T> might return an error because the mutex is poisoned, or the
-    // Deserialize impl for a struct may return an error because a required
-    // field is missing.
+    /// Payload is not a `Pot` payload.
+    #[error("not a pot: invalid header")]
+    NotAPot,
+    /// Data was written with an incompatible version.
+    #[error("incompatible version")]
+    IncompatibleVersion,
+    /// A generic error occurred.
     #[error("{0}")]
     Message(String),
+    /// Extra data appeared at the end of the input.
     #[error("extra data at end of input")]
     TrailingBytes,
+    /// Expected more data but encountered the end of the input.
     #[error("unexpected end of file")]
     Eof,
-    #[error("value too large")]
+    /// A numerical value could not be handled without losing precision or truncation.
+    #[error("numerical data cannot fit")]
     ImpreciseCastWouldLoseData,
+    /// An error occurred from io.
     #[error("io error: {0}")]
     Io(#[from] std::io::Error),
-    #[error("unexpected byte sequence")]
-    InvalidData,
+    /// A sequence of unknown size cannot be serialized.
     #[error("serializing sequences of unknown size is unsupported")]
     SequenceSizeMustBeKnown,
+    /// String data contained invalid utf-8 characters.
     #[error("invalid utf8: {0}")]
     InvalidUtf8(String),
+    /// An unknown kind was encountered. Generally a sign that something else has been parsed incorrectly.
     #[error("invalid kind: {0}")]
     InvalidKind(u8),
+    /// Encountered an unexpected atom kind.
     #[error("encountered atom kind {0:?}, expected {1:?}")]
     UnexpectedKind(Kind, Kind),
+    /// A requested symbol id was not found.
+    #[error("unknown symbol {0}")]
+    UnknownSymbol(u64),
+    /// An atom header was incorrectly formatted.
+    #[error("an atom header was incorrectly formatted")]
+    InvalidAtomHeader,
 }
 
 impl ser::Error for Error {

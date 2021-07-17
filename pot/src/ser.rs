@@ -14,6 +14,7 @@ use crate::{
     Error, Result,
 };
 
+/// A `Pot` serializer.
 #[derive(Debug)]
 pub struct Serializer<'a, W: WriteBytesExt> {
     symbol_map: SymbolMapRef<'a>,
@@ -22,6 +23,7 @@ pub struct Serializer<'a, W: WriteBytesExt> {
 }
 
 impl<'a, W: WriteBytesExt + Debug> Serializer<'a, W> {
+    /// Returns a new serializer outputting written bytes into `output`.
     pub fn new(output: W) -> Result<Self> {
         Self::new_with_symbol_map(output, SymbolMapRef::Owned(SymbolMap::default()))
     }
@@ -101,6 +103,12 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::Serializer for &'de mut Serial
     }
 
     #[cfg_attr(feature = "tracing", instrument)]
+    fn serialize_i128(self, v: i128) -> Result<()> {
+        self.bytes_written += format::write_i128(&mut self.output, v)?;
+        Ok(())
+    }
+
+    #[cfg_attr(feature = "tracing", instrument)]
     fn serialize_u8(self, v: u8) -> Result<()> {
         self.bytes_written += format::write_u8(&mut self.output, v)?;
         Ok(())
@@ -121,6 +129,12 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::Serializer for &'de mut Serial
     #[cfg_attr(feature = "tracing", instrument)]
     fn serialize_u64(self, v: u64) -> Result<()> {
         self.bytes_written += format::write_u64(&mut self.output, v)?;
+        Ok(())
+    }
+
+    #[cfg_attr(feature = "tracing", instrument)]
+    fn serialize_u128(self, v: u128) -> Result<()> {
+        self.bytes_written += format::write_u128(&mut self.output, v)?;
         Ok(())
     }
 
@@ -402,6 +416,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::SerializeStructVariant
     }
 }
 
+/// A list of previously serialized symbols.
 #[derive(Debug)]
 pub struct SymbolMap {
     symbols: Vec<(usize, u32)>,
@@ -422,6 +437,8 @@ struct RegisteredSymbol {
 }
 
 impl SymbolMap {
+    /// Returns a serializer that writes into `output` that persists symbols
+    /// into `self`.
     pub fn serializer_for<W: WriteBytesExt + Debug>(
         &mut self,
         output: W,

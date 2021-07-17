@@ -14,6 +14,7 @@ use crate::{
     Error, Result,
 };
 
+/// Deserializer for the `Pot` format.
 #[derive(Debug)]
 pub struct Deserializer<'s, 'de, R: Reader<'de>> {
     input: R,
@@ -23,6 +24,7 @@ pub struct Deserializer<'s, 'de, R: Reader<'de>> {
 }
 
 impl<'s, 'de> Deserializer<'s, 'de, SliceReader<'de>> {
+    /// Returns a new deserializer for `input`.
     pub fn from_slice(input: &'de [u8]) -> Result<Self> {
         Self::from_slice_with_symbols(input, SymbolMap::new())
     }
@@ -40,6 +42,7 @@ impl<'s, 'de> Deserializer<'s, 'de, SliceReader<'de>> {
         Ok(deserializer)
     }
 
+    /// Returns true if the input has been consumed completely.
     #[must_use]
     pub const fn end_of_input(&self) -> bool {
         self.input.data.is_empty() && self.peeked_atom.is_none()
@@ -52,7 +55,7 @@ impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
         if version == CURRENT_VERSION {
             Ok(())
         } else {
-            Err(Error::InvalidData)
+            Err(Error::IncompatibleVersion)
         }
     }
 
@@ -119,7 +122,8 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 4 => visitor.visit_i32(self.input.read_i32::<LittleEndian>()?),
                 6 => visitor.visit_i64(self.input.read_i48::<LittleEndian>()?),
                 8 => visitor.visit_i64(self.input.read_i64::<LittleEndian>()?),
-                _ => Err(Error::InvalidData),
+                16 => visitor.visit_i128(self.input.read_i128::<LittleEndian>()?),
+                _ => Err(Error::custom("unsupported int byte count")),
             },
             Kind::UInt => match atom.arg + 1 {
                 1 => visitor.visit_u8(self.input.read_u8()?),
@@ -128,12 +132,13 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 4 => visitor.visit_u32(self.input.read_u32::<LittleEndian>()?),
                 6 => visitor.visit_u64(self.input.read_u48::<LittleEndian>()?),
                 8 => visitor.visit_u64(self.input.read_u64::<LittleEndian>()?),
-                _ => Err(Error::InvalidData),
+                16 => visitor.visit_u128(self.input.read_u128::<LittleEndian>()?),
+                _ => Err(Error::custom("unsupported uint byte count")),
             },
             Kind::Float => match atom.arg + 1 {
                 4 => visitor.visit_f32(self.input.read_f32::<LittleEndian>()?),
                 8 => visitor.visit_f64(self.input.read_f64::<LittleEndian>()?),
-                _ => Err(Error::InvalidData),
+                _ => Err(Error::custom("unsupported float byte count")),
             },
             Kind::Sequence => visitor.visit_seq(AtomList::new(self, atom.arg as usize)),
             Kind::Map => visitor.visit_map(AtomList::new(self, atom.arg as usize)),
@@ -141,7 +146,8 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Bytes => match &atom.nucleus {
                 Some(Nucleus::Bytes(bytes)) => visitor.visit_borrowed_bytes(bytes),
                 None => visitor.visit_none(),
-                _ => Err(Error::InvalidData),
+                // The parsing operation guarantees that this will always be bytes.
+                _ => unreachable!(),
             },
         }
     }
@@ -158,10 +164,10 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_bool(integer.as_i8()? != 0)
                 } else {
-                    Err(Error::InvalidData)
+                    unreachable!("read_atom should never return anything else")
                 }
             }
-            _ => Err(Error::InvalidData),
+            other => Err(Error::custom(format!("expected bool, got {:?}", other))),
         }
     }
 
@@ -177,10 +183,10 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_i8(integer.as_i8()?)
                 } else {
-                    Err(Error::InvalidData)
+                    unreachable!("read_atom should never return anything else")
                 }
             }
-            _ => Err(Error::InvalidData),
+            other => Err(Error::custom(format!("expected i8, got {:?}", other))),
         }
     }
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
@@ -195,10 +201,10 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_i16(integer.as_i16()?)
                 } else {
-                    Err(Error::InvalidData)
+                    unreachable!("read_atom should never return anything else")
                 }
             }
-            _ => Err(Error::InvalidData),
+            other => Err(Error::custom(format!("expected i16, got {:?}", other))),
         }
     }
 
@@ -214,10 +220,10 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_i32(integer.as_i32()?)
                 } else {
-                    Err(Error::InvalidData)
+                    unreachable!("read_atom should never return anything else")
                 }
             }
-            _ => Err(Error::InvalidData),
+            other => Err(Error::custom(format!("expected i32, got {:?}", other))),
         }
     }
 
@@ -233,10 +239,29 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_i64(integer.as_i64()?)
                 } else {
-                    Err(Error::InvalidData)
+                    unreachable!("read_atom should never return anything else")
                 }
             }
-            _ => Err(Error::InvalidData),
+            other => Err(Error::custom(format!("expected i64, got {:?}", other))),
+        }
+    }
+
+    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    fn deserialize_i128<V>(self, visitor: V) -> Result<V::Value>
+    where
+        V: Visitor<'de>,
+    {
+        let atom = self.read_atom()?;
+        match atom.kind {
+            Kind::None => visitor.visit_i64(0),
+            Kind::UInt | Kind::Int => {
+                if let Some(Nucleus::Integer(integer)) = atom.nucleus {
+                    visitor.visit_i128(integer.as_i128()?)
+                } else {
+                    unreachable!("read_atom should never return anything else")
+                }
+            }
+            other => Err(Error::custom(format!("expected i128, got {:?}", other))),
         }
     }
 
@@ -252,10 +277,10 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_u8(integer.as_u8()?)
                 } else {
-                    Err(Error::InvalidData)
+                    unreachable!("read_atom should never return anything else")
                 }
             }
-            _ => Err(Error::InvalidData),
+            other => Err(Error::custom(format!("expected u8, got {:?}", other))),
         }
     }
 
@@ -271,10 +296,10 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_u16(integer.as_u16()?)
                 } else {
-                    Err(Error::InvalidData)
+                    unreachable!("read_atom should never return anything else")
                 }
             }
-            _ => Err(Error::InvalidData),
+            other => Err(Error::custom(format!("expected u16, got {:?}", other))),
         }
     }
 
@@ -290,10 +315,10 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_u32(integer.as_u32()?)
                 } else {
-                    Err(Error::InvalidData)
+                    unreachable!("read_atom should never return anything else")
                 }
             }
-            _ => Err(Error::InvalidData),
+            other => Err(Error::custom(format!("expected u32, got {:?}", other))),
         }
     }
 
@@ -309,10 +334,29 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_u64(integer.as_u64()?)
                 } else {
-                    Err(Error::InvalidData)
+                    unreachable!("read_atom should never return anything else")
                 }
             }
-            _ => Err(Error::InvalidData),
+            other => Err(Error::custom(format!("expected u64, got {:?}", other))),
+        }
+    }
+
+    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    fn deserialize_u128<V>(self, visitor: V) -> Result<V::Value>
+    where
+        V: Visitor<'de>,
+    {
+        let atom = self.read_atom()?;
+        match atom.kind {
+            Kind::None => visitor.visit_i64(0),
+            Kind::UInt | Kind::Int => {
+                if let Some(Nucleus::Integer(integer)) = atom.nucleus {
+                    visitor.visit_u128(integer.as_u128()?)
+                } else {
+                    unreachable!("read_atom should never return anything else")
+                }
+            }
+            other => Err(Error::custom(format!("expected i64, got {:?}", other))),
         }
     }
 
@@ -327,7 +371,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_f32(integer.as_f32()?)
                 } else {
-                    Err(Error::InvalidData)
+                    unreachable!("read_atom should never return anything else")
                 }
             }
 
@@ -335,10 +379,10 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 if let Some(Nucleus::Float(float)) = atom.nucleus {
                     visitor.visit_f32(float.as_f32()?)
                 } else {
-                    Err(Error::InvalidData)
+                    unreachable!("read_atom should never return anything else")
                 }
             }
-            _ => Err(Error::InvalidData),
+            other => Err(Error::custom(format!("expected f32, got {:?}", other))),
         }
     }
 
@@ -353,7 +397,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_f64(integer.as_f64()?)
                 } else {
-                    Err(Error::InvalidData)
+                    unreachable!("read_atom should never return anything else")
                 }
             }
 
@@ -361,19 +405,33 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 if let Some(Nucleus::Float(float)) = atom.nucleus {
                     visitor.visit_f64(float.as_f64())
                 } else {
-                    Err(Error::InvalidData)
+                    unreachable!("read_atom should never return anything else")
                 }
             }
-            _ => Err(Error::InvalidData),
+            other => Err(Error::custom(format!("expected f64, got {:?}", other))),
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(_visitor)))]
-    fn deserialize_char<V>(self, _visitor: V) -> Result<V::Value>
+    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    fn deserialize_char<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        unimplemented!()
+        let atom = self.read_atom()?;
+        match atom.kind {
+            Kind::None => visitor.visit_u32(0),
+            Kind::UInt | Kind::Int => {
+                if let Some(Nucleus::Integer(integer)) = atom.nucleus {
+                    visitor.visit_char(
+                        char::from_u32(integer.as_u32()?)
+                            .ok_or_else(|| Error::InvalidUtf8(String::from("invalid char")))?,
+                    )
+                } else {
+                    unreachable!("read_atom should never return anything else")
+                }
+            }
+            other => Err(Error::custom(format!("expected char, got {:?}", other))),
+        }
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
@@ -387,9 +445,9 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 Some(Nucleus::Bytes(bytes)) => {
                     visitor.visit_borrowed_str(std::str::from_utf8(bytes)?)
                 }
-                _ => Err(Error::InvalidData),
+                _ => unreachable!("read_atom should never return anything else"),
             },
-            _ => Err(Error::InvalidData),
+            other => Err(Error::custom(format!("expected str, got {:?}", other))),
         }
     }
 
@@ -411,7 +469,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         match atom.kind {
             Kind::Bytes => match atom.nucleus {
                 Some(Nucleus::Bytes(bytes)) => visitor.visit_borrowed_bytes(bytes),
-                _ => Err(Error::InvalidData),
+                _ => unreachable!("read_atom should never return anything else"),
             },
             Kind::Sequence => {
                 let mut buffer = Vec::with_capacity(atom.arg as usize);
@@ -428,7 +486,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 }
                 visitor.visit_byte_buf(buffer)
             }
-            _ => Err(Error::InvalidData),
+            other => Err(Error::custom(format!("expected bytes, got {:?}", other))),
         }
     }
 
@@ -466,7 +524,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         if atom.kind == Kind::None {
             visitor.visit_unit()
         } else {
-            Err(Error::InvalidData)
+            Err(Error::custom(format!("expected unit, got {:?}", atom.kind)))
         }
     }
 
@@ -500,7 +558,10 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         if atom.kind == Kind::Sequence {
             visitor.visit_seq(AtomList::new(self, atom.arg as usize))
         } else {
-            Err(Error::InvalidData)
+            Err(Error::custom(format!(
+                "expected sequence, got {:?}",
+                atom.kind
+            )))
         }
     }
 
@@ -534,7 +595,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         if atom.kind == Kind::Map {
             visitor.visit_map(AtomList::new(self, atom.arg as usize))
         } else {
-            Err(Error::InvalidData)
+            Err(Error::custom(format!("expected map, got {:?}", atom.kind)))
         }
     }
 
@@ -573,7 +634,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         let atom = self.read_atom()?;
         match atom.kind {
             Kind::Symbol => self.visit_symbol(&atom, visitor),
-            _ => Err(Error::InvalidData),
+            other => Err(Error::custom(format!("expected unit, got {:?}", other))),
         }
     }
 
@@ -674,10 +735,14 @@ impl<'a, 's, 'de, R: Reader<'de>> VariantAccess<'de> for &'a mut Deserializer<'s
 
     #[cfg_attr(feature = "tracing", instrument)]
     fn unit_variant(self) -> Result<()> {
-        if self.read_atom()?.kind == Kind::None {
+        let kind = self.read_atom()?.kind;
+        if kind == Kind::None {
             Ok(())
         } else {
-            Err(Error::InvalidData)
+            Err(Error::custom(format!(
+                "expected unit variant, got {:?}",
+                kind
+            )))
         }
     }
 
@@ -706,19 +771,25 @@ impl<'a, 's, 'de, R: Reader<'de>> VariantAccess<'de> for &'a mut Deserializer<'s
     }
 }
 
+/// A collection of deserialized symbols.
 #[derive(Debug)]
 pub enum SymbolMap<'a, 'de> {
+    /// An owned list of symbols.
     Owned(Vec<String>),
+    /// A mutable reference to an owned list of symbols.
     Persistent(&'a mut Vec<String>),
+    /// A list of borrowed symbols.
     Borrowed(Vec<&'de str>),
 }
 
 impl<'de> SymbolMap<'static, 'de> {
+    /// Returns a new symbol map that will persist symbols between payloads.
     #[must_use]
     pub const fn new() -> Self {
         Self::Owned(Vec::new())
     }
 
+    /// Returns a deserializer for `slice`.
     pub fn deserializer_for_slice<'a>(
         &'a mut self,
         slice: &'de [u8],
@@ -744,15 +815,21 @@ impl<'a, 'de> SymbolMap<'a, 'de> {
     {
         match self {
             Self::Owned(vec) => {
-                let symbol = vec.get(symbol_id as usize).ok_or(Error::InvalidData)?;
+                let symbol = vec
+                    .get(symbol_id as usize)
+                    .ok_or(Error::UnknownSymbol(symbol_id))?;
                 visitor.visit_str(symbol)
             }
             Self::Persistent(vec) => {
-                let symbol = vec.get(symbol_id as usize).ok_or(Error::InvalidData)?;
+                let symbol = vec
+                    .get(symbol_id as usize)
+                    .ok_or(Error::UnknownSymbol(symbol_id))?;
                 visitor.visit_str(symbol)
             }
             Self::Borrowed(vec) => {
-                let symbol = vec.get(symbol_id as usize).ok_or(Error::InvalidData)?;
+                let symbol = vec
+                    .get(symbol_id as usize)
+                    .ok_or(Error::UnknownSymbol(symbol_id))?;
                 visitor.visit_borrowed_str(*symbol)
             }
         }

@@ -1,4 +1,6 @@
-# Pot: The storage and network serialization format for BonsaiDb
+# Pot
+
+The storage format for [`BonsaiDb`][bonsai].
 
 ![`Pot` is considered experimental and unsupported](https://img.shields.io/badge/status-experimental-blueviolet)
 [![crate version](https://img.shields.io/crates/v/pot.svg)](https://crates.io/crates/pot)
@@ -6,7 +8,7 @@
 [![HTML Coverage Report for `main` branch](https://khonsulabs.github.io/pot/coverage/badge.svg)](https://khonsulabs.github.io/pot/coverage/)
 [![Documentation for `main` branch](https://img.shields.io/badge/docs-main-informational)](https://khonsulabs.github.io/pot/main/pot/)
 
-`Pot` is an encoding format used within `BonsaiDb`. Its purpose is to provide an encoding format for `serde` that:
+`Pot` is an encoding format used within [`BonsaiDb`][bonsai]. Its purpose is to provide an encoding format for `serde` that:
 
 * Is self-describing.
 * Is safe to run in production.
@@ -32,4 +34,6 @@ Because benchmarks can be subjective and often don't mirror real-world usage, th
 
 ## Status of Project
 
-This project is still experimental, but the authors of `BonsaiDb` have elected to adopt it as the default storage format.
+This project is still experimental, but the authors of [`BonsaiDb`][bonsai] have elected to adopt it as the default storage format.
+
+[bonsai]: https://github.com/khonsulabs/pliantdb

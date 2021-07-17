@@ -1,7 +1,9 @@
+//! A concise serialization format written for `BonsaiDb`.
+
 #![deny(unsafe_code)]
 #![warn(
     // clippy::cargo,
-    // missing_docs,
+    missing_docs,
     // clippy::missing_docs_in_private_items,
     clippy::nursery,
     clippy::pedantic,
@@ -15,15 +17,21 @@
     clippy::used_underscore_binding, // false positive with tracing
 )]
 
+/// Types for deserializing pots.
 pub mod de;
 mod error;
+/// Low-level interface for reading and writing the pot format.
 pub mod format;
+/// Types for reading data.
 pub mod reader;
+/// Types for serializing pots.
 pub mod ser;
 pub use error::Error;
+/// A result alias that returns [`Error`].
 pub type Result<T> = std::result::Result<T, Error>;
 use serde::{Deserialize, Serialize};
 
+/// Serialize `value` into a pot.
 pub fn to_vec<T>(value: &T) -> Result<Vec<u8>>
 where
     T: Serialize,
@@ -34,6 +42,7 @@ where
     Ok(output)
 }
 
+/// Restore a previously serialized value from a pot.
 pub fn from_slice<'a, T>(s: &'a [u8]) -> Result<T>
 where
     T: Deserialize<'a>,
@@ -49,8 +58,9 @@ where
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::borrow::Cow;
+
+    use super::*;
 
     fn init_tracing() {
         drop(
@@ -64,10 +74,18 @@ mod tests {
         );
     }
 
-    fn test_serialization<S: Serialize + for<'de> Deserialize<'de> + PartialEq + Debug>(value: &S) {
+    fn test_serialization<S: Serialize + for<'de> Deserialize<'de> + PartialEq + Debug>(
+        value: &S,
+        check_length: Option<usize>,
+    ) {
         init_tracing();
         let bytes = to_vec(&value).unwrap();
-        println!("{:02x?}", bytes);
+        println!("{:?}: {:02x?}", value, bytes);
+        if let Some(check_length) = check_length {
+            // Subtract 4 bytes from the serialized output to account for the header.
+            assert_eq!(bytes.len() - 4, check_length);
+        }
+
         let deserialized = from_slice::<S>(&bytes).unwrap();
         assert_eq!(value, &deserialized);
     }
@@ -77,12 +95,15 @@ mod tests {
     struct NumbersStruct {
         u8: u8,
         u16: u16,
+        char: char,
         u32: u32,
         u64: u64,
+        u128: u128,
         i8: i8,
         i16: i16,
         i32: i32,
         i64: i64,
+        i128: i128,
         f32: f32,
         f64: f64,
     }
@@ -97,43 +118,96 @@ mod tests {
 
     #[test]
     fn numbers() {
-        test_serialization(&NumbersStruct::default());
-        test_serialization(&NumbersStruct {
-            u8: u8::MAX,
-            u16: u16::MAX,
-            u32: u32::MAX,
-            u64: u64::MAX,
-            i8: i8::MIN,
-            i16: i16::MIN,
-            i32: i32::MIN,
-            i64: i64::MIN,
-            f32: 1.,
-            f64: 1.,
-        })
+        test_serialization(&NumbersStruct::default(), None);
+        test_serialization(
+            &NumbersStruct {
+                u8: u8::MAX,
+                u16: u16::MAX,
+                char: char::MAX,
+                u32: u32::MAX,
+                u64: u64::MAX,
+                u128: u128::MAX,
+                i8: i8::MIN,
+                i16: i16::MIN,
+                i32: i32::MIN,
+                i64: i64::MIN,
+                i128: i128::MIN,
+                f32: 1.,
+                f64: 1.,
+            },
+            None,
+        )
+    }
+
+    #[test]
+    fn number_packing() {
+        test_serialization(&0_u128, Some(2));
+        test_serialization(&(2_u128.pow(8) - 1), Some(2));
+        test_serialization(&2_u128.pow(8), Some(3));
+        test_serialization(&(2_u128.pow(16) - 1), Some(3));
+        test_serialization(&2_u128.pow(16), Some(4));
+        test_serialization(&(2_u128.pow(24) - 1), Some(4));
+        test_serialization(&2_u128.pow(24), Some(5));
+        test_serialization(&(2_u128.pow(32) - 1), Some(5));
+        test_serialization(&2_u128.pow(32), Some(7));
+        test_serialization(&(2_u128.pow(48) - 1), Some(7));
+        test_serialization(&2_u128.pow(48), Some(9));
+        test_serialization(&(2_u128.pow(64) - 1), Some(9));
+        test_serialization(&2_u128.pow(64), Some(17));
+
+        test_serialization(&0_i128, Some(2));
+        test_serialization(&(2_i128.pow(7) - 1), Some(2));
+        test_serialization(&2_i128.pow(7), Some(3));
+        test_serialization(&(2_i128.pow(15) - 1), Some(3));
+        test_serialization(&2_i128.pow(15), Some(4));
+        test_serialization(&(2_i128.pow(23) - 1), Some(4));
+        test_serialization(&2_i128.pow(23), Some(5));
+        test_serialization(&(2_i128.pow(31) - 1), Some(5));
+        test_serialization(&2_i128.pow(31), Some(7));
+        test_serialization(&(2_i128.pow(47) - 1), Some(7));
+        test_serialization(&2_i128.pow(47), Some(9));
+        test_serialization(&-(2_i128.pow(7)), Some(2));
+        test_serialization(&-(2_i128.pow(7) + 1), Some(3));
+        test_serialization(&-(2_i128.pow(15)), Some(3));
+        test_serialization(&-(2_i128.pow(15) + 1), Some(4));
+        test_serialization(&-(2_i128.pow(23)), Some(4));
+        test_serialization(&-(2_i128.pow(23) + 1), Some(5));
+        test_serialization(&-(2_i128.pow(31)), Some(5));
+        test_serialization(&-(2_i128.pow(31) + 1), Some(7));
+        test_serialization(&-(2_i128.pow(47)), Some(7));
+        test_serialization(&-(2_i128.pow(47) + 1), Some(9));
+        test_serialization(&-(2_i128.pow(63)), Some(9));
+        test_serialization(&-(2_i128.pow(63) + 1), Some(17));
+
+        // Float packing will only work if bitwise conversions are lossless
+        test_serialization(&0_f64, Some(5));
     }
 
     #[test]
     fn enums() {
-        test_serialization(&EnumVariants::Unit);
+        test_serialization(&EnumVariants::Unit, None);
 
-        test_serialization(&EnumVariants::Tuple(0));
+        test_serialization(&EnumVariants::Tuple(0), None);
 
-        test_serialization(&EnumVariants::TupleTwoArgs(1, 2));
+        test_serialization(&EnumVariants::TupleTwoArgs(1, 2), None);
 
-        test_serialization(&EnumVariants::Struct { arg: 3 });
+        test_serialization(&EnumVariants::Struct { arg: 3 }, None);
     }
 
     #[test]
     fn vectors() {
-        test_serialization(&vec![0_u64, 1]);
-        test_serialization(&vec![NumbersStruct::default(), NumbersStruct::default()]);
+        test_serialization(&vec![0_u64, 1], None);
+        test_serialization(
+            &vec![NumbersStruct::default(), NumbersStruct::default()],
+            None,
+        );
     }
 
     #[test]
     fn option() {
-        test_serialization(&Option::<u64>::None);
-        test_serialization(&Some(0_u64));
-        test_serialization(&Some(u64::MAX));
+        test_serialization(&Option::<u64>::None, None);
+        test_serialization(&Some(0_u64), None);
+        test_serialization(&Some(u64::MAX), None);
     }
 
     #[derive(Serialize, PartialEq, Deserialize, Debug, Default)]
