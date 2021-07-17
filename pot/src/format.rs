@@ -113,7 +113,7 @@ impl Kind {
             5 => Ok(Self::Map),
             6 => Ok(Self::Symbol),
             7 => Ok(Self::Bytes),
-            _ => Err(Error::InvalidData),
+            other => Err(Error::InvalidKind(other)),
         }
     }
 }
@@ -487,7 +487,7 @@ impl Integer {
                 8 => Ok(Self::U64(reader.read_u64::<LittleEndian>()?)),
                 _ => Err(Error::InvalidData),
             },
-            _ => unreachable!("invalid kind"),
+            _ => Err(Error::InvalidData),
         }
     }
 
@@ -635,7 +635,7 @@ impl Float {
                 _ => Err(Error::InvalidData),
             }
         } else {
-            unreachable!("invalid kind")
+            Err(Error::InvalidData)
         }
     }
 }

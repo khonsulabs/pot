@@ -2,7 +2,9 @@ use std::marker::PhantomData;
 
 use byteorder::LittleEndian;
 use format::Kind;
-use serde::de::{self, DeserializeSeed, EnumAccess, MapAccess, SeqAccess, VariantAccess, Visitor};
+use serde::de::{
+    self, DeserializeSeed, EnumAccess, Error as _, MapAccess, SeqAccess, VariantAccess, Visitor,
+};
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -400,11 +402,34 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(_visitor)))]
-    fn deserialize_bytes<V>(self, _visitor: V) -> Result<V::Value>
+    #[allow(clippy::cast_possible_truncation)]
+    fn deserialize_bytes<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        unimplemented!()
+        let atom = self.read_atom()?;
+        match atom.kind {
+            Kind::Bytes => match atom.nucleus {
+                Some(Nucleus::Bytes(bytes)) => visitor.visit_borrowed_bytes(bytes),
+                _ => Err(Error::InvalidData),
+            },
+            Kind::Sequence => {
+                let mut buffer = Vec::with_capacity(atom.arg as usize);
+                for _ in 0..atom.arg {
+                    let atom = self.read_atom()?;
+
+                    if let Some(Nucleus::Integer(integer)) = atom.nucleus {
+                        buffer.push(integer.as_u8()?);
+                    } else {
+                        return Err(Error::custom(
+                            "expected byte array, encountered non-integer atom",
+                        ));
+                    }
+                }
+                visitor.visit_byte_buf(buffer)
+            }
+            _ => Err(Error::InvalidData),
+        }
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]

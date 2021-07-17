@@ -1,0 +1,82 @@
+name: Tests
+
+on: [push]
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Rust
+        uses: hecrj/setup-rust-action@v1
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/.crates.toml
+            ~/.cargo/.crates2.json
+            ~/.cargo/bin/cargo-audit
+          key: cargo-audit
+      - name: Install cargo-audit
+        run: cargo -v install cargo-audit
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ matrix.branch }}
+      - name: Audit
+        run: |
+          cargo audit -D warnings
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run clippy
+        run: |
+          cargo clippy
+
+      - name: Run unit tests
+        run: |
+          cargo test --all-features
+
+  docs:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Generate Docs
+        run: |
+          cargo doc --no-deps --all-features
+
+      - name: Deploy Docs
+        uses: JamesIves/github-pages-deploy-action@releases/v4
+        with:
+          branch: gh-pages
+          folder: target/doc/
+          git-config-name: kl-botsu
+          git-config-email: botsu@khonsulabs.com
+          target-folder: /main/
+          clean: true
+
+  coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run code coverage
+        run: |
+          cargo xtask generate-code-coverage-report --install-dependencies
+
+      - name: Deploy Docs
+        if: github.ref == 'refs/heads/main'
+        uses: JamesIves/github-pages-deploy-action@releases/v4
+        with:
+          branch: gh-pages
+          folder: coverage/
+          git-config-name: kl-botsu
+          git-config-email: botsu@khonsulabs.com
+          target-folder: /coverage/
+          clean: true

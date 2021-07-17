@@ -50,6 +50,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::borrow::Cow;
 
     fn init_tracing() {
         drop(
@@ -133,5 +134,34 @@ mod tests {
         test_serialization(&Option::<u64>::None);
         test_serialization(&Some(0_u64));
         test_serialization(&Some(u64::MAX));
+    }
+
+    #[derive(Serialize, PartialEq, Deserialize, Debug, Default)]
+    struct StringsAndBytes<'a> {
+        bytes: Cow<'a, [u8]>,
+        #[serde(with = "serde_bytes")]
+        bytes_borrowed: Cow<'a, [u8]>,
+        #[serde(with = "serde_bytes")]
+        serde_bytes_byte_slice: &'a [u8],
+        #[serde(with = "serde_bytes")]
+        serde_bytes_byte_vec: Vec<u8>,
+        str_ref: &'a str,
+        string: String,
+    }
+
+    #[test]
+    fn borrowing_data() {
+        let original = StringsAndBytes {
+            bytes: Cow::Borrowed(b"hello"),
+            bytes_borrowed: Cow::Borrowed(b"hello"),
+            serde_bytes_byte_slice: b"hello",
+            serde_bytes_byte_vec: b"world".to_vec(),
+            str_ref: "hello",
+            string: String::from("world"),
+        };
+        let serialized = to_vec(&original).unwrap();
+        let deserialized = from_slice(&serialized).unwrap();
+        assert_eq!(original, deserialized);
+        assert!(matches!(deserialized.bytes_borrowed, Cow::Borrowed(_)));
     }
 }

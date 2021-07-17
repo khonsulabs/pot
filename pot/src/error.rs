@@ -2,6 +2,8 @@ use std::{fmt::Display, str::Utf8Error, string::FromUtf8Error};
 
 use serde::{de, ser};
 
+use crate::format::Kind;
+
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
     // One or more variants that can be created by data structures through the
@@ -25,6 +27,10 @@ pub enum Error {
     SequenceSizeMustBeKnown,
     #[error("invalid utf8: {0}")]
     InvalidUtf8(String),
+    #[error("invalid kind: {0}")]
+    InvalidKind(u8),
+    #[error("encountered atom kind {0:?}, expected {1:?}")]
+    UnexpectedKind(Kind, Kind),
 }
 
 impl ser::Error for Error {

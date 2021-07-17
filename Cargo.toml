@@ -1,32 +1,5 @@
-[package]
-name = "pot"
-version = "0.1.0"
-edition = "2018"
-
-[dependencies]
-serde = "1"
-thiserror = "1"
-tracing = { version="0.1", features=["release_max_level_off"], optional=true }
-byteorder = "1"
-bytes = "1"
-
-[dev-dependencies]
-serde = { version="1", features=["derive"] }
-tracing-subscriber = { version="0.2" }
-tracing = { version="0.1" }
-rand = "0.8"
-fake = "2"
-chrono = { version="0.4", features=["serde"] }
-anyhow = "1"
-cli-table = "0.4"
-thousands = "0.2"
-serde_cbor = "0.11"
-bincode = "1"
-criterion = "0.3"
+[workspace]
+members = ["xtask", "pot"]
 
 [profile.bench]
 debug = true
-
-[[bench]]
-name = "benchmarks"
-harness = false

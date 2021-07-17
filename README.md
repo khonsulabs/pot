@@ -1,32 +1,35 @@
 # Pot: The storage and network serialization format for BonsaiDb
 
-PBOR is an encoding format [being proposed](https://community.khonsulabs.com/t/towards-stabilization-serialization-format-s-for-pliantdb/71) for use within `PliantDb`. Its purpose is to provide an encoding format for `serde` that:
+![`Pot` is considered experimental and unsupported](https://img.shields.io/badge/status-experimental-blueviolet)
+[![crate version](https://img.shields.io/crates/v/pot.svg)](https://crates.io/crates/pot)
+[![Live Build Status](https://img.shields.io/github/workflow/status/khonsulabs/pot/Tests/main)](https://github.com/khonsulabs/pot/actions?query=workflow:Tests)
+[![HTML Coverage Report for `main` branch](https://khonsulabs.github.io/pot/coverage/badge.svg)](https://khonsulabs.github.io/pot/coverage/)
+[![Documentation for `main` branch](https://img.shields.io/badge/docs-main-informational)](https://khonsulabs.github.io/pot/main/pot/)
 
-* Preserves Identifiers: `bincode` is a great format, but it's so compact because it discards identifiers. This is great if you're willing to accept the limitations on how to maintain version compatibility. However, `JSON` became popular because it preserved enough information that it can be flexibly serialized to and from with cross-version compatibility. Serde offers many features such as renames and aliases that help with this, but bincode can only support so many of these features due to the lack of identifiers in the encoded output.
-* Is safe to run in production: As far as I can tell, none of the available CBOR crates offer settings to ensure memory exhustion attacks can be prevented.
-* Is Compact: CBOR is compact, but imagine this setup:
+`Pot` is an encoding format used within `BonsaiDb`. Its purpose is to provide an encoding format for `serde` that:
 
-  ```rust
-  struct ShoppingCart {
-      items: Vec<Item>,
-  }
-
-  struct Item {
-      product_id: u64,
-      quantity: u16,
-      gift_message: String,
-      // ...
-  }
+* Is self-describing.
+* Is safe to run in production.
+* Is compact.
+  
+  ```sh
+  $ cargo test --example logs -- average_sizes --nocapture
+  Generating 1000 LogArchies with 100 entries.
+  +-----------------+------------+
+  | Format          | Avg. Bytes |
+  +-----------------+------------+
+  | pot             | 26,642.383 |
+  +-----------------+------------+
+  | bincode(varint) | 25,361.761 |
+  +-----------------+------------+
+  | bincode         | 27,855.579 |
+  +-----------------+------------+
+  | cbor            | 31,025.765 |
+  +-----------------+------------+
   ```
 
-  JSON/CBOR (amongst many other formats that preserve identifiers) include the name of the identifier each time its used. Thus, a shopping cart that had 50 items would have the identifier `product_id` included 50 times. PBOR utilizes an identifier table to ensure that each payload preserves identifiers, but only includes each identifier once.
-
-This blend of features should make it nearly as compact as bincode in many situations, but much more flexible allowing for easier cross-version compatibility: a must for `PliantDb`.
+Because benchmarks can be subjective and often don't mirror real-world usage, this library's authors aren't making any specific performance claims. Thorough benchmarks will be written eventually, the way pot achieves space savings requires some computational overhead. Thus, it is expected that a theoretically perfect CBOR implementation could outperform a perfect Pot implementation.
 
 ## Status of Project
 
-This experiment [has been a success](https://community.khonsulabs.com/t/towards-stabilization-serialization-format-s-for-pliantdb/71#how-did-the-experiment-go-5), but it's not such a large victory that the benefits of using it over sticking with an open standard aren't clear.
-
-This project has minimal testing at this current stage, and shouldn't be used in
-production. It has horrible error reporting for when things go wrong, and it
-does not specifically handle maliciously designed payloads yet. If this project is adopted into PliantDb, these aspects will be addressed.
+This project is still experimental, but the authors of `BonsaiDb` have elected to adopt it as the default storage format.
