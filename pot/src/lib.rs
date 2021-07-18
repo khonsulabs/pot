@@ -197,6 +197,8 @@ mod tests {
         test_serialization(&f64::NEG_INFINITY, Some(3));
         test_serialization(&0_f64, Some(3));
         test_serialization(&-0_f64, Some(3));
+        test_serialization(&0.1_f64, Some(9));
+        test_serialization(&0.1_f32, Some(9));
     }
 
     #[test]

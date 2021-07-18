@@ -60,10 +60,8 @@ pub fn read_atom_header<R: ReadBytesExt>(reader: &mut R) -> Result<(Kind, u64), 
             bytes_read += 1;
             arg |= u64::from(byte & 0x7f) << offset;
             offset += 7;
-            if byte & 0b1000_0000 == 0 {
+            if byte & 0b1000_0000 == 0 || bytes_read == 10 {
                 break;
-            } else if bytes_read == 9 {
-                return Err(Error::InvalidAtomHeader);
             }
         }
     }
@@ -914,12 +912,47 @@ mod tests {
     }
 
     #[test]
-    fn headers() {
+    fn header() {
         let mut out = Vec::new();
-        write_atom_header(&mut out, Kind::Map, Some(32)).unwrap();
-        let (kind, bytes) = read_atom_header(&mut out.as_slice()).unwrap();
+        write_header(&mut out, 1).unwrap();
+        let version = read_header(&mut out.as_slice()).unwrap();
+        assert_eq!(version, 1);
+
+        out[0] = 0;
+        assert!(read_header(&mut out.as_slice()).is_err());
+    }
+
+    #[test]
+    fn atom_headers() {
+        let mut out = Vec::new();
+        {
+            write_atom_header(&mut out, Kind::Map, Some(32)).unwrap();
+            let (kind, arg) = read_atom_header(&mut out.as_slice()).unwrap();
+            assert_eq!(kind, Kind::Map);
+            assert_eq!(arg, 32);
+        }
+        out.clear();
+
+        write_atom_header(&mut out, Kind::Map, Some(u64::MAX)).unwrap();
+        println!("header: {:?}", out);
+        let (kind, arg) = read_atom_header(&mut out.as_slice()).unwrap();
         assert_eq!(kind, Kind::Map);
-        assert_eq!(bytes, 32);
+        assert_eq!(arg, u64::MAX);
+    }
+
+    #[test]
+    fn atom_kinds() {
+        assert_eq!(Kind::None, Kind::from_u8(Kind::None as u8).unwrap());
+        assert_eq!(Kind::Int, Kind::from_u8(Kind::Int as u8).unwrap());
+        assert_eq!(Kind::UInt, Kind::from_u8(Kind::UInt as u8).unwrap());
+        assert_eq!(Kind::Float, Kind::from_u8(Kind::Float as u8).unwrap());
+        assert_eq!(Kind::Sequence, Kind::from_u8(Kind::Sequence as u8).unwrap());
+        assert_eq!(Kind::Map, Kind::from_u8(Kind::Map as u8).unwrap());
+        assert_eq!(Kind::Symbol, Kind::from_u8(Kind::Symbol as u8).unwrap());
+        assert_eq!(Kind::Bytes, Kind::from_u8(Kind::Bytes as u8).unwrap());
+        for i in 8_u8..=15 {
+            assert!(Kind::from_u8(i).is_err());
+        }
     }
 
     #[test]
