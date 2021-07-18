@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Serializer","A `Pot` serializer."],["SymbolMap","A list of previously serialized symbols."]]});
