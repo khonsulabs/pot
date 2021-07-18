@@ -1,4 +1,5 @@
 use byteorder::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
+use half::f16;
 use serde::de::Error as _;
 
 pub(crate) const CURRENT_VERSION: u8 = 0;
@@ -324,15 +325,33 @@ pub fn write_u128<W: WriteBytesExt>(writer: &mut W, value: u128) -> std::io::Res
 }
 
 /// Writes an [`Kind::Float`] atom with the given value.
+#[allow(clippy::cast_possible_truncation, clippy::float_cmp)]
 pub fn write_f32<W: WriteBytesExt>(writer: &mut W, value: f32) -> std::io::Result<usize> {
-    let header_len = write_atom_header(
-        writer,
-        Kind::Float,
-        Some(std::mem::size_of::<f32>() as u64 - 1),
-    )?;
-    writer
-        .write_f32::<LittleEndian>(value)
-        .map(|_| std::mem::size_of::<f32>() + header_len)
+    let as_f16 = f16::from_f32(value);
+    if as_f16.to_f32() == value {
+        let header_len = write_atom_header(
+            writer,
+            Kind::Float,
+            Some(std::mem::size_of::<u16>() as u64 - 1),
+        )?;
+        writer
+            .write_u16::<LittleEndian>(as_f16.to_bits())
+            .map(|_| std::mem::size_of::<u16>() + header_len)
+    } else {
+        let header_len = write_atom_header(
+            writer,
+            Kind::Float,
+            Some(std::mem::size_of::<f32>() as u64 - 1),
+        )?;
+        writer
+            .write_f32::<LittleEndian>(value)
+            .map(|_| std::mem::size_of::<f32>() + header_len)
+    }
+}
+
+fn read_f16<R: ReadBytesExt>(reader: &mut R) -> std::io::Result<f32> {
+    let value = f16::from_bits(reader.read_u16::<LittleEndian>()?);
+    Ok(value.to_f32())
 }
 
 /// Writes an [`Kind::Float`] atom with the given value.
@@ -854,6 +873,7 @@ impl Float {
     ) -> Result<Self, Error> {
         if let Kind::Float = kind {
             match byte_len + 1 {
+                2 => Ok(Self::F32(read_f16(reader)?)),
                 4 => Ok(Self::F32(reader.read_f32::<LittleEndian>()?)),
                 8 => Ok(Self::F64(reader.read_f64::<LittleEndian>()?)),
                 _ => Err(Error::custom("unsupported float byte count")),

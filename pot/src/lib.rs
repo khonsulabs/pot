@@ -78,17 +78,30 @@ mod tests {
         value: &S,
         check_length: Option<usize>,
     ) {
+        test_serialization_with(value, check_length, |value, deserialized| {
+            assert_eq!(value, deserialized);
+        });
+    }
+
+    fn test_serialization_with<
+        S: Serialize + for<'de> Deserialize<'de> + PartialEq + Debug,
+        F: FnOnce(&S, &S),
+    >(
+        value: &S,
+        check_length: Option<usize>,
+        callback: F,
+    ) {
         init_tracing();
         let bytes = to_vec(&value).unwrap();
         println!("{:?}: {:02x?}", value, bytes);
+        let deserialized = from_slice::<S>(&bytes).unwrap();
+        callback(value, &deserialized);
         if let Some(check_length) = check_length {
             // Subtract 4 bytes from the serialized output to account for the header.
             assert_eq!(bytes.len() - 4, check_length);
         }
-
-        let deserialized = from_slice::<S>(&bytes).unwrap();
-        assert_eq!(value, &deserialized);
     }
+
     use std::fmt::Debug;
 
     #[derive(Serialize, PartialEq, Deserialize, Debug, Default)]
@@ -179,8 +192,11 @@ mod tests {
         test_serialization(&-(2_i128.pow(63)), Some(9));
         test_serialization(&-(2_i128.pow(63) + 1), Some(17));
 
-        // Float packing will only work if bitwise conversions are lossless
-        test_serialization(&0_f64, Some(5));
+        // Float packing relies on bitwise conversions and are lossless.
+        test_serialization(&f64::INFINITY, Some(3));
+        test_serialization(&f64::NEG_INFINITY, Some(3));
+        test_serialization(&0_f64, Some(3));
+        test_serialization(&-0_f64, Some(3));
     }
 
     #[test]

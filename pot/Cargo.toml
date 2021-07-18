@@ -9,6 +9,7 @@ thiserror = "1"
 tracing = { version="0.1", features=["release_max_level_off"], optional=true }
 byteorder = "1"
 bytes = "1"
+half = "1"
 
 [dev-dependencies]
 serde = { version="1", features=["derive"] }
