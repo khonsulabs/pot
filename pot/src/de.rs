@@ -9,7 +9,7 @@ use serde::de::{
 use tracing::instrument;
 
 use crate::{
-    format::{self, Atom, Nucleus, CURRENT_VERSION},
+    format::{self, in_memory_int_size, update_budget, Atom, Nucleus, CURRENT_VERSION},
     reader::{Reader, SliceReader},
     Error, Result,
 };
@@ -20,22 +20,28 @@ pub struct Deserializer<'s, 'de, R: Reader<'de>> {
     input: R,
     symbols: SymbolMap<'s, 'de>,
     peeked_atom: Option<Atom<'de>>,
+    remaining_budget: usize,
     _phantom: PhantomData<&'de R>,
 }
 
 impl<'s, 'de> Deserializer<'s, 'de, SliceReader<'de>> {
     /// Returns a new deserializer for `input`.
-    pub fn from_slice(input: &'de [u8]) -> Result<Self> {
-        Self::from_slice_with_symbols(input, SymbolMap::new())
+    pub(crate) fn from_slice(input: &'de [u8], maximum_bytes_allocatable: usize) -> Result<Self> {
+        Self::from_slice_with_symbols(input, SymbolMap::new(), maximum_bytes_allocatable)
     }
 
-    fn from_slice_with_symbols(input: &'de [u8], mut symbols: SymbolMap<'s, 'de>) -> Result<Self> {
+    fn from_slice_with_symbols(
+        input: &'de [u8],
+        mut symbols: SymbolMap<'s, 'de>,
+        maximum_bytes_allocatable: usize,
+    ) -> Result<Self> {
         // TODO make this configurable
         symbols.reserve(1024);
         let mut deserializer = Deserializer {
             input: SliceReader::from(input),
             symbols,
             peeked_atom: None,
+            remaining_budget: maximum_bytes_allocatable,
             _phantom: PhantomData::default(),
         };
         deserializer.read_header()?;
@@ -63,7 +69,7 @@ impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
         if let Some(peeked) = self.peeked_atom.take() {
             Ok(peeked)
         } else {
-            format::read_atom(&mut self.input)
+            format::read_atom(&mut self.input, &mut self.remaining_budget)
         }
     }
 
@@ -115,31 +121,44 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
 
         match atom.kind {
             Kind::None => visitor.visit_none(),
-            Kind::Int => match atom.arg + 1 {
-                1 => visitor.visit_i8(self.input.read_i8()?),
-                2 => visitor.visit_i16(self.input.read_i16::<LittleEndian>()?),
-                3 => visitor.visit_i32(self.input.read_i24::<LittleEndian>()?),
-                4 => visitor.visit_i32(self.input.read_i32::<LittleEndian>()?),
-                6 => visitor.visit_i64(self.input.read_i48::<LittleEndian>()?),
-                8 => visitor.visit_i64(self.input.read_i64::<LittleEndian>()?),
-                16 => visitor.visit_i128(self.input.read_i128::<LittleEndian>()?),
-                _ => Err(Error::custom("unsupported int byte count")),
-            },
-            Kind::UInt => match atom.arg + 1 {
-                1 => visitor.visit_u8(self.input.read_u8()?),
-                2 => visitor.visit_u16(self.input.read_u16::<LittleEndian>()?),
-                3 => visitor.visit_u32(self.input.read_u24::<LittleEndian>()?),
-                4 => visitor.visit_u32(self.input.read_u32::<LittleEndian>()?),
-                6 => visitor.visit_u64(self.input.read_u48::<LittleEndian>()?),
-                8 => visitor.visit_u64(self.input.read_u64::<LittleEndian>()?),
-                16 => visitor.visit_u128(self.input.read_u128::<LittleEndian>()?),
-                _ => Err(Error::custom("unsupported uint byte count")),
-            },
-            Kind::Float => match atom.arg + 1 {
-                4 => visitor.visit_f32(self.input.read_f32::<LittleEndian>()?),
-                8 => visitor.visit_f64(self.input.read_f64::<LittleEndian>()?),
-                _ => Err(Error::custom("unsupported float byte count")),
-            },
+            Kind::Int => {
+                let bytes = usize::try_from(atom.arg.saturating_add(1)).unwrap_or(usize::MAX);
+
+                update_budget(&mut self.remaining_budget, in_memory_int_size(bytes))?;
+                match bytes {
+                    1 => visitor.visit_i8(self.input.read_i8()?),
+                    2 => visitor.visit_i16(self.input.read_i16::<LittleEndian>()?),
+                    3 => visitor.visit_i32(self.input.read_i24::<LittleEndian>()?),
+                    4 => visitor.visit_i32(self.input.read_i32::<LittleEndian>()?),
+                    6 => visitor.visit_i64(self.input.read_i48::<LittleEndian>()?),
+                    8 => visitor.visit_i64(self.input.read_i64::<LittleEndian>()?),
+                    16 => visitor.visit_i128(self.input.read_i128::<LittleEndian>()?),
+                    _ => Err(Error::custom("unsupported int byte count")),
+                }
+            }
+            Kind::UInt => {
+                let bytes = usize::try_from(atom.arg.saturating_add(1)).unwrap_or(usize::MAX);
+                update_budget(&mut self.remaining_budget, in_memory_int_size(bytes))?;
+                match bytes {
+                    1 => visitor.visit_u8(self.input.read_u8()?),
+                    2 => visitor.visit_u16(self.input.read_u16::<LittleEndian>()?),
+                    3 => visitor.visit_u32(self.input.read_u24::<LittleEndian>()?),
+                    4 => visitor.visit_u32(self.input.read_u32::<LittleEndian>()?),
+                    6 => visitor.visit_u64(self.input.read_u48::<LittleEndian>()?),
+                    8 => visitor.visit_u64(self.input.read_u64::<LittleEndian>()?),
+                    16 => visitor.visit_u128(self.input.read_u128::<LittleEndian>()?),
+                    _ => Err(Error::custom("unsupported uint byte count")),
+                }
+            }
+            Kind::Float => {
+                let bytes = usize::try_from(atom.arg.saturating_add(1)).unwrap_or(usize::MAX);
+                update_budget(&mut self.remaining_budget, bytes)?;
+                match bytes {
+                    4 => visitor.visit_f32(self.input.read_f32::<LittleEndian>()?),
+                    8 => visitor.visit_f64(self.input.read_f64::<LittleEndian>()?),
+                    _ => Err(Error::custom("unsupported float byte count")),
+                }
+            }
             Kind::Sequence => visitor.visit_seq(AtomList::new(self, atom.arg as usize)),
             Kind::Map => visitor.visit_map(AtomList::new(self, atom.arg as usize)),
             Kind::Symbol => self.visit_symbol(&atom, visitor),
@@ -794,7 +813,7 @@ impl<'de> SymbolMap<'static, 'de> {
         &'a mut self,
         slice: &'de [u8],
     ) -> Result<Deserializer<'a, 'de, SliceReader<'de>>> {
-        Deserializer::from_slice_with_symbols(slice, self.persistent())
+        Deserializer::from_slice_with_symbols(slice, self.persistent(), usize::MAX)
     }
 
     #[must_use]

@@ -46,6 +46,9 @@ pub enum Error {
     /// An atom header was incorrectly formatted.
     #[error("an atom header was incorrectly formatted")]
     InvalidAtomHeader,
+    /// The amount of data read exceeds the configured maximum number of bytes.
+    #[error("the deserialized value is larger than the allowed allocation limit")]
+    TooManyBytesRead,
 }
 
 impl ser::Error for Error {

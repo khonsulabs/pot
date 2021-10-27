@@ -36,23 +36,65 @@ pub fn to_vec<T>(value: &T) -> Result<Vec<u8>>
 where
     T: Serialize,
 {
-    let mut output = Vec::default();
-    let mut serializer = ser::Serializer::new(&mut output)?;
-    value.serialize(&mut serializer)?;
-    Ok(output)
+    Config::default().serialize(value)
 }
 
 /// Restore a previously serialized value from a pot.
-pub fn from_slice<'a, T>(s: &'a [u8]) -> Result<T>
+pub fn from_slice<'a, T>(serialized: &'a [u8]) -> Result<T>
 where
     T: Deserialize<'a>,
 {
-    let mut deserializer = de::Deserializer::from_slice(s)?;
-    let t = T::deserialize(&mut deserializer)?;
-    if deserializer.end_of_input() {
-        Ok(t)
-    } else {
-        Err(Error::TrailingBytes)
+    Config::default().deserialize(serialized)
+}
+
+/// Serialization and deserialization configuration.
+#[must_use]
+pub struct Config {
+    allocation_budget: usize,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            allocation_budget: usize::MAX,
+        }
+    }
+}
+
+impl Config {
+    /// Sets the maximum number of bytes able to be allocated. This is not
+    /// guaranteed to be perfectly accurate, due to the limitations of serde
+    /// deserializers. Pot can keep track of how many bytes it thinks its
+    /// allocating, but a deserializer can always allocate more memory than Pot
+    /// can be aware of.
+    ///
+    /// The default allocation budget is `usize::MAX`.
+    pub const fn allocation_budget(mut self, budget: usize) -> Self {
+        self.allocation_budget = budget;
+        self
+    }
+
+    /// Deserializes a value from a slice using the configured options.
+    pub fn deserialize<'de, T>(&self, serialized: &'de [u8]) -> Result<T>
+    where
+        T: Deserialize<'de>,
+    {
+        let mut deserializer = de::Deserializer::from_slice(serialized, self.allocation_budget)?;
+        let t = T::deserialize(&mut deserializer)?;
+        if deserializer.end_of_input() {
+            Ok(t)
+        } else {
+            Err(Error::TrailingBytes)
+        }
+    }
+
+    /// Serializes a value to a `Vec` using the configured options.
+    #[allow(clippy::unused_self)]
+    pub fn serialize<T: Serialize>(&self, value: &T) -> Result<Vec<u8>> {
+        let mut output = Vec::default();
+        let mut serializer = ser::Serializer::new(&mut output)?;
+        value.serialize(&mut serializer)?;
+        Ok(output)
     }
 }
 
@@ -260,5 +302,53 @@ mod tests {
         let deserialized = from_slice(&serialized).unwrap();
         assert_eq!(original, deserialized);
         assert!(matches!(deserialized.bytes_borrowed, Cow::Borrowed(_)));
+    }
+
+    #[test]
+    fn limiting_input() {
+        let original = StringsAndBytes {
+            bytes: Cow::Borrowed(b"hello"),
+            bytes_borrowed: Cow::Borrowed(b"hello"),
+            serde_bytes_byte_slice: b"hello",
+            serde_bytes_byte_vec: b"world".to_vec(),
+            str_ref: "hello",
+            string: String::from("world"),
+        };
+        let serialized = to_vec(&original).unwrap();
+        // There are 6 values that contain 5 bytes each. A limit of 30 should be perfect.
+        assert!(Config::default()
+            .allocation_budget(30)
+            .deserialize::<StringsAndBytes<'_>>(&serialized)
+            .is_ok());
+        assert!(Config::default()
+            .allocation_budget(29)
+            .deserialize::<StringsAndBytes<'_>>(&serialized)
+            .is_err());
+
+        // Test number limits
+        let serialized = to_vec(&NumbersStruct {
+            u8: u8::MAX,
+            u16: u16::MAX,
+            char: char::MAX,
+            u32: u32::MAX,
+            u64: u64::MAX,
+            u128: u128::MAX,
+            i8: i8::MIN,
+            i16: i16::MIN,
+            i32: i32::MIN,
+            i64: i64::MIN,
+            i128: i128::MIN,
+            f32: f32::MAX,
+            f64: f64::MIN,
+        })
+        .unwrap();
+        assert!(Config::default()
+            .allocation_budget(78)
+            .deserialize::<NumbersStruct>(&serialized)
+            .is_ok());
+        assert!(Config::default()
+            .allocation_budget(77)
+            .deserialize::<NumbersStruct>(&serialized)
+            .is_err());
     }
 }

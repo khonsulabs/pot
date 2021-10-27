@@ -4,8 +4,6 @@ use serde::de::Error as _;
 
 pub(crate) const CURRENT_VERSION: u8 = 0;
 
-use std::convert::TryFrom;
-
 use crate::{reader::Reader, Error};
 
 /// Writes an atom header into `writer`.
@@ -705,7 +703,7 @@ impl Integer {
     ) -> Result<Self, Error> {
         match kind {
             Kind::None => Ok(Self::U8(0)),
-            Kind::Int => match byte_len + 1 {
+            Kind::Int => match byte_len {
                 1 => Ok(Self::I8(reader.read_i8()?)),
                 2 => Ok(Self::I16(reader.read_i16::<LittleEndian>()?)),
                 3 => Ok(Self::I32(reader.read_i24::<LittleEndian>()?)),
@@ -715,7 +713,7 @@ impl Integer {
                 16 => Ok(Self::I128(reader.read_i128::<LittleEndian>()?)),
                 _ => Err(Error::custom("unsupported int byte count")),
             },
-            Kind::UInt => match byte_len + 1 {
+            Kind::UInt => match byte_len {
                 1 => Ok(Self::U8(reader.read_u8()?)),
                 2 => Ok(Self::U16(reader.read_u16::<LittleEndian>()?)),
                 3 => Ok(Self::U32(reader.read_u24::<LittleEndian>()?)),
@@ -757,7 +755,10 @@ impl Integer {
 
 /// Reads an atom.
 #[allow(clippy::cast_possible_truncation)]
-pub fn read_atom<'de, R: Reader<'de>>(reader: &mut R) -> Result<Atom<'de>, Error> {
+pub fn read_atom<'de, R: Reader<'de>>(
+    reader: &mut R,
+    remaining_budget: &mut usize,
+) -> Result<Atom<'de>, Error> {
     let (kind, arg) = read_atom_header(reader)?;
     Ok(match kind {
         Kind::None | Kind::Sequence | Kind::Map | Kind::Symbol => Atom {
@@ -765,26 +766,28 @@ pub fn read_atom<'de, R: Reader<'de>>(reader: &mut R) -> Result<Atom<'de>, Error
             arg,
             nucleus: None,
         },
-        Kind::Int | Kind::UInt => Atom {
-            kind,
-            arg,
-            nucleus: Some(Nucleus::Integer(Integer::read_from(
+        Kind::Int | Kind::UInt => {
+            let bytes = arg as usize + 1;
+            update_budget(remaining_budget, in_memory_int_size(bytes))?;
+            Atom {
                 kind,
-                arg as usize,
-                reader,
-            )?)),
-        },
-        Kind::Float => Atom {
-            kind,
-            arg,
-            nucleus: Some(Nucleus::Float(Float::read_from(
+                arg,
+                nucleus: Some(Nucleus::Integer(Integer::read_from(kind, bytes, reader)?)),
+            }
+        }
+        Kind::Float => {
+            let bytes = arg as usize + 1;
+            update_budget(remaining_budget, in_memory_int_size(bytes))?;
+            Atom {
                 kind,
-                arg as usize,
-                reader,
-            )?)),
-        },
+                arg,
+                nucleus: Some(Nucleus::Float(Float::read_from(kind, bytes, reader)?)),
+            }
+        }
         Kind::Bytes => {
-            let bytes = reader.buffered_read_bytes(arg as usize)?;
+            let bytes = arg as usize;
+            update_budget(remaining_budget, bytes)?;
+            let bytes = reader.buffered_read_bytes(bytes)?;
             Atom {
                 kind,
                 arg,
@@ -792,6 +795,25 @@ pub fn read_atom<'de, R: Reader<'de>>(reader: &mut R) -> Result<Atom<'de>, Error
             }
         }
     })
+}
+
+pub(crate) const fn in_memory_int_size(encoded_length: usize) -> usize {
+    // Some integers are stored more compact than we can represent them in memory
+    match encoded_length {
+        3 => 4,
+        6 => 8,
+        other => other,
+    }
+}
+
+pub(crate) fn update_budget(budget: &mut usize, read_amount: usize) -> Result<(), Error> {
+    println!("Reading {} from {}", read_amount, *budget);
+    if let Some(remaining) = budget.checked_sub(read_amount) {
+        *budget = remaining;
+        Ok(())
+    } else {
+        Err(Error::TooManyBytesRead)
+    }
 }
 
 /// An encoded [`Kind`], argument, and optional contained value.
@@ -870,7 +892,7 @@ impl Float {
         reader: &mut R,
     ) -> Result<Self, Error> {
         if let Kind::Float = kind {
-            match byte_len + 1 {
+            match byte_len {
                 2 => Ok(Self::F32(read_f16(reader)?)),
                 4 => Ok(Self::F32(reader.read_f32::<LittleEndian>()?)),
                 8 => Ok(Self::F64(reader.read_f64::<LittleEndian>()?)),
@@ -905,7 +927,7 @@ mod tests {
             let mut reader = out.as_slice();
             let (kind, bytes) = read_atom_header(&mut reader).unwrap();
             assert_eq!(
-                Integer::read_from(kind, bytes as usize, &mut reader).unwrap(),
+                Integer::read_from(kind, bytes as usize + 1, &mut reader).unwrap(),
                 expected
             );
         }
