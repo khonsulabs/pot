@@ -1,7 +1,13 @@
 [package]
 name = "pot"
-version = "0.1.0-dev.0"
+version = "0.1.0"
 edition = "2018"
+description = "A concise binary serialization format written for `BonsaiDb`."
+license = "MIT OR Apache-2.0"
+readme = "../README.md"
+repository = "https://github.com/khonsulabs/pot"
+keywords = ["serialization", "serde"]
+categories = ["encoding"]
 
 [dependencies]
 serde = "1"
