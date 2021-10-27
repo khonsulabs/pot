@@ -807,7 +807,6 @@ pub(crate) const fn in_memory_int_size(encoded_length: usize) -> usize {
 }
 
 pub(crate) fn update_budget(budget: &mut usize, read_amount: usize) -> Result<(), Error> {
-    println!("Reading {} from {}", read_amount, *budget);
     if let Some(remaining) = budget.checked_sub(read_amount) {
         *budget = remaining;
         Ok(())
