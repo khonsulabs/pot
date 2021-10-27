@@ -1042,7 +1042,6 @@
 <span id="1042">1042</span>
 <span id="1043">1043</span>
 <span id="1044">1044</span>
-<span id="1045">1045</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">byteorder</span>::{<span class="ident">BigEndian</span>, <span class="ident">LittleEndian</span>, <span class="ident">ReadBytesExt</span>, <span class="ident">WriteBytesExt</span>};
 <span class="kw">use</span> <span class="ident">half::f16</span>;
 <span class="kw">use</span> <span class="ident">serde::de::Error</span> <span class="kw">as</span> <span class="kw">_</span>;
@@ -1852,7 +1851,6 @@
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">update_budget</span>(<span class="ident">budget</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">usize</span>, <span class="ident">read_amount</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>(), <span class="ident">Error</span><span class="op">&gt;</span> {
-    <span class="macro">println!</span>(<span class="string">&quot;Reading {} from {}&quot;</span>, <span class="ident">read_amount</span>, <span class="kw-2">*</span><span class="ident">budget</span>);
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">remaining</span>) <span class="op">=</span> <span class="ident">budget</span>.<span class="ident">checked_sub</span>(<span class="ident">read_amount</span>) {
         <span class="kw-2">*</span><span class="ident">budget</span> <span class="op">=</span> <span class="ident">remaining</span>;
         <span class="prelude-val">Ok</span>(())
