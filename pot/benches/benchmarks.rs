@@ -100,41 +100,53 @@ fn bench_logs(c: &mut Criterion) {
         logs.entries.push(Log::generate(&mut thread_rng()));
     }
 
+    let mut serialize_group = c.benchmark_group("logs/serialize");
     for backend in Backend::all() {
-        let mut group = c.benchmark_group(format!("logs/{}", backend));
         let serialize = match backend {
             Backend::Pbor => |logs| pot::to_vec(logs).unwrap(),
             Backend::Cbor => |logs| serde_cbor::to_vec(logs).unwrap(),
             Backend::Bincode => |logs| bincode::serialize(logs).unwrap(),
         };
-        let deserialize = match backend {
-            Backend::Pbor => |logs| pot::from_slice::<LogArchive>(logs).unwrap(),
-            Backend::Cbor => |logs| serde_cbor::from_slice(logs).unwrap(),
-            Backend::Bincode => |logs| bincode::deserialize(logs).unwrap(),
-        };
-
-        let bytes = serialize(&logs);
-        group.bench_function("serialize", |b| {
+        serialize_group.bench_function(backend.to_string(), |b| {
             b.iter(|| {
                 serialize(black_box(&logs));
             });
         });
+    }
+    drop(serialize_group);
 
+    let mut buffer = Vec::with_capacity(LOG_ENTRIES * 1024);
+    let mut serialize_reuse_group = c.benchmark_group("logs/serialize-reuse");
+    for backend in Backend::all() {
         let serialize = match backend {
             Backend::Pbor => pbor_serialize_into,
             Backend::Cbor => cbor_serialize_into,
             Backend::Bincode => bincode_serialize_into,
         };
 
-        let mut buffer = Vec::with_capacity(LOG_ENTRIES * 1024);
-        group.bench_function("serialize-reuse", |b| {
+        serialize_reuse_group.bench_function(backend.to_string(), |b| {
             b.iter(|| {
                 buffer.clear();
                 serialize(black_box(&logs), black_box(&mut buffer));
             });
         });
+    }
+    drop(serialize_reuse_group);
 
-        group.bench_function("deserialize", |b| {
+    let mut deserialize_group = c.benchmark_group("logs/deserialize");
+
+    for backend in Backend::all() {
+        let deserialize = match backend {
+            Backend::Pbor => |logs| pot::from_slice::<LogArchive>(logs).unwrap(),
+            Backend::Cbor => |logs| serde_cbor::from_slice(logs).unwrap(),
+            Backend::Bincode => |logs| bincode::deserialize(logs).unwrap(),
+        };
+        let bytes = match backend {
+            Backend::Pbor => pot::to_vec(&logs).unwrap(),
+            Backend::Cbor => serde_cbor::to_vec(&logs).unwrap(),
+            Backend::Bincode => bincode::serialize(&logs).unwrap(),
+        };
+        deserialize_group.bench_function(backend.to_string(), |b| {
             b.iter(|| {
                 deserialize(black_box(&bytes));
             });
