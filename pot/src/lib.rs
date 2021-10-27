@@ -1,6 +1,6 @@
 //! A concise serialization format written for `BonsaiDb`.
 
-#![deny(unsafe_code)]
+#![forbid(unsafe_code)]
 #![warn(
     // clippy::cargo,
     missing_docs,
@@ -58,7 +58,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use std::borrow::Cow;
+    use std::{borrow::Cow, marker::PhantomData};
 
     use super::*;
 
@@ -149,7 +149,7 @@ mod tests {
                 f64: 1.,
             },
             None,
-        )
+        );
     }
 
     #[test]
@@ -226,6 +226,11 @@ mod tests {
         test_serialization(&Option::<u64>::None, None);
         test_serialization(&Some(0_u64), None);
         test_serialization(&Some(u64::MAX), None);
+    }
+
+    #[test]
+    fn phantom() {
+        test_serialization(&PhantomData::<u64>, None);
     }
 
     #[derive(Serialize, PartialEq, Deserialize, Debug, Default)]

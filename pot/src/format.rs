@@ -958,66 +958,66 @@ mod tests {
     #[test]
     fn zero() {
         test_roundtrip_integer(Integer::U64(0), Integer::U8(0), 2);
-        test_roundtrip_integer(Integer::I64(0), Integer::I8(0), 2)
+        test_roundtrip_integer(Integer::I64(0), Integer::I8(0), 2);
     }
 
     #[test]
     fn u8_max() {
-        test_roundtrip_integer(Integer::U64(u64::from(u8::MAX)), Integer::U8(u8::MAX), 2)
+        test_roundtrip_integer(Integer::U64(u64::from(u8::MAX)), Integer::U8(u8::MAX), 2);
     }
 
     #[test]
     fn i8_max() {
-        test_roundtrip_integer(Integer::I64(i64::from(i8::MAX)), Integer::I8(i8::MAX), 2)
+        test_roundtrip_integer(Integer::I64(i64::from(i8::MAX)), Integer::I8(i8::MAX), 2);
     }
 
     #[test]
     fn i8_min() {
-        test_roundtrip_integer(Integer::I64(i64::from(i8::MIN)), Integer::I8(i8::MIN), 2)
+        test_roundtrip_integer(Integer::I64(i64::from(i8::MIN)), Integer::I8(i8::MIN), 2);
     }
 
     #[test]
     fn u16_max() {
-        test_roundtrip_integer(Integer::U64(u64::from(u16::MAX)), Integer::U16(u16::MAX), 3)
+        test_roundtrip_integer(Integer::U64(u64::from(u16::MAX)), Integer::U16(u16::MAX), 3);
     }
 
     #[test]
     fn i16_max() {
-        test_roundtrip_integer(Integer::I64(i64::from(i16::MAX)), Integer::I16(i16::MAX), 3)
+        test_roundtrip_integer(Integer::I64(i64::from(i16::MAX)), Integer::I16(i16::MAX), 3);
     }
 
     #[test]
     fn i16_min() {
-        test_roundtrip_integer(Integer::I64(i64::from(i16::MIN)), Integer::I16(i16::MIN), 3)
+        test_roundtrip_integer(Integer::I64(i64::from(i16::MIN)), Integer::I16(i16::MIN), 3);
     }
 
     #[test]
     fn u32_max() {
-        test_roundtrip_integer(Integer::U64(u64::from(u32::MAX)), Integer::U32(u32::MAX), 5)
+        test_roundtrip_integer(Integer::U64(u64::from(u32::MAX)), Integer::U32(u32::MAX), 5);
     }
 
     #[test]
     fn i32_max() {
-        test_roundtrip_integer(Integer::I64(i64::from(i32::MAX)), Integer::I32(i32::MAX), 5)
+        test_roundtrip_integer(Integer::I64(i64::from(i32::MAX)), Integer::I32(i32::MAX), 5);
     }
 
     #[test]
     fn i32_min() {
-        test_roundtrip_integer(Integer::I64(i64::from(i32::MIN)), Integer::I32(i32::MIN), 5)
+        test_roundtrip_integer(Integer::I64(i64::from(i32::MIN)), Integer::I32(i32::MIN), 5);
     }
 
     #[test]
     fn u64_max() {
-        test_roundtrip_integer(Integer::U64(u64::MAX), Integer::U64(u64::MAX), 9)
+        test_roundtrip_integer(Integer::U64(u64::MAX), Integer::U64(u64::MAX), 9);
     }
 
     #[test]
     fn i64_max() {
-        test_roundtrip_integer(Integer::I64(i64::MAX), Integer::I64(i64::MAX), 9)
+        test_roundtrip_integer(Integer::I64(i64::MAX), Integer::I64(i64::MAX), 9);
     }
 
     #[test]
     fn i64_min() {
-        test_roundtrip_integer(Integer::I64(i64::MIN), Integer::I64(i64::MIN), 9)
+        test_roundtrip_integer(Integer::I64(i64::MIN), Integer::I64(i64::MIN), 9);
     }
 }

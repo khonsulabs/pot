@@ -72,6 +72,10 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::Serializer for &'de mut Serial
     type SerializeStruct = Self;
     type SerializeStructVariant = Self;
 
+    fn is_human_readable(&self) -> bool {
+        false
+    }
+
     #[cfg_attr(feature = "tracing", instrument)]
     fn serialize_bool(self, v: bool) -> Result<()> {
         self.bytes_written += format::write_u8(&mut self.output, v as u8)?;
@@ -446,7 +450,6 @@ impl SymbolMap {
         Serializer::new_with_symbol_map(output, SymbolMapRef::Borrowed(self))
     }
 
-    #[allow(unsafe_code)]
     #[allow(clippy::cast_possible_truncation)]
     fn find_or_add(&mut self, symbol: &'static str) -> RegisteredSymbol {
         // Symbols have to be static strings, and so we can rely on the addres
@@ -459,10 +462,7 @@ impl SymbolMap {
             .binary_search_by(|check| symbol_address.cmp(&check.0))
         {
             Ok(position) => RegisteredSymbol {
-                // SAFETY: binary_search_by guarantees this position is valid.
-                // At the time of adding this unsafe block, it made a noticeable
-                // improvement in benchmarks.
-                id: unsafe { self.symbols.get_unchecked(position) }.1,
+                id: self.symbols[position].1,
                 new: false,
             },
             Err(position) => {
