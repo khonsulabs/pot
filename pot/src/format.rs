@@ -70,8 +70,8 @@ pub fn read_atom_header<R: ReadBytesExt>(reader: &mut R) -> Result<(Kind, u64), 
 /// The type of an atom.
 #[derive(Clone, Copy, Eq, PartialEq, Debug)]
 pub enum Kind {
-    /// No value
-    None = 0,
+    /// A value with a special meaning.
+    Special = 0,
     /// A signed integer. Argument is the byte length, minus one. The following
     /// bytes are the value, stored in little endian.
     Int = 1,
@@ -105,7 +105,7 @@ impl Kind {
     #[inline]
     pub const fn from_u8(kind: u8) -> Result<Self, Error> {
         match kind {
-            0 => Ok(Self::None),
+            0 => Ok(Self::Special),
             1 => Ok(Self::Int),
             2 => Ok(Self::UInt),
             3 => Ok(Self::Float),
@@ -114,6 +114,36 @@ impl Kind {
             6 => Ok(Self::Symbol),
             7 => Ok(Self::Bytes),
             other => Err(Error::InvalidKind(other)),
+        }
+    }
+}
+
+/// A special value type.
+#[derive(Clone, Copy, Eq, PartialEq, Debug)]
+pub enum Special {
+    /// A None value.
+    None = 0,
+    /// A Unit value.
+    Unit = 1,
+    /// The `false` boolean literal.
+    False = 2,
+    /// The `true` boolean literal.
+    True = 3,
+    /// A named value. A symbol followed by another value.
+    Named = 4,
+}
+
+impl TryFrom<u64> for Special {
+    type Error = Error;
+
+    fn try_from(value: u64) -> Result<Self, Self::Error> {
+        match value {
+            0 => Ok(Self::None),
+            1 => Ok(Self::Unit),
+            2 => Ok(Self::False),
+            3 => Ok(Self::True),
+            4 => Ok(Self::Named),
+            _ => Err(Error::custom("unknown special type")),
         }
     }
 }
@@ -137,15 +167,36 @@ pub fn read_header<R: ReadBytesExt>(reader: &mut R) -> Result<u8, Error> {
         Err(Error::IncompatibleVersion)
     }
 }
-
-/// Writes a [`Kind::None`] atom.
-pub fn write_none<W: WriteBytesExt>(writer: &mut W) -> std::io::Result<usize> {
-    write_atom_header(writer, Kind::None, None)
+/// Writes a [`Kind::Special`] atom.
+pub fn write_special<W: WriteBytesExt>(writer: &mut W, special: Special) -> std::io::Result<usize> {
+    write_atom_header(writer, Kind::Special, Some(special as u64))
 }
 
-/// Writes a [`Kind::None`] atom. Pot doesn't distinguish between a Unit and a None value.
+/// Writes a [`Kind::Special`] atom with [`Special::None`].
+pub fn write_none<W: WriteBytesExt>(writer: &mut W) -> std::io::Result<usize> {
+    write_special(writer, Special::None)
+}
+
+/// Writes a [`Kind::Special`] atom with [`Special::Unit`].
 pub fn write_unit<W: WriteBytesExt>(writer: &mut W) -> std::io::Result<usize> {
-    write_none(writer)
+    write_special(writer, Special::Unit)
+}
+
+/// Writes a [`Kind::Special`] atom with [`Special::Named`].
+pub fn write_named<W: WriteBytesExt>(writer: &mut W) -> std::io::Result<usize> {
+    write_special(writer, Special::Named)
+}
+
+/// Writes a [`Kind::Special`] atom with either [`Special::True`] or [`Special::False`].
+pub fn write_bool<W: WriteBytesExt>(writer: &mut W, boolean: bool) -> std::io::Result<usize> {
+    write_special(
+        writer,
+        if boolean {
+            Special::True
+        } else {
+            Special::False
+        },
+    )
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
@@ -406,6 +457,22 @@ pub enum Integer {
 }
 
 impl Integer {
+    /// Returns true if the value contained is zero.
+    #[must_use]
+    pub const fn is_zero(&self) -> bool {
+        match self {
+            Integer::I8(value) => *value == 0,
+            Integer::I16(value) => *value == 0,
+            Integer::I32(value) => *value == 0,
+            Integer::I64(value) => *value == 0,
+            Integer::I128(value) => *value == 0,
+            Integer::U8(value) => *value == 0,
+            Integer::U16(value) => *value == 0,
+            Integer::U32(value) => *value == 0,
+            Integer::U64(value) => *value == 0,
+            Integer::U128(value) => *value == 0,
+        }
+    }
     /// Returns the contained value as an i8, or an error if the value is unable to fit.
     #[allow(clippy::cast_possible_wrap)]
     pub const fn as_i8(&self) -> Result<i8, Error> {
@@ -702,7 +769,7 @@ impl Integer {
         reader: &mut R,
     ) -> Result<Self, Error> {
         match kind {
-            Kind::None => Ok(Self::U8(0)),
+            Kind::Special => Ok(Self::U8(0)),
             Kind::Int => match byte_len {
                 1 => Ok(Self::I8(reader.read_i8()?)),
                 2 => Ok(Self::I16(reader.read_i16::<LittleEndian>()?)),
@@ -761,10 +828,21 @@ pub fn read_atom<'de, R: Reader<'de>>(
 ) -> Result<Atom<'de>, Error> {
     let (kind, arg) = read_atom_header(reader)?;
     Ok(match kind {
-        Kind::None | Kind::Sequence | Kind::Map | Kind::Symbol => Atom {
+        Kind::Sequence | Kind::Map | Kind::Symbol => Atom {
             kind,
             arg,
             nucleus: None,
+        },
+        Kind::Special => Atom {
+            kind,
+            arg,
+            nucleus: match Special::try_from(arg)? {
+                Special::None => None,
+                Special::Unit => Some(Nucleus::Unit),
+                Special::False => Some(Nucleus::Boolean(false)),
+                Special::True => Some(Nucleus::Boolean(true)),
+                Special::Named => Some(Nucleus::Named),
+            },
         },
         Kind::Int | Kind::UInt => {
             let bytes = arg as usize + 1;
@@ -906,12 +984,18 @@ impl Float {
 /// A value contained within an [`Atom`].
 #[derive(Debug)]
 pub enum Nucleus<'de> {
+    /// A boolean value.
+    Boolean(bool),
     /// An integer value.
     Integer(Integer),
     /// A floating point value.
     Float(Float),
     /// A buffer of bytes.
     Bytes(&'de [u8]),
+    /// A unit.
+    Unit,
+    /// A named value.
+    Named,
 }
 
 #[cfg(test)]
@@ -963,7 +1047,7 @@ mod tests {
 
     #[test]
     fn atom_kinds() {
-        assert_eq!(Kind::None, Kind::from_u8(Kind::None as u8).unwrap());
+        assert_eq!(Kind::Special, Kind::from_u8(Kind::Special as u8).unwrap());
         assert_eq!(Kind::Int, Kind::from_u8(Kind::Int as u8).unwrap());
         assert_eq!(Kind::UInt, Kind::from_u8(Kind::UInt as u8).unwrap());
         assert_eq!(Kind::Float, Kind::from_u8(Kind::Float as u8).unwrap());

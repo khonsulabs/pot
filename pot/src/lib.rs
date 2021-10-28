@@ -102,6 +102,8 @@ impl Config {
 mod tests {
     use std::{borrow::Cow, marker::PhantomData};
 
+    use serde_json::{value::Value, Number};
+
     use super::*;
 
     fn init_tracing() {
@@ -350,5 +352,23 @@ mod tests {
             .allocation_budget(77)
             .deserialize::<NumbersStruct>(&serialized)
             .is_err());
+    }
+
+    #[test]
+    fn deserialize_any() {
+        test_serialization(&Value::Null, None);
+        test_serialization(&Value::Bool(false), None);
+        test_serialization(&Value::Bool(true), None);
+        test_serialization(&Value::Array(vec![serde_json::value::Value::Null]), None);
+        test_serialization(&Value::Number(Number::from_f64(1.).unwrap()), None);
+        test_serialization(&Value::String(String::from("Hello world")), None);
+        test_serialization(
+            &Value::Object(
+                [(String::from("key"), Value::Bool(true))]
+                    .into_iter()
+                    .collect(),
+            ),
+            None,
+        );
     }
 }

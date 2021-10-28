@@ -1,6 +1,5 @@
-use std::marker::PhantomData;
+use std::{collections::VecDeque, marker::PhantomData};
 
-use byteorder::LittleEndian;
 use format::Kind;
 use serde::de::{
     self, DeserializeSeed, EnumAccess, Error as _, MapAccess, SeqAccess, VariantAccess, Visitor,
@@ -9,7 +8,7 @@ use serde::de::{
 use tracing::instrument;
 
 use crate::{
-    format::{self, in_memory_int_size, update_budget, Atom, Nucleus, CURRENT_VERSION},
+    format::{self, Atom, Float, Integer, Nucleus, CURRENT_VERSION},
     reader::{Reader, SliceReader},
     Error, Result,
 };
@@ -19,7 +18,7 @@ use crate::{
 pub struct Deserializer<'s, 'de, R: Reader<'de>> {
     input: R,
     symbols: SymbolMap<'s, 'de>,
-    peeked_atom: Option<Atom<'de>>,
+    peeked_atom: VecDeque<Atom<'de>>,
     remaining_budget: usize,
     _phantom: PhantomData<&'de R>,
 }
@@ -40,7 +39,7 @@ impl<'s, 'de> Deserializer<'s, 'de, SliceReader<'de>> {
         let mut deserializer = Deserializer {
             input: SliceReader::from(input),
             symbols,
-            peeked_atom: None,
+            peeked_atom: VecDeque::new(),
             remaining_budget: maximum_bytes_allocatable,
             _phantom: PhantomData::default(),
         };
@@ -50,8 +49,8 @@ impl<'s, 'de> Deserializer<'s, 'de, SliceReader<'de>> {
 
     /// Returns true if the input has been consumed completely.
     #[must_use]
-    pub const fn end_of_input(&self) -> bool {
-        self.input.data.is_empty() && self.peeked_atom.is_none()
+    pub fn end_of_input(&self) -> bool {
+        self.input.data.is_empty() && self.peeked_atom.is_empty()
     }
 }
 
@@ -66,7 +65,7 @@ impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
     }
 
     fn read_atom(&mut self) -> Result<Atom<'de>> {
-        if let Some(peeked) = self.peeked_atom.take() {
+        if let Some(peeked) = self.peeked_atom.pop_front() {
             Ok(peeked)
         } else {
             format::read_atom(&mut self.input, &mut self.remaining_budget)
@@ -74,12 +73,18 @@ impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
     }
 
     #[allow(clippy::missing_panics_doc)]
-    fn peek_atom(&mut self) -> Result<&Atom<'_>> {
-        if self.peeked_atom.is_none() {
-            self.peeked_atom = Some(self.read_atom()?);
+    fn peek_atom_at(&mut self, index: usize) -> Result<&Atom<'_>> {
+        while index >= self.peeked_atom.len() {
+            let atom = self.read_atom()?;
+            self.peeked_atom.push_back(atom);
         }
 
-        Ok(self.peeked_atom.as_ref().unwrap())
+        Ok(&self.peeked_atom[index])
+    }
+
+    #[allow(clippy::missing_panics_doc)]
+    fn peek_atom(&mut self) -> Result<&Atom<'_>> {
+        self.peek_atom_at(0)
     }
 
     #[allow(clippy::cast_possible_truncation)]
@@ -120,50 +125,45 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         let atom = self.read_atom()?;
 
         match atom.kind {
-            Kind::None => visitor.visit_none(),
-            Kind::Int => {
-                let bytes = usize::try_from(atom.arg.saturating_add(1)).unwrap_or(usize::MAX);
-
-                update_budget(&mut self.remaining_budget, in_memory_int_size(bytes))?;
-                match bytes {
-                    1 => visitor.visit_i8(self.input.read_i8()?),
-                    2 => visitor.visit_i16(self.input.read_i16::<LittleEndian>()?),
-                    3 => visitor.visit_i32(self.input.read_i24::<LittleEndian>()?),
-                    4 => visitor.visit_i32(self.input.read_i32::<LittleEndian>()?),
-                    6 => visitor.visit_i64(self.input.read_i48::<LittleEndian>()?),
-                    8 => visitor.visit_i64(self.input.read_i64::<LittleEndian>()?),
-                    16 => visitor.visit_i128(self.input.read_i128::<LittleEndian>()?),
-                    _ => Err(Error::custom("unsupported int byte count")),
-                }
-            }
-            Kind::UInt => {
-                let bytes = usize::try_from(atom.arg.saturating_add(1)).unwrap_or(usize::MAX);
-                update_budget(&mut self.remaining_budget, in_memory_int_size(bytes))?;
-                match bytes {
-                    1 => visitor.visit_u8(self.input.read_u8()?),
-                    2 => visitor.visit_u16(self.input.read_u16::<LittleEndian>()?),
-                    3 => visitor.visit_u32(self.input.read_u24::<LittleEndian>()?),
-                    4 => visitor.visit_u32(self.input.read_u32::<LittleEndian>()?),
-                    6 => visitor.visit_u64(self.input.read_u48::<LittleEndian>()?),
-                    8 => visitor.visit_u64(self.input.read_u64::<LittleEndian>()?),
-                    16 => visitor.visit_u128(self.input.read_u128::<LittleEndian>()?),
-                    _ => Err(Error::custom("unsupported uint byte count")),
-                }
-            }
-            Kind::Float => {
-                let bytes = usize::try_from(atom.arg.saturating_add(1)).unwrap_or(usize::MAX);
-                update_budget(&mut self.remaining_budget, bytes)?;
-                match bytes {
-                    4 => visitor.visit_f32(self.input.read_f32::<LittleEndian>()?),
-                    8 => visitor.visit_f64(self.input.read_f64::<LittleEndian>()?),
-                    _ => Err(Error::custom("unsupported float byte count")),
-                }
-            }
+            Kind::Special => match &atom.nucleus {
+                Some(Nucleus::Boolean(value)) => visitor.visit_bool(*value),
+                Some(Nucleus::Unit) => visitor.visit_unit(),
+                Some(Nucleus::Named) => visitor.visit_map(AtomList::new(self, 1)),
+                None => visitor.visit_none(),
+                _ => unreachable!("read_atom should never return anything else"),
+            },
+            Kind::Int => match atom.nucleus {
+                Some(Nucleus::Integer(Integer::I8(value))) => visitor.visit_i8(value),
+                Some(Nucleus::Integer(Integer::I16(value))) => visitor.visit_i16(value),
+                Some(Nucleus::Integer(Integer::I32(value))) => visitor.visit_i32(value),
+                Some(Nucleus::Integer(Integer::I64(value))) => visitor.visit_i64(value),
+                Some(Nucleus::Integer(Integer::I128(value))) => visitor.visit_i128(value),
+                _ => unreachable!("read_atom should never return anything else"),
+            },
+            Kind::UInt => match atom.nucleus {
+                Some(Nucleus::Integer(Integer::U8(value))) => visitor.visit_u8(value),
+                Some(Nucleus::Integer(Integer::U16(value))) => visitor.visit_u16(value),
+                Some(Nucleus::Integer(Integer::U32(value))) => visitor.visit_u32(value),
+                Some(Nucleus::Integer(Integer::U64(value))) => visitor.visit_u64(value),
+                Some(Nucleus::Integer(Integer::U128(value))) => visitor.visit_u128(value),
+                _ => unreachable!("read_atom should never return anything else"),
+            },
+            Kind::Float => match atom.nucleus {
+                Some(Nucleus::Float(Float::F32(value))) => visitor.visit_f32(value),
+                Some(Nucleus::Float(Float::F64(value))) => visitor.visit_f64(value),
+                _ => unreachable!("read_atom should never return anything else"),
+            },
             Kind::Sequence => visitor.visit_seq(AtomList::new(self, atom.arg as usize)),
             Kind::Map => visitor.visit_map(AtomList::new(self, atom.arg as usize)),
             Kind::Symbol => self.visit_symbol(&atom, visitor),
             Kind::Bytes => match &atom.nucleus {
-                Some(Nucleus::Bytes(bytes)) => visitor.visit_borrowed_bytes(bytes),
+                Some(Nucleus::Bytes(bytes)) => {
+                    if let Ok(as_str) = std::str::from_utf8(bytes) {
+                        visitor.visit_str(as_str)
+                    } else {
+                        visitor.visit_borrowed_bytes(bytes)
+                    }
+                }
                 None => visitor.visit_none(),
                 // The parsing operation guarantees that this will always be bytes.
                 _ => unreachable!(),
@@ -178,14 +178,14 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::None => visitor.visit_bool(false),
-            Kind::UInt | Kind::Int => {
-                if let Some(Nucleus::Integer(integer)) = atom.nucleus {
-                    visitor.visit_bool(integer.as_i8()? != 0)
-                } else {
-                    unreachable!("read_atom should never return anything else")
-                }
-            }
+            Kind::Special | Kind::UInt | Kind::Int => match atom.nucleus {
+                Some(Nucleus::Integer(integer)) => visitor.visit_bool(!integer.is_zero()),
+                Some(Nucleus::Boolean(b)) => visitor.visit_bool(b),
+                other => Err(Error::custom(format!(
+                    "expected bool nucleus, got {:?}",
+                    other
+                ))),
+            },
             other => Err(Error::custom(format!("expected bool, got {:?}", other))),
         }
     }
@@ -197,7 +197,6 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::None => visitor.visit_i8(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_i8(integer.as_i8()?)
@@ -215,7 +214,6 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::None => visitor.visit_i16(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_i16(integer.as_i16()?)
@@ -234,7 +232,6 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::None => visitor.visit_i32(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_i32(integer.as_i32()?)
@@ -253,7 +250,6 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::None => visitor.visit_i64(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_i64(integer.as_i64()?)
@@ -272,7 +268,6 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::None => visitor.visit_i64(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_i128(integer.as_i128()?)
@@ -291,7 +286,6 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::None => visitor.visit_u8(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_u8(integer.as_u8()?)
@@ -310,7 +304,6 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::None => visitor.visit_u16(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_u16(integer.as_u16()?)
@@ -329,7 +322,6 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::None => visitor.visit_u32(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_u32(integer.as_u32()?)
@@ -348,7 +340,6 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::None => visitor.visit_u64(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_u64(integer.as_u64()?)
@@ -367,7 +358,6 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::None => visitor.visit_i64(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_u128(integer.as_u128()?)
@@ -438,7 +428,6 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         match atom.kind {
-            Kind::None => visitor.visit_u32(0),
             Kind::UInt | Kind::Int => {
                 if let Some(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_char(
@@ -466,6 +455,15 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 }
                 _ => unreachable!("read_atom should never return anything else"),
             },
+            Kind::Symbol => self.visit_symbol(&atom, visitor),
+            Kind::Special => {
+                if matches!(atom.nucleus, Some(Nucleus::Named)) {
+                    // If we encounter a named entity here, skip it and trust that serde will decode the following information correctly.
+                    self.deserialize_str(visitor)
+                } else {
+                    self.visit_symbol(&atom, visitor)
+                }
+            }
             other => Err(Error::custom(format!("expected str, got {:?}", other))),
         }
     }
@@ -524,10 +522,17 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.peek_atom()?;
         match atom.kind {
-            Kind::None => {
-                // Consume the atom.
-                drop(self.read_atom()?);
-                visitor.visit_none()
+            Kind::Special => {
+                if atom.nucleus.is_none() {
+                    // Consume the atom.
+                    drop(self.read_atom()?);
+                    visitor.visit_none()
+                } else {
+                    Err(Error::custom(format!(
+                        "unexpected Special: {:?}",
+                        atom.nucleus
+                    )))
+                }
             }
             _ => visitor.visit_some(self),
         }
@@ -540,7 +545,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         V: Visitor<'de>,
     {
         let atom = self.read_atom()?;
-        if atom.kind == Kind::None {
+        if atom.kind == Kind::Special && matches!(atom.nucleus, Some(Nucleus::Unit)) {
             visitor.visit_unit()
         } else {
             Err(Error::custom(format!("expected unit, got {:?}", atom.kind)))
@@ -653,7 +658,19 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         let atom = self.read_atom()?;
         match atom.kind {
             Kind::Symbol => self.visit_symbol(&atom, visitor),
-            other => Err(Error::custom(format!("expected unit, got {:?}", other))),
+            Kind::Bytes => {
+                if let Some(Nucleus::Bytes(bytes)) = atom.nucleus {
+                    let as_str = std::str::from_utf8(bytes)
+                        .map_err(|err| Error::InvalidUtf8(err.to_string()))?;
+                    visitor.visit_str(dbg!(as_str))
+                } else {
+                    unreachable!("read_atom shouldn't return anything else")
+                }
+            }
+            other => Err(Error::custom(format!(
+                "expected identifier, got {:?}",
+                other
+            ))),
         }
     }
 
@@ -744,8 +761,16 @@ impl<'a, 's, 'de, R: Reader<'de>> EnumAccess<'de> for &'a mut Deserializer<'s, '
         V: DeserializeSeed<'de>,
     {
         // Have the seed deserialize the next atom, which should be the symbol
-        let val = seed.deserialize(&mut *self)?;
-        Ok((val, self))
+        let atom = self.read_atom()?;
+        if atom.kind == Kind::Special && matches!(atom.nucleus, Some(Nucleus::Named)) {
+            let val = seed.deserialize(&mut *self)?;
+            Ok((val, self))
+        } else {
+            Err(Error::custom(format!(
+                "expected Named, got {:?}",
+                atom.kind
+            )))
+        }
     }
 }
 
@@ -754,15 +779,7 @@ impl<'a, 's, 'de, R: Reader<'de>> VariantAccess<'de> for &'a mut Deserializer<'s
 
     #[cfg_attr(feature = "tracing", instrument)]
     fn unit_variant(self) -> Result<()> {
-        let kind = self.read_atom()?.kind;
-        if kind == Kind::None {
-            Ok(())
-        } else {
-            Err(Error::custom(format!(
-                "expected unit variant, got {:?}",
-                kind
-            )))
-        }
+        Ok(())
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(seed)))]

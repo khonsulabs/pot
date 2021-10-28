@@ -78,7 +78,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::Serializer for &'de mut Serial
 
     #[cfg_attr(feature = "tracing", instrument)]
     fn serialize_bool(self, v: bool) -> Result<()> {
-        self.bytes_written += format::write_u8(&mut self.output, v as u8)?;
+        self.bytes_written += format::write_bool(&mut self.output, v)?;
         Ok(())
     }
 
@@ -204,8 +204,8 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::Serializer for &'de mut Serial
         _variant_index: u32,
         variant: &'static str,
     ) -> Result<()> {
+        format::write_named(&mut self.output)?;
         self.write_symbol(variant)?;
-        self.bytes_written += format::write_none(&mut self.output)?;
         Ok(())
     }
 
@@ -228,6 +228,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::Serializer for &'de mut Serial
     where
         T: ?Sized + Serialize,
     {
+        format::write_named(&mut self.output)?;
         self.write_symbol(variant)?;
         value.serialize(&mut *self)?;
         Ok(())
@@ -263,6 +264,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::Serializer for &'de mut Serial
         variant: &'static str,
         len: usize,
     ) -> Result<Self::SerializeTupleVariant> {
+        format::write_named(&mut self.output)?;
         self.write_symbol(variant)?;
         self.serialize_seq(Some(len))
     }
@@ -288,6 +290,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::Serializer for &'de mut Serial
         variant: &'static str,
         len: usize,
     ) -> Result<Self::SerializeStructVariant> {
+        format::write_named(&mut self.output)?;
         self.write_symbol(variant)?;
         self.serialize_struct(name, len)
     }
