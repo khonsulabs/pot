@@ -11,6 +11,7 @@ fn main() -> anyhow::Result<()> {
         Commands::GenerateCodeCoverageReport {
             install_dependencies,
         } => CodeCoverage::<CoverageConfig>::execute(install_dependencies),
+        Commands::InstallPreCommitHook | Commands::Audit { .. } => todo!(),
     }
 }
 
