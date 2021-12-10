@@ -21,6 +21,7 @@
 <span id="21">21</span>
 <span id="22">22</span>
 <span id="23">23</span>
+<span id="24">24</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">khonsu_tools</span>::{
     <span class="ident">anyhow</span>,
     <span class="ident">code_coverage</span>::{<span class="self">self</span>, <span class="ident">CodeCoverage</span>},
@@ -34,6 +35,7 @@
         <span class="ident">Commands::GenerateCodeCoverageReport</span> {
             <span class="ident">install_dependencies</span>,
         } =&gt; <span class="ident">CodeCoverage</span>::<span class="op">&lt;</span><span class="ident">CoverageConfig</span><span class="op">&gt;</span><span class="ident">::execute</span>(<span class="ident">install_dependencies</span>),
+        <span class="ident">Commands::InstallPreCommitHook</span> <span class="op">|</span> <span class="ident">Commands::Audit</span> { .. } =&gt; <span class="macro">todo!</span>(),
     }
 }
 
