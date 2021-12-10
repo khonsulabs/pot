@@ -254,6 +254,8 @@ mod tests {
         test_serialization(&EnumVariants::TupleTwoArgs(1, 2), None);
 
         test_serialization(&EnumVariants::Struct { arg: 3 }, None);
+
+        test_serialization(&Some(EnumVariants::Unit), None);
     }
 
     #[test]

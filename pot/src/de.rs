@@ -521,21 +521,13 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         V: Visitor<'de>,
     {
         let atom = self.peek_atom()?;
-        match atom.kind {
-            Kind::Special => {
-                if atom.nucleus.is_none() {
-                    // Consume the atom.
-                    drop(self.read_atom()?);
-                    visitor.visit_none()
-                } else {
-                    Err(Error::custom(format!(
-                        "unexpected Special: {:?}",
-                        atom.nucleus
-                    )))
-                }
-            }
-            _ => visitor.visit_some(self),
+        if matches!(atom.kind, Kind::Special) && atom.nucleus.is_none() {
+            // Consume the atom.
+            drop(self.read_atom()?);
+            return visitor.visit_none();
         }
+
+        visitor.visit_some(self)
     }
 
     // In Serde, unit means an anonymous value containing no data.
