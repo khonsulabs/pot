@@ -5,6 +5,7 @@ use std::{
 };
 
 use byteorder::WriteBytesExt;
+use derive_where::DeriveWhere;
 use serde::{ser, Serialize};
 #[cfg(feature = "tracing")]
 use tracing::instrument;
@@ -15,14 +16,16 @@ use crate::{
 };
 
 /// A `Pot` serializer.
-#[derive(Debug)]
+#[derive(DeriveWhere)]
+#[derive_where(Debug)]
 pub struct Serializer<'a, W: WriteBytesExt> {
     symbol_map: SymbolMapRef<'a>,
+    #[derive_where(skip)]
     output: W,
     bytes_written: usize,
 }
 
-impl<'a, W: WriteBytesExt + Debug> Serializer<'a, W> {
+impl<'a, W: WriteBytesExt> Serializer<'a, W> {
     /// Returns a new serializer outputting written bytes into `output`.
     pub fn new(output: W) -> Result<Self> {
         Self::new_with_symbol_map(output, SymbolMapRef::Owned(SymbolMap::default()))
@@ -60,7 +63,7 @@ impl<'a, W: WriteBytesExt + Debug> Serializer<'a, W> {
     }
 }
 
-impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::Serializer for &'de mut Serializer<'a, W> {
+impl<'de, 'a: 'de, W: WriteBytesExt> ser::Serializer for &'de mut Serializer<'a, W> {
     type Ok = ();
     type Error = Error;
 
@@ -296,7 +299,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::Serializer for &'de mut Serial
     }
 }
 
-impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::SerializeSeq for &'de mut Serializer<'a, W> {
+impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeSeq for &'de mut Serializer<'a, W> {
     type Ok = ();
     type Error = Error;
 
@@ -312,7 +315,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::SerializeSeq for &'de mut Seri
     }
 }
 
-impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::SerializeTuple for &'de mut Serializer<'a, W> {
+impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeTuple for &'de mut Serializer<'a, W> {
     type Ok = ();
     type Error = Error;
 
@@ -328,9 +331,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::SerializeTuple for &'de mut Se
     }
 }
 
-impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::SerializeTupleStruct
-    for &'de mut Serializer<'a, W>
-{
+impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeTupleStruct for &'de mut Serializer<'a, W> {
     type Ok = ();
     type Error = Error;
 
@@ -346,9 +347,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::SerializeTupleStruct
     }
 }
 
-impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::SerializeTupleVariant
-    for &'de mut Serializer<'a, W>
-{
+impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeTupleVariant for &'de mut Serializer<'a, W> {
     type Ok = ();
     type Error = Error;
 
@@ -364,7 +363,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::SerializeTupleVariant
     }
 }
 
-impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::SerializeMap for &'de mut Serializer<'a, W> {
+impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeMap for &'de mut Serializer<'a, W> {
     type Ok = ();
     type Error = Error;
 
@@ -387,7 +386,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::SerializeMap for &'de mut Seri
     }
 }
 
-impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::SerializeStruct for &'de mut Serializer<'a, W> {
+impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeStruct for &'de mut Serializer<'a, W> {
     type Ok = ();
     type Error = Error;
 
@@ -404,9 +403,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::SerializeStruct for &'de mut S
     }
 }
 
-impl<'de, 'a: 'de, W: WriteBytesExt + Debug> ser::SerializeStructVariant
-    for &'de mut Serializer<'a, W>
-{
+impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeStructVariant for &'de mut Serializer<'a, W> {
     type Ok = ();
     type Error = Error;
 
@@ -446,10 +443,7 @@ struct RegisteredSymbol {
 impl SymbolMap {
     /// Returns a serializer that writes into `output` that persists symbols
     /// into `self`.
-    pub fn serializer_for<W: WriteBytesExt + Debug>(
-        &mut self,
-        output: W,
-    ) -> Result<Serializer<'_, W>> {
+    pub fn serializer_for<W: WriteBytesExt>(&mut self, output: W) -> Result<Serializer<'_, W>> {
         Serializer::new_with_symbol_map(output, SymbolMapRef::Borrowed(self))
     }
 

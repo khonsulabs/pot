@@ -1,3 +1,5 @@
+use std::borrow::Cow;
+
 use byteorder::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
 use half::f16;
 use serde::de::Error as _;
@@ -968,7 +970,7 @@ impl Float {
         byte_len: usize,
         reader: &mut R,
     ) -> Result<Self, Error> {
-        if let Kind::Float = kind {
+        if Kind::Float == kind {
             match byte_len {
                 2 => Ok(Self::F32(read_f16(reader)?)),
                 4 => Ok(Self::F32(reader.read_f32::<LittleEndian>()?)),
@@ -991,7 +993,7 @@ pub enum Nucleus<'de> {
     /// A floating point value.
     Float(Float),
     /// A buffer of bytes.
-    Bytes(&'de [u8]),
+    Bytes(Cow<'de, [u8]>),
     /// A unit.
     Unit,
     /// A named value.

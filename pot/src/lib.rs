@@ -26,12 +26,17 @@ pub mod format;
 pub mod reader;
 /// Types for serializing pots.
 pub mod ser;
+use std::io::Read;
+
+use byteorder::WriteBytesExt;
 pub use error::Error;
 /// A result alias that returns [`Error`].
 pub type Result<T> = std::result::Result<T, Error>;
 use serde::{Deserialize, Serialize};
 
-/// Serialize `value` into a pot.
+use crate::reader::IoReader;
+
+/// Serialize `value` using Pot into a `Vce<u8>`.
 pub fn to_vec<T>(value: &T) -> Result<Vec<u8>>
 where
     T: Serialize,
@@ -39,12 +44,30 @@ where
     Config::default().serialize(value)
 }
 
-/// Restore a previously serialized value from a pot.
+/// Serialize `value` using Pot into `writer`.
+pub fn to_writer<T, W>(value: &T, writer: W) -> Result<()>
+where
+    T: Serialize,
+    W: WriteBytesExt,
+{
+    Config::default().serialize_into(value, writer)
+}
+
+/// Restore a previously Pot-serialized value from a slice.
 pub fn from_slice<'a, T>(serialized: &'a [u8]) -> Result<T>
 where
     T: Deserialize<'a>,
 {
     Config::default().deserialize(serialized)
+}
+
+/// Restore a previously Pot-serialized value from a [`Read`] implementor.
+pub fn from_reader<'de, T, R>(reader: R) -> Result<T>
+where
+    T: Deserialize<'de>,
+    R: Read + 'de,
+{
+    Config::default().deserialize_from(reader)
 }
 
 /// Serialization and deserialization configuration.
@@ -88,6 +111,17 @@ impl Config {
         }
     }
 
+    /// Deserializes a value from a [`Read`] implementor using the configured
+    /// options.
+    pub fn deserialize_from<'de, T, R: Read + 'de>(&self, reader: R) -> Result<T>
+    where
+        T: Deserialize<'de>,
+    {
+        let mut deserializer =
+            de::Deserializer::from_read(IoReader::new(reader), self.allocation_budget)?;
+        T::deserialize(&mut deserializer)
+    }
+
     /// Serializes a value to a `Vec` using the configured options.
     #[allow(clippy::unused_self)]
     pub fn serialize<T: Serialize>(&self, value: &T) -> Result<Vec<u8>> {
@@ -95,6 +129,17 @@ impl Config {
         let mut serializer = ser::Serializer::new(&mut output)?;
         value.serialize(&mut serializer)?;
         Ok(output)
+    }
+
+    /// Serializes a value to a writer using the configured options.
+    #[allow(clippy::unused_self)]
+    pub fn serialize_into<T, W>(&self, value: &T, writer: W) -> Result<()>
+    where
+        T: Serialize,
+        W: WriteBytesExt,
+    {
+        let mut serializer = ser::Serializer::new(writer)?;
+        value.serialize(&mut serializer)
     }
 }
 
@@ -129,11 +174,11 @@ mod tests {
 
     fn test_serialization_with<
         S: Serialize + for<'de> Deserialize<'de> + PartialEq + Debug,
-        F: FnOnce(&S, &S),
+        F: FnMut(&S, &S),
     >(
         value: &S,
         check_length: Option<usize>,
-        callback: F,
+        mut callback: F,
     ) {
         init_tracing();
         let bytes = to_vec(&value).unwrap();
@@ -144,6 +189,13 @@ mod tests {
             // Subtract 4 bytes from the serialized output to account for the header.
             assert_eq!(bytes.len() - 4, check_length);
         }
+
+        // do the same, but using the reader interface
+        let mut bytes = Vec::new();
+        to_writer(value, &mut bytes).unwrap();
+        println!("{:?}: {:02x?}", value, bytes);
+        let deserialized = from_reader(&bytes[..]).unwrap();
+        callback(value, &deserialized);
     }
 
     use std::fmt::Debug;

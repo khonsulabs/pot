@@ -1,5 +1,7 @@
-use std::{collections::VecDeque, marker::PhantomData};
+use std::{borrow::Cow, collections::VecDeque, fmt::Debug, marker::PhantomData};
 
+use byteorder::ReadBytesExt;
+use derive_where::DeriveWhere;
 use format::Kind;
 use serde::de::{
     self, DeserializeSeed, EnumAccess, Error as _, MapAccess, SeqAccess, VariantAccess, Visitor,
@@ -9,13 +11,15 @@ use tracing::instrument;
 
 use crate::{
     format::{self, Atom, Float, Integer, Nucleus, CURRENT_VERSION},
-    reader::{Reader, SliceReader},
+    reader::{IoReader, Reader, SliceReader},
     Error, Result,
 };
 
 /// Deserializer for the `Pot` format.
-#[derive(Debug)]
+#[derive(DeriveWhere)]
+#[derive_where(Debug)]
 pub struct Deserializer<'s, 'de, R: Reader<'de>> {
+    #[derive_where(skip)]
     input: R,
     symbols: SymbolMap<'s, 'de>,
     peeked_atom: VecDeque<Atom<'de>>,
@@ -31,20 +35,10 @@ impl<'s, 'de> Deserializer<'s, 'de, SliceReader<'de>> {
 
     fn from_slice_with_symbols(
         input: &'de [u8],
-        mut symbols: SymbolMap<'s, 'de>,
+        symbols: SymbolMap<'s, 'de>,
         maximum_bytes_allocatable: usize,
     ) -> Result<Self> {
-        // TODO make this configurable
-        symbols.reserve(1024);
-        let mut deserializer = Deserializer {
-            input: SliceReader::from(input),
-            symbols,
-            peeked_atom: VecDeque::new(),
-            remaining_budget: maximum_bytes_allocatable,
-            _phantom: PhantomData::default(),
-        };
-        deserializer.read_header()?;
-        Ok(deserializer)
+        Self::new(SliceReader::from(input), symbols, maximum_bytes_allocatable)
     }
 
     /// Returns true if the input has been consumed completely.
@@ -54,7 +48,40 @@ impl<'s, 'de> Deserializer<'s, 'de, SliceReader<'de>> {
     }
 }
 
+impl<'s, 'de, R: ReadBytesExt> Deserializer<'s, 'de, IoReader<R>> {
+    /// Returns a new deserializer for `input`.
+    pub(crate) fn from_read(input: R, maximum_bytes_allocatable: usize) -> Result<Self> {
+        Self::from_read_with_symbols(input, SymbolMap::new(), maximum_bytes_allocatable)
+    }
+
+    fn from_read_with_symbols(
+        input: R,
+        symbols: SymbolMap<'s, 'de>,
+        maximum_bytes_allocatable: usize,
+    ) -> Result<Self> {
+        Self::new(IoReader::new(input), symbols, maximum_bytes_allocatable)
+    }
+}
+
 impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
+    pub(crate) fn new(
+        input: R,
+        mut symbols: SymbolMap<'s, 'de>,
+        maximum_bytes_allocatable: usize,
+    ) -> Result<Self> {
+        // TODO make this configurable
+        symbols.reserve(1024);
+        let mut deserializer = Deserializer {
+            input,
+            symbols,
+            peeked_atom: VecDeque::new(),
+            remaining_budget: maximum_bytes_allocatable,
+            _phantom: PhantomData::default(),
+        };
+        deserializer.read_header()?;
+        Ok(deserializer)
+    }
+
     fn read_header(&mut self) -> Result<()> {
         let version = format::read_header(&mut self.input)?;
         if version == CURRENT_VERSION {
@@ -87,6 +114,7 @@ impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
         self.peek_atom_at(0)
     }
 
+    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     fn visit_symbol<V>(&mut self, atom: &Atom<'_>, visitor: V) -> Result<V::Value>
     where
@@ -99,9 +127,19 @@ impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
         } else {
             // New symbol
             let name = self.input.buffered_read_bytes(arg as usize)?;
-            let name = std::str::from_utf8(name)?;
-            self.symbols.push(name);
-            visitor.visit_borrowed_str(name)
+            match name {
+                Cow::Borrowed(name) => {
+                    let name = std::str::from_utf8(name)?;
+                    self.symbols.push(Cow::Borrowed(name));
+                    visitor.visit_borrowed_str(name)
+                }
+                Cow::Owned(name) => {
+                    let name = String::from_utf8(name)?;
+                    let result = visitor.visit_str(&name);
+                    self.symbols.push(Cow::Owned(name));
+                    result
+                }
+            }
         }
     }
 }
@@ -157,13 +195,22 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Map => visitor.visit_map(AtomList::new(self, atom.arg as usize)),
             Kind::Symbol => self.visit_symbol(&atom, visitor),
             Kind::Bytes => match &atom.nucleus {
-                Some(Nucleus::Bytes(bytes)) => {
-                    if let Ok(as_str) = std::str::from_utf8(bytes) {
-                        visitor.visit_str(as_str)
-                    } else {
-                        visitor.visit_borrowed_bytes(bytes)
+                Some(Nucleus::Bytes(bytes)) => match bytes {
+                    Cow::Borrowed(bytes) => {
+                        if let Ok(as_str) = std::str::from_utf8(bytes) {
+                            visitor.visit_borrowed_str(as_str)
+                        } else {
+                            visitor.visit_borrowed_bytes(bytes)
+                        }
                     }
-                }
+                    Cow::Owned(bytes) => {
+                        if let Ok(as_str) = std::str::from_utf8(bytes) {
+                            visitor.visit_str(as_str)
+                        } else {
+                            visitor.visit_bytes(bytes)
+                        }
+                    }
+                },
                 None => visitor.visit_none(),
                 // The parsing operation guarantees that this will always be bytes.
                 _ => unreachable!(),
@@ -450,9 +497,10 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         let atom = self.read_atom()?;
         match atom.kind {
             Kind::Bytes => match atom.nucleus {
-                Some(Nucleus::Bytes(bytes)) => {
-                    visitor.visit_borrowed_str(std::str::from_utf8(bytes)?)
-                }
+                Some(Nucleus::Bytes(bytes)) => match bytes {
+                    Cow::Borrowed(bytes) => visitor.visit_borrowed_str(std::str::from_utf8(bytes)?),
+                    Cow::Owned(bytes) => visitor.visit_str(std::str::from_utf8(&bytes)?),
+                },
                 _ => unreachable!("read_atom should never return anything else"),
             },
             Kind::Symbol => self.visit_symbol(&atom, visitor),
@@ -485,7 +533,10 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         let atom = self.read_atom()?;
         match atom.kind {
             Kind::Bytes => match atom.nucleus {
-                Some(Nucleus::Bytes(bytes)) => visitor.visit_borrowed_bytes(bytes),
+                Some(Nucleus::Bytes(bytes)) => match bytes {
+                    Cow::Borrowed(bytes) => visitor.visit_borrowed_bytes(bytes),
+                    Cow::Owned(bytes) => visitor.visit_bytes(&bytes),
+                },
                 _ => unreachable!("read_atom should never return anything else"),
             },
             Kind::Sequence => {
@@ -652,9 +703,9 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Symbol => self.visit_symbol(&atom, visitor),
             Kind::Bytes => {
                 if let Some(Nucleus::Bytes(bytes)) = atom.nucleus {
-                    let as_str = std::str::from_utf8(bytes)
+                    let as_str = std::str::from_utf8(&bytes)
                         .map_err(|err| Error::InvalidUtf8(err.to_string()))?;
-                    visitor.visit_str(dbg!(as_str))
+                    visitor.visit_str(as_str)
                 } else {
                     unreachable!("read_atom shouldn't return anything else")
                 }
@@ -675,7 +726,8 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 }
 
-#[derive(Debug)]
+#[derive(DeriveWhere)]
+#[derive_where(Debug)]
 struct AtomList<'a, 's, 'de, R: Reader<'de>> {
     de: &'a mut Deserializer<'s, 'de, R>,
     consumed: usize,
@@ -807,7 +859,7 @@ pub enum SymbolMap<'a, 'de> {
     /// A mutable reference to an owned list of symbols.
     Persistent(&'a mut Vec<String>),
     /// A list of borrowed symbols.
-    Borrowed(Vec<&'de str>),
+    Borrowed(Vec<Cow<'de, str>>),
 }
 
 impl<'de> SymbolMap<'static, 'de> {
@@ -858,7 +910,10 @@ impl<'a, 'de> SymbolMap<'a, 'de> {
                 let symbol = vec
                     .get(symbol_id as usize)
                     .ok_or(Error::UnknownSymbol(symbol_id))?;
-                visitor.visit_borrowed_str(*symbol)
+                match symbol {
+                    Cow::Borrowed(symbol) => visitor.visit_borrowed_str(*symbol),
+                    Cow::Owned(symbol) => visitor.visit_str(symbol),
+                }
             }
         }
     }
@@ -871,7 +926,7 @@ impl<'a, 'de> SymbolMap<'a, 'de> {
         }
     }
 
-    fn push(&mut self, symbol: &'de str) {
+    fn push(&mut self, symbol: Cow<'de, str>) {
         match self {
             Self::Owned(vec) => vec.push(symbol.to_string()),
             Self::Persistent(vec) => vec.push(symbol.to_string()),
