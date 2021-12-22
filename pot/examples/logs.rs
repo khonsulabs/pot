@@ -19,7 +19,8 @@ fn main() -> anyhow::Result<()> {
     let bincode_varint_bytes = bincode::DefaultOptions::default()
         .with_varint_encoding()
         .serialize(&logs)?;
-    let cbor_bytes = serde_cbor::to_vec(&logs)?;
+    let mut cbor_bytes = Vec::new();
+    ciborium::ser::into_writer(&logs, &mut cbor_bytes)?;
 
     cli_table::print_stdout(
         vec![

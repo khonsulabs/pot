@@ -33,7 +33,7 @@ chrono = { version = "0.4", features = ["serde"] }
 anyhow = "1"
 cli-table = "0.4"
 thousands = "0.2"
-serde_cbor = "0.11"
+ciborium = "0.2"
 bincode = "1"
 criterion = { version = "0.3", features = ["html_reports"] }
 serde_bytes = "0.11"

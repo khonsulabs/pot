@@ -104,7 +104,11 @@ fn bench_logs(c: &mut Criterion) {
     for backend in Backend::all() {
         let serialize = match backend {
             Backend::Pbor => |logs| pot::to_vec(logs).unwrap(),
-            Backend::Cbor => |logs| serde_cbor::to_vec(logs).unwrap(),
+            Backend::Cbor => |logs| {
+                let mut cbor_bytes = Vec::new();
+                ciborium::ser::into_writer(&logs, &mut cbor_bytes).unwrap();
+                cbor_bytes
+            },
             Backend::Bincode => |logs| bincode::serialize(logs).unwrap(),
         };
         serialize_group.bench_function(backend.to_string(), |b| {
@@ -138,12 +142,16 @@ fn bench_logs(c: &mut Criterion) {
     for backend in Backend::all() {
         let deserialize = match backend {
             Backend::Pbor => |logs| pot::from_slice::<LogArchive>(logs).unwrap(),
-            Backend::Cbor => |logs| serde_cbor::from_slice(logs).unwrap(),
+            Backend::Cbor => |logs| ciborium::de::from_reader(logs).unwrap(),
             Backend::Bincode => |logs| bincode::deserialize(logs).unwrap(),
         };
         let bytes = match backend {
             Backend::Pbor => pot::to_vec(&logs).unwrap(),
-            Backend::Cbor => serde_cbor::to_vec(&logs).unwrap(),
+            Backend::Cbor => {
+                let mut cbor_bytes = Vec::new();
+                ciborium::ser::into_writer(&logs, &mut cbor_bytes).unwrap();
+                cbor_bytes
+            }
             Backend::Bincode => bincode::serialize(&logs).unwrap(),
         };
         deserialize_group.bench_function(backend.to_string(), |b| {
@@ -160,7 +168,7 @@ fn pbor_serialize_into(logs: &LogArchive, buffer: &mut Vec<u8>) {
 }
 
 fn cbor_serialize_into(logs: &LogArchive, buffer: &mut Vec<u8>) {
-    serde_cbor::to_writer(buffer, logs).unwrap();
+    ciborium::ser::into_writer(logs, buffer).unwrap();
 }
 
 fn bincode_serialize_into(logs: &LogArchive, buffer: &mut Vec<u8>) {
