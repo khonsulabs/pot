@@ -63,6 +63,13 @@ fn main() -> Result<(), pot::Error> {
 }
 ```
 
+Outputs:
+
+```text
+User serialized: [50, 6f, 74, 00, a2, c4, 69, 64, 40, 2a, c8, 6e, 61, 6d, 65, e5, 65, 63, 74, 6f, 6e]
+User decoded as value: {id: 42, name: ecton}
+```
+
 ## Benchmarks
 
 Because benchmarks can be subjective and often don't mirror real-world usage,
