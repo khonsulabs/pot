@@ -18,7 +18,14 @@ fn main() -> anyhow::Result<()> {
 struct CoverageConfig;
 
 impl code_coverage::Config for CoverageConfig {
-    fn ignore_paths() -> Vec<String> {
-        vec![String::from("pot/examples/*")]
+    /// The cargo command after `cargo`.
+    fn cargo_args() -> Vec<String> {
+        vec![
+            String::from("+nightly"),
+            String::from("test"),
+            String::from("--workspace"),
+            String::from("--all-features"),
+            String::from("--all-targets"),
+        ]
     }
 }

@@ -146,6 +146,11 @@ impl Level {
 }
 
 #[test]
+fn runs() {
+    main().unwrap();
+}
+
+#[test]
 fn one_log() {
     let log = Log::generate(&mut thread_rng());
     let bytes = pot::to_vec(&log).unwrap();
@@ -172,7 +177,9 @@ fn average_sizes() {
                 .unwrap()
                 .len(),
         );
-        cbor_sizes.push(serde_cbor::to_vec(&log).unwrap().len());
+        let mut cbor_bytes = Vec::new();
+        ciborium::ser::into_writer(&log, &mut cbor_bytes).unwrap();
+        cbor_sizes.push(cbor_bytes.len());
         pot_sizes.push(pot::to_vec(&log).unwrap().len());
     }
 
