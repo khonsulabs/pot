@@ -10,22 +10,7 @@ fn main() -> anyhow::Result<()> {
     match command {
         Commands::GenerateCodeCoverageReport {
             install_dependencies,
-        } => CodeCoverage::<CoverageConfig>::execute(install_dependencies),
+        } => CodeCoverage::<code_coverage::DefaultConfig>::execute(install_dependencies),
         Commands::InstallPreCommitHook | Commands::Audit { .. } => todo!(),
-    }
-}
-
-struct CoverageConfig;
-
-impl code_coverage::Config for CoverageConfig {
-    /// The cargo command after `cargo`.
-    fn cargo_args() -> Vec<String> {
-        vec![
-            String::from("+nightly"),
-            String::from("test"),
-            String::from("--workspace"),
-            String::from("--all-features"),
-            String::from("--all-targets"),
-        ]
     }
 }

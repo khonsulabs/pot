@@ -121,7 +121,6 @@ impl Kind {
 }
 
 /// A special value type.
-#[derive(Clone, Copy, Eq, PartialEq, Debug)]
 pub enum Special {
     /// A None value.
     None = 0,
@@ -134,6 +133,9 @@ pub enum Special {
     /// A named value. A symbol followed by another value.
     Named = 4,
 }
+
+#[cfg(test)]
+pub(crate) const SPECIAL_COUNT: u64 = Special::Named as u64 + 1;
 
 impl TryFrom<u64> for Special {
     type Error = Error;
@@ -497,12 +499,14 @@ impl Integer {
         }
     }
     /// Returns the contained value as an i8, or an error if the value is unable to fit.
+    // clippy::checked_conversions: try_from isn't const, and it would demote this from a const fn.
     #[allow(clippy::cast_possible_wrap)]
+    #[allow(clippy::checked_conversions)]
     pub const fn as_i8(&self) -> Result<i8, Error> {
         match &self.0 {
             InnerInteger::I8(value) => Ok(*value),
             InnerInteger::U8(value) => {
-                if *value < i8::MAX as u8 {
+                if *value <= i8::MAX as u8 {
                     Ok(*value as i8)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
@@ -530,13 +534,14 @@ impl Integer {
 
     /// Returns the contained value as an i16, or an error if the value is unable to fit.
     #[allow(clippy::cast_possible_wrap)]
+    #[allow(clippy::checked_conversions)]
     pub const fn as_i16(&self) -> Result<i16, Error> {
         match &self.0 {
             InnerInteger::I8(value) => Ok(*value as i16),
             InnerInteger::U8(value) => Ok(*value as i16),
             InnerInteger::I16(value) => Ok(*value),
             InnerInteger::U16(value) => {
-                if *value < i16::MAX as u16 {
+                if *value <= i16::MAX as u16 {
                     Ok(*value as i16)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
@@ -582,6 +587,7 @@ impl Integer {
 
     /// Returns the contained value as an i32, or an error if the value is unable to fit.
     #[allow(clippy::cast_possible_wrap)]
+    #[allow(clippy::checked_conversions)]
     pub const fn as_i32(&self) -> Result<i32, Error> {
         match &self.0 {
             InnerInteger::I8(value) => Ok(*value as i32),
@@ -590,7 +596,7 @@ impl Integer {
             InnerInteger::U16(value) => Ok(*value as i32),
             InnerInteger::I32(value) => Ok(*value),
             InnerInteger::U32(value) => {
-                if *value < i32::MAX as u32 {
+                if *value <= i32::MAX as u32 {
                     Ok(*value as i32)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
@@ -640,6 +646,7 @@ impl Integer {
 
     /// Returns the contained value as an i64, or an error if the value is unable to fit.
     #[allow(clippy::cast_possible_wrap)]
+    #[allow(clippy::checked_conversions)]
     pub const fn as_i64(&self) -> Result<i64, Error> {
         match &self.0 {
             InnerInteger::I8(value) => Ok(*value as i64),
@@ -650,7 +657,7 @@ impl Integer {
             InnerInteger::U32(value) => Ok(*value as i64),
             InnerInteger::I64(value) => Ok(*value),
             InnerInteger::U64(value) => {
-                if *value < i64::MAX as u64 {
+                if *value <= i64::MAX as u64 {
                     Ok(*value as i64)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
@@ -674,7 +681,7 @@ impl Integer {
             InnerInteger::U64(value) => Ok(*value as i128),
             InnerInteger::I128(value) => Ok(*value),
             InnerInteger::U128(value) => {
-                if *value < i128::MAX as u128 {
+                if *value <= i128::MAX as u128 {
                     Ok(*value as i128)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
@@ -794,7 +801,6 @@ impl Integer {
         reader: &mut R,
     ) -> Result<Self, Error> {
         match kind {
-            Kind::Special => Ok(InnerInteger::U8(0)),
             Kind::Int => match byte_len {
                 1 => Ok(InnerInteger::I8(reader.read_i8()?)),
                 2 => Ok(InnerInteger::I16(reader.read_i16::<LittleEndian>()?)),
@@ -827,7 +833,7 @@ impl Integer {
     #[allow(clippy::cast_precision_loss)]
     pub fn as_f32(&self) -> Result<f32, Error> {
         let int = self.as_i32()?;
-        if int < -(2_i32.pow(f32::MANTISSA_DIGITS)) || int > 2_i32.pow(f32::MANTISSA_DIGITS) {
+        if int < -(2_i32.pow(f32::MANTISSA_DIGITS)) || int >= 2_i32.pow(f32::MANTISSA_DIGITS) {
             Err(Error::ImpreciseCastWouldLoseData)
         } else {
             Ok(int as f32)
@@ -838,7 +844,7 @@ impl Integer {
     #[allow(clippy::cast_precision_loss)]
     pub fn as_f64(&self) -> Result<f64, Error> {
         let int = self.as_i64()?;
-        if int < -(2_i64.pow(f64::MANTISSA_DIGITS)) || int > 2_i64.pow(f64::MANTISSA_DIGITS) {
+        if int < -(2_i64.pow(f64::MANTISSA_DIGITS)) || int >= 2_i64.pow(f64::MANTISSA_DIGITS) {
             Err(Error::ImpreciseCastWouldLoseData)
         } else {
             Ok(int as f64)
@@ -1295,28 +1301,330 @@ mod tests {
     }
 
     #[test]
-    fn integer_is_zero() {
-        assert!(Integer::from(0_u8).is_zero());
-        assert!(!Integer::from(1_i8).is_zero());
-        assert!(Integer::from(0_i16).is_zero());
-        assert!(!Integer::from(1_i16).is_zero());
-        assert!(Integer::from(0_i32).is_zero());
-        assert!(!Integer::from(1_i32).is_zero());
-        assert!(Integer::from(0_i64).is_zero());
-        assert!(!Integer::from(1_i64).is_zero());
-        assert!(Integer::from(0_i128).is_zero());
-        assert!(!Integer::from(1_i128).is_zero());
+    fn u128_max() {
+        test_roundtrip_integer(
+            Integer::from(u128::MAX),
+            Integer(InnerInteger::U128(u128::MAX)),
+            17,
+        );
+    }
 
-        assert!(Integer::from(0_u8).is_zero());
-        assert!(!Integer::from(1_u8).is_zero());
-        assert!(Integer::from(0_u16).is_zero());
-        assert!(!Integer::from(1_u16).is_zero());
-        assert!(Integer::from(0_u32).is_zero());
-        assert!(!Integer::from(1_u32).is_zero());
-        assert!(Integer::from(0_u64).is_zero());
-        assert!(!Integer::from(1_u64).is_zero());
+    #[test]
+    fn i128_max() {
+        test_roundtrip_integer(
+            Integer::from(i128::MAX),
+            Integer(InnerInteger::I128(i128::MAX)),
+            17,
+        );
+    }
+
+    #[test]
+    fn i128_min() {
+        test_roundtrip_integer(
+            Integer::from(i128::MIN),
+            Integer(InnerInteger::I128(i128::MIN)),
+            17,
+        );
+    }
+
+    #[test]
+    fn integer_is_zero() {
+        assert!(Integer::from(0_i128).is_zero());
+        assert!(!Integer::from(i8::MAX).is_zero());
+        assert!(!Integer::from(i16::MAX).is_zero());
+        assert!(!Integer::from(i32::MAX).is_zero());
+        assert!(!Integer::from(i64::MAX).is_zero());
+        assert!(!Integer::from(i128::MAX).is_zero());
+
         assert!(Integer::from(0_u128).is_zero());
-        assert!(!Integer::from(1_u128).is_zero());
+        assert!(!Integer::from(u8::MAX).is_zero());
+        assert!(!Integer::from(u16::MAX).is_zero());
+        assert!(!Integer::from(u32::MAX).is_zero());
+        assert!(!Integer::from(u64::MAX).is_zero());
+        assert!(!Integer::from(u128::MAX).is_zero());
+    }
+
+    macro_rules! test_conversion_succeeds {
+        ($host:ty, $value:expr, $method:ident) => {{
+            assert!(matches!(<$host>::from($value).$method(), Ok(_)))
+        }};
+    }
+    macro_rules! test_conversion_fails {
+        ($host:ty, $value:expr, $method:ident) => {{
+            assert!(matches!(
+                <$host>::from($value).$method(),
+                Err(Error::ImpreciseCastWouldLoseData)
+            ))
+        }};
+    }
+
+    #[test]
+    #[allow(clippy::cognitive_complexity, clippy::too_many_lines)]
+    fn integer_casts() {
+        macro_rules! test_negative_fails {
+            ($method:ident) => {{
+                test_conversion_fails!(Integer, i8::MIN, $method);
+                test_conversion_fails!(Integer, i16::MIN, $method);
+                test_conversion_fails!(Integer, i32::MIN, $method);
+                test_conversion_fails!(Integer, i64::MIN, $method);
+                test_conversion_fails!(Integer, i128::MIN, $method);
+            }};
+        }
+
+        // ### i8 ###
+        // unsigned max -> i8
+        test_conversion_fails!(Integer, u8::MAX, as_i8);
+        test_conversion_fails!(Integer, u16::MAX, as_i8);
+        test_conversion_fails!(Integer, u32::MAX, as_i8);
+        test_conversion_fails!(Integer, u64::MAX, as_i8);
+        test_conversion_fails!(Integer, u128::MAX, as_i8);
+
+        // signed max -> i8
+        test_conversion_succeeds!(Integer, i8::MAX, as_i8);
+        test_conversion_fails!(Integer, i16::MAX, as_i8);
+        test_conversion_fails!(Integer, i32::MAX, as_i8);
+        test_conversion_fails!(Integer, i64::MAX, as_i8);
+        test_conversion_fails!(Integer, i128::MAX, as_i8);
+
+        // signed max as unsigned -> i8
+        test_conversion_succeeds!(Integer, i8::MAX as u8, as_i8);
+        test_conversion_fails!(Integer, i16::MAX as u16, as_i8);
+        test_conversion_fails!(Integer, i32::MAX as u32, as_i8);
+        test_conversion_fails!(Integer, i64::MAX as u64, as_i8);
+        test_conversion_fails!(Integer, i128::MAX as u128, as_i8);
+
+        // signed min -> i8
+        test_conversion_succeeds!(Integer, i8::MIN, as_i8);
+        test_conversion_fails!(Integer, i16::MIN, as_i8);
+        test_conversion_fails!(Integer, i32::MIN, as_i8);
+        test_conversion_fails!(Integer, i64::MIN, as_i8);
+        test_conversion_fails!(Integer, i128::MIN, as_i8);
+
+        // ### i16 ###
+        // unsigned max -> i16
+        test_conversion_succeeds!(Integer, u8::MAX, as_i16);
+        test_conversion_fails!(Integer, u16::MAX, as_i16);
+        test_conversion_fails!(Integer, u32::MAX, as_i16);
+        test_conversion_fails!(Integer, u64::MAX, as_i16);
+        test_conversion_fails!(Integer, u128::MAX, as_i16);
+
+        // signed max -> i16
+        test_conversion_succeeds!(Integer, i8::MAX, as_i16);
+        test_conversion_succeeds!(Integer, i16::MAX, as_i16);
+        test_conversion_fails!(Integer, i32::MAX, as_i16);
+        test_conversion_fails!(Integer, i64::MAX, as_i16);
+        test_conversion_fails!(Integer, i128::MAX, as_i16);
+
+        // signed max as unsigned -> i16
+        test_conversion_succeeds!(Integer, i8::MAX as u8, as_i16);
+        test_conversion_succeeds!(Integer, i16::MAX as u16, as_i16);
+        test_conversion_fails!(Integer, i32::MAX as u32, as_i16);
+        test_conversion_fails!(Integer, i64::MAX as u64, as_i16);
+        test_conversion_fails!(Integer, i128::MAX as u128, as_i16);
+
+        // signed min -> i16
+        test_conversion_succeeds!(Integer, i8::MIN, as_i16);
+        test_conversion_succeeds!(Integer, i16::MIN, as_i16);
+        test_conversion_fails!(Integer, i32::MIN, as_i16);
+        test_conversion_fails!(Integer, i64::MIN, as_i16);
+        test_conversion_fails!(Integer, i128::MIN, as_i16);
+
+        // ### i32 ###
+        // unsigned max -> i32
+        test_conversion_succeeds!(Integer, u8::MAX, as_i32);
+        test_conversion_succeeds!(Integer, u16::MAX, as_i32);
+        test_conversion_fails!(Integer, u32::MAX, as_i32);
+        test_conversion_fails!(Integer, u64::MAX, as_i32);
+        test_conversion_fails!(Integer, u128::MAX, as_i32);
+
+        // signed max -> i32
+        test_conversion_succeeds!(Integer, i8::MAX, as_i32);
+        test_conversion_succeeds!(Integer, i16::MAX, as_i32);
+        test_conversion_succeeds!(Integer, i32::MAX, as_i32);
+        test_conversion_fails!(Integer, i64::MAX, as_i32);
+        test_conversion_fails!(Integer, i128::MAX, as_i32);
+
+        // signed max as unsigned -> i32
+        test_conversion_succeeds!(Integer, i8::MAX as u8, as_i32);
+        test_conversion_succeeds!(Integer, i16::MAX as u16, as_i32);
+        test_conversion_succeeds!(Integer, i32::MAX as u32, as_i32);
+        test_conversion_fails!(Integer, i64::MAX as u64, as_i32);
+        test_conversion_fails!(Integer, i128::MAX as u128, as_i32);
+
+        // signed min -> i32
+        test_conversion_succeeds!(Integer, i8::MIN, as_i32);
+        test_conversion_succeeds!(Integer, i16::MIN, as_i32);
+        test_conversion_succeeds!(Integer, i32::MIN, as_i32);
+        test_conversion_fails!(Integer, i64::MIN, as_i32);
+        test_conversion_fails!(Integer, i128::MIN, as_i32);
+
+        // ### i64 ###
+        // unsigned max -> i64
+        test_conversion_succeeds!(Integer, u8::MAX, as_i64);
+        test_conversion_succeeds!(Integer, u16::MAX, as_i64);
+        test_conversion_succeeds!(Integer, u32::MAX, as_i64);
+        test_conversion_fails!(Integer, u64::MAX, as_i64);
+        test_conversion_fails!(Integer, u128::MAX, as_i64);
+
+        // signed max -> i64
+        test_conversion_succeeds!(Integer, i8::MAX, as_i64);
+        test_conversion_succeeds!(Integer, i16::MAX, as_i64);
+        test_conversion_succeeds!(Integer, i32::MAX, as_i64);
+        test_conversion_succeeds!(Integer, i64::MAX, as_i64);
+        test_conversion_fails!(Integer, i128::MAX, as_i64);
+
+        // signed max as unsigned -> i64
+        test_conversion_succeeds!(Integer, i8::MAX as u8, as_i64);
+        test_conversion_succeeds!(Integer, i16::MAX as u16, as_i64);
+        test_conversion_succeeds!(Integer, i32::MAX as u32, as_i64);
+        test_conversion_succeeds!(Integer, i64::MAX as u64, as_i64);
+        test_conversion_fails!(Integer, i128::MAX as u128, as_i64);
+
+        // signed min -> i64
+        test_conversion_succeeds!(Integer, i8::MIN, as_i64);
+        test_conversion_succeeds!(Integer, i16::MIN, as_i64);
+        test_conversion_succeeds!(Integer, i32::MIN, as_i64);
+        test_conversion_succeeds!(Integer, i64::MIN, as_i64);
+        test_conversion_fails!(Integer, i128::MIN, as_i64);
+
+        // ### i128 ###
+        // unsigned max -> i128
+        test_conversion_succeeds!(Integer, u8::MAX, as_i128);
+        test_conversion_succeeds!(Integer, u16::MAX, as_i128);
+        test_conversion_succeeds!(Integer, u32::MAX, as_i128);
+        test_conversion_succeeds!(Integer, u64::MAX, as_i128);
+        test_conversion_fails!(Integer, u128::MAX, as_i128);
+
+        // signed max -> i128
+        test_conversion_succeeds!(Integer, i8::MAX, as_i128);
+        test_conversion_succeeds!(Integer, i16::MAX, as_i128);
+        test_conversion_succeeds!(Integer, i32::MAX, as_i128);
+        test_conversion_succeeds!(Integer, i64::MAX, as_i128);
+        test_conversion_succeeds!(Integer, i128::MAX, as_i128);
+
+        // signed max as unsigned -> i128
+        test_conversion_succeeds!(Integer, i8::MAX as u8, as_i128);
+        test_conversion_succeeds!(Integer, i16::MAX as u16, as_i128);
+        test_conversion_succeeds!(Integer, i32::MAX as u32, as_i128);
+        test_conversion_succeeds!(Integer, i64::MAX as u64, as_i128);
+        test_conversion_succeeds!(Integer, i128::MAX as u128, as_i128);
+
+        // signed min -> i128
+        test_conversion_succeeds!(Integer, i8::MIN, as_i128);
+        test_conversion_succeeds!(Integer, i16::MIN, as_i128);
+        test_conversion_succeeds!(Integer, i32::MIN, as_i128);
+        test_conversion_succeeds!(Integer, i64::MIN, as_i128);
+        test_conversion_succeeds!(Integer, i128::MIN, as_i128);
+
+        // ### u8 ###
+        // unsigned max -> u8
+        test_conversion_succeeds!(Integer, u8::MAX, as_u8);
+        test_conversion_fails!(Integer, u16::MAX, as_u8);
+        test_conversion_fails!(Integer, u32::MAX, as_u8);
+        test_conversion_fails!(Integer, u64::MAX, as_u8);
+        test_conversion_fails!(Integer, u128::MAX, as_u8);
+
+        // signed max -> u8
+        test_conversion_succeeds!(Integer, i8::MAX, as_u8);
+        test_conversion_fails!(Integer, i16::MAX, as_u8);
+        test_conversion_fails!(Integer, i32::MAX, as_u8);
+        test_conversion_fails!(Integer, i64::MAX, as_u8);
+        test_conversion_fails!(Integer, i128::MAX, as_u8);
+
+        // signed min -> u8
+        test_negative_fails!(as_u8);
+
+        // ### u16 ###
+        // unsigned max -> u16
+        test_conversion_succeeds!(Integer, u8::MAX, as_u16);
+        test_conversion_succeeds!(Integer, u16::MAX, as_u16);
+        test_conversion_fails!(Integer, u32::MAX, as_u16);
+        test_conversion_fails!(Integer, u64::MAX, as_u16);
+        test_conversion_fails!(Integer, u128::MAX, as_u16);
+
+        // signed max -> u16
+        test_conversion_succeeds!(Integer, i8::MAX, as_u16);
+        test_conversion_succeeds!(Integer, i16::MAX, as_u16);
+        test_conversion_fails!(Integer, i32::MAX, as_u16);
+        test_conversion_fails!(Integer, i64::MAX, as_u16);
+        test_conversion_fails!(Integer, i128::MAX, as_u16);
+
+        // signed min -> u16
+        test_negative_fails!(as_u16);
+
+        // ### u32 ###
+        // unsigned max -> u32
+        test_conversion_succeeds!(Integer, u8::MAX, as_u32);
+        test_conversion_succeeds!(Integer, u16::MAX, as_u32);
+        test_conversion_succeeds!(Integer, u32::MAX, as_u32);
+        test_conversion_fails!(Integer, u64::MAX, as_u32);
+        test_conversion_fails!(Integer, u128::MAX, as_u32);
+
+        // signed max -> u32
+        test_conversion_succeeds!(Integer, i8::MAX, as_u32);
+        test_conversion_succeeds!(Integer, i16::MAX, as_u32);
+        test_conversion_succeeds!(Integer, i32::MAX, as_u32);
+        test_conversion_fails!(Integer, i64::MAX, as_u32);
+        test_conversion_fails!(Integer, i128::MAX, as_u32);
+
+        // signed min -> u32
+        test_negative_fails!(as_u32);
+
+        // ### u64 ###
+        // unsigned max -> u64
+        test_conversion_succeeds!(Integer, u8::MAX, as_u64);
+        test_conversion_succeeds!(Integer, u16::MAX, as_u64);
+        test_conversion_succeeds!(Integer, u32::MAX, as_u64);
+        test_conversion_succeeds!(Integer, u64::MAX, as_u64);
+        test_conversion_fails!(Integer, u128::MAX, as_u64);
+
+        // signed max -> u64
+        test_conversion_succeeds!(Integer, i8::MAX, as_u64);
+        test_conversion_succeeds!(Integer, i16::MAX, as_u64);
+        test_conversion_succeeds!(Integer, i32::MAX, as_u64);
+        test_conversion_succeeds!(Integer, i64::MAX, as_u64);
+        test_conversion_fails!(Integer, i128::MAX, as_u64);
+
+        // signed min -> u64
+        test_negative_fails!(as_u64);
+
+        // ### u128 ###
+        // unsigned max -> u128
+        test_conversion_succeeds!(Integer, u8::MAX, as_u128);
+        test_conversion_succeeds!(Integer, u16::MAX, as_u128);
+        test_conversion_succeeds!(Integer, u32::MAX, as_u128);
+        test_conversion_succeeds!(Integer, u64::MAX, as_u128);
+        test_conversion_succeeds!(Integer, u128::MAX, as_u128);
+
+        // signed max -> u128
+        test_conversion_succeeds!(Integer, i8::MAX, as_u128);
+        test_conversion_succeeds!(Integer, i16::MAX, as_u128);
+        test_conversion_succeeds!(Integer, i32::MAX, as_u128);
+        test_conversion_succeeds!(Integer, i64::MAX, as_u128);
+        test_conversion_succeeds!(Integer, i128::MAX, as_u128);
+
+        // signed min -> u128
+        test_negative_fails!(as_u128);
+    }
+
+    #[test]
+    fn float_as_integer() {
+        test_conversion_succeeds!(Float, 1_f32, as_integer);
+        test_conversion_succeeds!(Float, 1_f64, as_integer);
+        test_conversion_fails!(Float, 1.1_f32, as_integer);
+        test_conversion_fails!(Float, 1.1_f64, as_integer);
+    }
+
+    #[test]
+    fn integer_as_float() {
+        test_conversion_succeeds!(Integer, -(2_i32.pow(f32::MANTISSA_DIGITS)), as_f32);
+        test_conversion_succeeds!(Integer, 2_i32.pow(f32::MANTISSA_DIGITS) - 1, as_f32);
+        test_conversion_fails!(Integer, i32::MIN, as_f32);
+        test_conversion_fails!(Integer, i32::MAX, as_f32);
+        test_conversion_succeeds!(Integer, -(2_i64.pow(f64::MANTISSA_DIGITS)), as_f64);
+        test_conversion_succeeds!(Integer, 2_i64.pow(f64::MANTISSA_DIGITS) - 1, as_f64);
+        test_conversion_fails!(Integer, i64::MIN, as_f64);
+        test_conversion_fails!(Integer, i64::MAX, as_f64);
     }
 
     #[test]
@@ -1325,5 +1633,25 @@ mod tests {
         assert!(!Float::from(1_f32).is_zero());
         assert!(Float::from(0_f64).is_zero());
         assert!(!Float::from(1_f64).is_zero());
+    }
+
+    #[test]
+    fn integer_display() {
+        assert_eq!(Integer::from(i8::MAX).to_string(), "127");
+        assert_eq!(Integer::from(i16::MAX).to_string(), "32767");
+        assert_eq!(Integer::from(i32::MAX).to_string(), "2147483647");
+        assert_eq!(Integer::from(i64::MAX).to_string(), "9223372036854775807");
+        assert_eq!(
+            Integer::from(i128::MAX).to_string(),
+            "170141183460469231731687303715884105727"
+        );
+        assert_eq!(Integer::from(u8::MAX).to_string(), "255");
+        assert_eq!(Integer::from(u16::MAX).to_string(), "65535");
+        assert_eq!(Integer::from(u32::MAX).to_string(), "4294967295");
+        assert_eq!(Integer::from(u64::MAX).to_string(), "18446744073709551615");
+        assert_eq!(
+            Integer::from(u128::MAX).to_string(),
+            "340282366920938463463374607431768211455"
+        );
     }
 }

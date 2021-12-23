@@ -148,11 +148,12 @@ impl Config {
 mod tests {
     use std::{borrow::Cow, marker::PhantomData};
 
+    use serde::{Deserializer, Serializer};
     use serde_json::{value::Value as JsonValue, Number};
 
     use super::*;
     use crate::{
-        format::{Float, Integer},
+        format::{Float, Integer, CURRENT_VERSION},
         value::Value,
     };
 
@@ -413,6 +414,14 @@ mod tests {
             .is_err());
     }
 
+    #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
+    struct TupleStruct(u32, u8);
+
+    #[test]
+    fn tuple_struct() {
+        test_serialization(&TupleStruct(1, 2), None);
+    }
+
     #[test]
     fn json_value() {
         test_serialization(&JsonValue::Null, None);
@@ -477,5 +486,159 @@ mod tests {
             borrowed_decoded
         );
         assert!(matches!(borrowed_decoded, Value::Bytes(Cow::Borrowed(_))));
+    }
+
+    #[test]
+    fn incompatible_version() {
+        let mut incompatible_header = Vec::new();
+        format::write_header(&mut incompatible_header, CURRENT_VERSION + 1).unwrap();
+        assert!(matches!(
+            from_slice::<()>(&incompatible_header),
+            Err(Error::IncompatibleVersion)
+        ));
+    }
+
+    #[test]
+    fn invalid_char_cast() {
+        let bytes = to_vec(&0x11_0000_u32).unwrap();
+
+        assert!(matches!(
+            from_slice::<char>(&bytes),
+            Err(Error::InvalidUtf8(_))
+        ));
+    }
+
+    #[test]
+    fn bytes_to_identifier() {
+        let mut valid_bytes = Vec::new();
+        format::write_header(&mut valid_bytes, CURRENT_VERSION).unwrap();
+        format::write_named(&mut valid_bytes).unwrap();
+        format::write_bytes(&mut valid_bytes, b"Unit").unwrap();
+
+        assert_eq!(
+            from_slice::<EnumVariants>(&valid_bytes).unwrap(),
+            EnumVariants::Unit
+        );
+
+        let mut invalid_bytes = Vec::new();
+        format::write_header(&mut invalid_bytes, CURRENT_VERSION).unwrap();
+        format::write_named(&mut invalid_bytes).unwrap();
+        format::write_bytes(&mut invalid_bytes, &0xFFFF_FFFF_u32.to_be_bytes()).unwrap();
+
+        assert!(matches!(
+            from_slice::<EnumVariants>(&invalid_bytes),
+            Err(Error::InvalidUtf8(_))
+        ));
+    }
+
+    #[test]
+    fn invalid_symbol() {
+        let mut valid_bytes = Vec::new();
+        format::write_header(&mut valid_bytes, CURRENT_VERSION).unwrap();
+        format::write_atom_header(&mut valid_bytes, format::Kind::Symbol, Some(4)).unwrap();
+        format::write_bytes(&mut valid_bytes, &0xFFFF_FFFF_u32.to_be_bytes()).unwrap();
+
+        assert!(matches!(
+            from_slice::<Value<'_>>(&valid_bytes),
+            Err(Error::InvalidUtf8(_))
+        ));
+
+        // Reading from a reader means we can't borrow the bytes, which yields a
+        // different internal error path.
+        assert!(matches!(
+            from_reader::<Value<'_>, _>(&valid_bytes[..]),
+            Err(Error::InvalidUtf8(_))
+        ));
+    }
+
+    #[test]
+    fn unknown_special() {
+        let mut invalid_bytes = Vec::new();
+        format::write_header(&mut invalid_bytes, CURRENT_VERSION).unwrap();
+        format::write_atom_header(
+            &mut invalid_bytes,
+            format::Kind::Special,
+            Some(format::SPECIAL_COUNT),
+        )
+        .unwrap();
+
+        assert!(matches!(from_slice::<()>(&invalid_bytes), Err(_)));
+    }
+
+    #[test]
+    fn invalid_numbers() {
+        let mut invalid_float_byte_len = Vec::new();
+        format::write_header(&mut invalid_float_byte_len, CURRENT_VERSION).unwrap();
+        format::write_atom_header(&mut invalid_float_byte_len, format::Kind::Float, Some(0))
+            .unwrap();
+
+        assert!(matches!(from_slice::<f32>(&invalid_float_byte_len), Err(_)));
+
+        assert!(matches!(
+            format::Float::read_from(format::Kind::Symbol, 0, &mut &invalid_float_byte_len[..]),
+            Err(_)
+        ));
+
+        let mut invalid_signed_byte_len = Vec::new();
+        format::write_header(&mut invalid_signed_byte_len, CURRENT_VERSION).unwrap();
+        format::write_atom_header(&mut invalid_signed_byte_len, format::Kind::Int, Some(10))
+            .unwrap();
+
+        assert!(matches!(
+            from_slice::<i32>(&invalid_signed_byte_len),
+            Err(_)
+        ));
+
+        assert!(matches!(
+            format::Integer::read_from(format::Kind::Symbol, 0, &mut &invalid_signed_byte_len[..]),
+            Err(_)
+        ));
+
+        let mut invalid_unsigned_byte_len = Vec::new();
+        format::write_header(&mut invalid_unsigned_byte_len, CURRENT_VERSION).unwrap();
+        format::write_atom_header(&mut invalid_unsigned_byte_len, format::Kind::UInt, Some(10))
+            .unwrap();
+
+        assert!(matches!(
+            from_slice::<u32>(&invalid_unsigned_byte_len),
+            Err(_)
+        ));
+    }
+
+    #[test]
+    #[allow(clippy::unnecessary_mut_passed)] // It's necessary.
+    fn not_human_readable() {
+        let mut bytes = Vec::new();
+        let mut serializer = ser::Serializer::new(&mut bytes).unwrap();
+        assert!(!(&mut serializer).is_human_readable());
+        ().serialize(&mut serializer).unwrap();
+
+        let bytes = to_vec(&()).unwrap();
+        let mut deserializer = de::Deserializer::from_slice(&bytes, usize::MAX).unwrap();
+        assert!(!(&mut deserializer).is_human_readable());
+    }
+
+    #[test]
+    fn unexpected_eof() {
+        let mut invalid_bytes = Vec::new();
+        format::write_header(&mut invalid_bytes, CURRENT_VERSION).unwrap();
+        format::write_atom_header(&mut invalid_bytes, format::Kind::Bytes, Some(10)).unwrap();
+        assert!(matches!(
+            from_slice::<Vec<u8>>(&invalid_bytes),
+            Err(Error::Eof)
+        ));
+    }
+
+    #[test]
+    fn too_big_read() {
+        let mut invalid_bytes = Vec::new();
+        format::write_header(&mut invalid_bytes, CURRENT_VERSION).unwrap();
+        format::write_atom_header(&mut invalid_bytes, format::Kind::Bytes, Some(10)).unwrap();
+        assert!(matches!(
+            Config::default()
+                .allocation_budget(9)
+                .deserialize::<Vec<u8>>(&invalid_bytes),
+            Err(Error::TooManyBytesRead)
+        ));
     }
 }
