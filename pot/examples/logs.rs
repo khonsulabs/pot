@@ -166,7 +166,7 @@ fn average_sizes() {
     let mut pot_sizes = Vec::new();
 
     const ITERATIONS: usize = 1_000;
-    println!("Generating {} LogArchies with 100 entries.", ITERATIONS);
+    println!("Generating {} LogArchives with 100 entries.", ITERATIONS);
     for _ in 0..ITERATIONS {
         let log = LogArchive::generate(&mut thread_rng(), 100);
         bincode_sizes.push(bincode::serialize(&log).unwrap().len());

@@ -19,19 +19,49 @@ provide an encoding format for [`serde`](https://serde.rs) that:
   
   ```sh
   $ cargo test --example logs -- average_sizes --nocapture
-  Generating 1000 LogArchies with 100 entries.
+  Generating 1000 LogArchives with 100 entries.
   +-----------------+------------+
   | Format          | Avg. Bytes |
   +-----------------+------------+
-  | pot             | 26,642.383 |
+  | pot             | 26,568.829 |
   +-----------------+------------+
-  | bincode(varint) | 25,361.761 |
+  | bincode(varint) | 25,287.882 |
   +-----------------+------------+
-  | bincode         | 27,855.579 |
+  | bincode         | 27,783.24  |
   +-----------------+------------+
-  | cbor            | 31,025.765 |
+  | cbor            | 30,951.973 |
   +-----------------+------------+
   ```
+
+## Example
+
+```rust
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
+pub struct User {
+    id: u64,
+    name: String,
+}
+
+fn main() -> Result<(), pot::Error> {
+    let user = User {
+        id: 42,
+        name: String::from("ecton"),
+    };
+    let serialized = pot::to_vec(&user)?;
+    println!("User serialized: {:02x?}", serialized);
+    let deserialized: User = pot::from_slice(&serialized)?;
+    assert_eq!(deserialized, user);
+
+    // Pot also provides a "Value" type for serializing Pot encoded payloads
+    // without needing the original structure.
+    let user: pot::Value<'_> = pot::from_slice(&serialized)?;
+    println!("User decoded as value: {}", user);
+
+    Ok(())
+}
+```
 
 ## Benchmarks
 

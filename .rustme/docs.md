@@ -19,19 +19,25 @@ provide an encoding format for [`serde`](https://serde.rs) that:
   
   ```sh
   $$ cargo test --example logs -- average_sizes --nocapture
-  Generating 1000 LogArchies with 100 entries.
+  Generating 1000 LogArchives with 100 entries.
   +-----------------+------------+
   | Format          | Avg. Bytes |
   +-----------------+------------+
-  | pot             | 26,642.383 |
+  | pot             | 26,568.829 |
   +-----------------+------------+
-  | bincode(varint) | 25,361.761 |
+  | bincode(varint) | 25,287.882 |
   +-----------------+------------+
-  | bincode         | 27,855.579 |
+  | bincode         | 27,783.24  |
   +-----------------+------------+
-  | cbor            | 31,025.765 |
+  | cbor            | 30,951.973 |
   +-----------------+------------+
   ```
+
+## Example
+
+```rust
+$../pot/examples/simple.rs:example$
+```
 
 ## Benchmarks
 
