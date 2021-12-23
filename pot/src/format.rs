@@ -435,7 +435,11 @@ pub fn write_bytes<W: WriteBytesExt>(writer: &mut W, value: &[u8]) -> std::io::R
 
 /// An integer type that can safely convert between other number types using compile-time evaluation.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub enum Integer {
+#[serde(transparent)]
+pub struct Integer(pub(crate) InnerInteger);
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub(crate) enum InnerInteger {
     /// An i8 value.
     I8(i8),
     /// An i16 value.
@@ -460,17 +464,17 @@ pub enum Integer {
 
 impl Display for Integer {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Integer::I8(value) => Display::fmt(value, f),
-            Integer::I16(value) => Display::fmt(value, f),
-            Integer::I32(value) => Display::fmt(value, f),
-            Integer::I64(value) => Display::fmt(value, f),
-            Integer::I128(value) => Display::fmt(value, f),
-            Integer::U8(value) => Display::fmt(value, f),
-            Integer::U16(value) => Display::fmt(value, f),
-            Integer::U32(value) => Display::fmt(value, f),
-            Integer::U64(value) => Display::fmt(value, f),
-            Integer::U128(value) => Display::fmt(value, f),
+        match &self.0 {
+            InnerInteger::I8(value) => Display::fmt(value, f),
+            InnerInteger::I16(value) => Display::fmt(value, f),
+            InnerInteger::I32(value) => Display::fmt(value, f),
+            InnerInteger::I64(value) => Display::fmt(value, f),
+            InnerInteger::I128(value) => Display::fmt(value, f),
+            InnerInteger::U8(value) => Display::fmt(value, f),
+            InnerInteger::U16(value) => Display::fmt(value, f),
+            InnerInteger::U32(value) => Display::fmt(value, f),
+            InnerInteger::U64(value) => Display::fmt(value, f),
+            InnerInteger::U128(value) => Display::fmt(value, f),
         }
     }
 }
@@ -479,25 +483,25 @@ impl Integer {
     /// Returns true if the value contained is zero.
     #[must_use]
     pub const fn is_zero(&self) -> bool {
-        match self {
-            Integer::I8(value) => *value == 0,
-            Integer::I16(value) => *value == 0,
-            Integer::I32(value) => *value == 0,
-            Integer::I64(value) => *value == 0,
-            Integer::I128(value) => *value == 0,
-            Integer::U8(value) => *value == 0,
-            Integer::U16(value) => *value == 0,
-            Integer::U32(value) => *value == 0,
-            Integer::U64(value) => *value == 0,
-            Integer::U128(value) => *value == 0,
+        match &self.0 {
+            InnerInteger::I8(value) => *value == 0,
+            InnerInteger::I16(value) => *value == 0,
+            InnerInteger::I32(value) => *value == 0,
+            InnerInteger::I64(value) => *value == 0,
+            InnerInteger::I128(value) => *value == 0,
+            InnerInteger::U8(value) => *value == 0,
+            InnerInteger::U16(value) => *value == 0,
+            InnerInteger::U32(value) => *value == 0,
+            InnerInteger::U64(value) => *value == 0,
+            InnerInteger::U128(value) => *value == 0,
         }
     }
     /// Returns the contained value as an i8, or an error if the value is unable to fit.
     #[allow(clippy::cast_possible_wrap)]
     pub const fn as_i8(&self) -> Result<i8, Error> {
-        match self {
-            Self::I8(value) => Ok(*value),
-            Self::U8(value) => {
+        match &self.0 {
+            InnerInteger::I8(value) => Ok(*value),
+            InnerInteger::U8(value) => {
                 if *value < i8::MAX as u8 {
                     Ok(*value as i8)
                 } else {
@@ -511,9 +515,9 @@ impl Integer {
     /// Returns the contained value as an u8, or an error if the value is unable to fit.
     #[allow(clippy::cast_sign_loss)]
     pub const fn as_u8(&self) -> Result<u8, Error> {
-        match self {
-            Self::U8(value) => Ok(*value),
-            Self::I8(value) => {
+        match &self.0 {
+            InnerInteger::U8(value) => Ok(*value),
+            InnerInteger::I8(value) => {
                 if *value >= 0 {
                     Ok(*value as u8)
                 } else {
@@ -527,147 +531,149 @@ impl Integer {
     /// Returns the contained value as an i16, or an error if the value is unable to fit.
     #[allow(clippy::cast_possible_wrap)]
     pub const fn as_i16(&self) -> Result<i16, Error> {
-        match self {
-            Self::I8(value) => Ok(*value as i16),
-            Self::U8(value) => Ok(*value as i16),
-            Self::I16(value) => Ok(*value),
-            Self::U16(value) => {
+        match &self.0 {
+            InnerInteger::I8(value) => Ok(*value as i16),
+            InnerInteger::U8(value) => Ok(*value as i16),
+            InnerInteger::I16(value) => Ok(*value),
+            InnerInteger::U16(value) => {
                 if *value < i16::MAX as u16 {
                     Ok(*value as i16)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U32(_)
-            | Self::I32(_)
-            | Self::U64(_)
-            | Self::I64(_)
-            | Self::U128(_)
-            | Self::I128(_) => Err(Error::ImpreciseCastWouldLoseData),
+            InnerInteger::U32(_)
+            | InnerInteger::I32(_)
+            | InnerInteger::U64(_)
+            | InnerInteger::I64(_)
+            | InnerInteger::U128(_)
+            | InnerInteger::I128(_) => Err(Error::ImpreciseCastWouldLoseData),
         }
     }
 
     /// Returns the contained value as an u16, or an error if the value is unable to fit.
     #[allow(clippy::cast_sign_loss)]
     pub const fn as_u16(&self) -> Result<u16, Error> {
-        match self {
-            Self::I8(value) => {
+        match &self.0 {
+            InnerInteger::I8(value) => {
                 if *value >= 0 {
                     Ok(*value as u16)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U8(value) => Ok(*value as u16),
-            Self::U16(value) => Ok(*value),
-            Self::I16(value) => {
+            InnerInteger::U8(value) => Ok(*value as u16),
+            InnerInteger::U16(value) => Ok(*value),
+            InnerInteger::I16(value) => {
                 if *value >= 0 {
                     Ok(*value as u16)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U32(_)
-            | Self::I32(_)
-            | Self::U64(_)
-            | Self::I64(_)
-            | Self::U128(_)
-            | Self::I128(_) => Err(Error::ImpreciseCastWouldLoseData),
+            InnerInteger::U32(_)
+            | InnerInteger::I32(_)
+            | InnerInteger::U64(_)
+            | InnerInteger::I64(_)
+            | InnerInteger::U128(_)
+            | InnerInteger::I128(_) => Err(Error::ImpreciseCastWouldLoseData),
         }
     }
 
     /// Returns the contained value as an i32, or an error if the value is unable to fit.
     #[allow(clippy::cast_possible_wrap)]
     pub const fn as_i32(&self) -> Result<i32, Error> {
-        match self {
-            Self::I8(value) => Ok(*value as i32),
-            Self::U8(value) => Ok(*value as i32),
-            Self::I16(value) => Ok(*value as i32),
-            Self::U16(value) => Ok(*value as i32),
-            Self::I32(value) => Ok(*value),
-            Self::U32(value) => {
+        match &self.0 {
+            InnerInteger::I8(value) => Ok(*value as i32),
+            InnerInteger::U8(value) => Ok(*value as i32),
+            InnerInteger::I16(value) => Ok(*value as i32),
+            InnerInteger::U16(value) => Ok(*value as i32),
+            InnerInteger::I32(value) => Ok(*value),
+            InnerInteger::U32(value) => {
                 if *value < i32::MAX as u32 {
                     Ok(*value as i32)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U64(_) | Self::I64(_) | Self::U128(_) | Self::I128(_) => {
-                Err(Error::ImpreciseCastWouldLoseData)
-            }
+            InnerInteger::U64(_)
+            | InnerInteger::I64(_)
+            | InnerInteger::U128(_)
+            | InnerInteger::I128(_) => Err(Error::ImpreciseCastWouldLoseData),
         }
     }
 
     /// Returns the contained value as an u32, or an error if the value is unable to fit.
     #[allow(clippy::cast_sign_loss)]
     pub const fn as_u32(&self) -> Result<u32, Error> {
-        match self {
-            Self::I8(value) => {
+        match &self.0 {
+            InnerInteger::I8(value) => {
                 if *value >= 0 {
                     Ok(*value as u32)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U8(value) => Ok(*value as u32),
-            Self::I16(value) => {
+            InnerInteger::U8(value) => Ok(*value as u32),
+            InnerInteger::I16(value) => {
                 if *value >= 0 {
                     Ok(*value as u32)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U16(value) => Ok(*value as u32),
-            Self::U32(value) => Ok(*value),
-            Self::I32(value) => {
+            InnerInteger::U16(value) => Ok(*value as u32),
+            InnerInteger::U32(value) => Ok(*value),
+            InnerInteger::I32(value) => {
                 if *value >= 0 {
                     Ok(*value as u32)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U64(_) | Self::I64(_) | Self::U128(_) | Self::I128(_) => {
-                Err(Error::ImpreciseCastWouldLoseData)
-            }
+            InnerInteger::U64(_)
+            | InnerInteger::I64(_)
+            | InnerInteger::U128(_)
+            | InnerInteger::I128(_) => Err(Error::ImpreciseCastWouldLoseData),
         }
     }
 
     /// Returns the contained value as an i64, or an error if the value is unable to fit.
     #[allow(clippy::cast_possible_wrap)]
     pub const fn as_i64(&self) -> Result<i64, Error> {
-        match self {
-            Self::I8(value) => Ok(*value as i64),
-            Self::U8(value) => Ok(*value as i64),
-            Self::I16(value) => Ok(*value as i64),
-            Self::U16(value) => Ok(*value as i64),
-            Self::I32(value) => Ok(*value as i64),
-            Self::U32(value) => Ok(*value as i64),
-            Self::I64(value) => Ok(*value),
-            Self::U64(value) => {
+        match &self.0 {
+            InnerInteger::I8(value) => Ok(*value as i64),
+            InnerInteger::U8(value) => Ok(*value as i64),
+            InnerInteger::I16(value) => Ok(*value as i64),
+            InnerInteger::U16(value) => Ok(*value as i64),
+            InnerInteger::I32(value) => Ok(*value as i64),
+            InnerInteger::U32(value) => Ok(*value as i64),
+            InnerInteger::I64(value) => Ok(*value),
+            InnerInteger::U64(value) => {
                 if *value < i64::MAX as u64 {
                     Ok(*value as i64)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U128(_) | Self::I128(_) => Err(Error::ImpreciseCastWouldLoseData),
+            InnerInteger::U128(_) | InnerInteger::I128(_) => Err(Error::ImpreciseCastWouldLoseData),
         }
     }
 
     /// Returns the contained value as an i64, or an error if the value is unable to fit.
     #[allow(clippy::cast_possible_wrap)]
     pub const fn as_i128(&self) -> Result<i128, Error> {
-        match self {
-            Self::I8(value) => Ok(*value as i128),
-            Self::U8(value) => Ok(*value as i128),
-            Self::I16(value) => Ok(*value as i128),
-            Self::U16(value) => Ok(*value as i128),
-            Self::I32(value) => Ok(*value as i128),
-            Self::U32(value) => Ok(*value as i128),
-            Self::I64(value) => Ok(*value as i128),
-            Self::U64(value) => Ok(*value as i128),
-            Self::I128(value) => Ok(*value),
-            Self::U128(value) => {
+        match &self.0 {
+            InnerInteger::I8(value) => Ok(*value as i128),
+            InnerInteger::U8(value) => Ok(*value as i128),
+            InnerInteger::I16(value) => Ok(*value as i128),
+            InnerInteger::U16(value) => Ok(*value as i128),
+            InnerInteger::I32(value) => Ok(*value as i128),
+            InnerInteger::U32(value) => Ok(*value as i128),
+            InnerInteger::I64(value) => Ok(*value as i128),
+            InnerInteger::U64(value) => Ok(*value as i128),
+            InnerInteger::I128(value) => Ok(*value),
+            InnerInteger::U128(value) => {
                 if *value < i128::MAX as u128 {
                     Ok(*value as i128)
                 } else {
@@ -680,81 +686,81 @@ impl Integer {
     /// Returns the contained value as an u64, or an error if the value is unable to fit.
     #[allow(clippy::cast_sign_loss)]
     pub const fn as_u64(&self) -> Result<u64, Error> {
-        match self {
-            Self::I8(value) => {
+        match &self.0 {
+            InnerInteger::I8(value) => {
                 if *value >= 0 {
                     Ok(*value as u64)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U8(value) => Ok(*value as u64),
-            Self::I16(value) => {
+            InnerInteger::U8(value) => Ok(*value as u64),
+            InnerInteger::I16(value) => {
                 if *value >= 0 {
                     Ok(*value as u64)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U16(value) => Ok(*value as u64),
-            Self::U32(value) => Ok(*value as u64),
-            Self::I32(value) => {
+            InnerInteger::U16(value) => Ok(*value as u64),
+            InnerInteger::U32(value) => Ok(*value as u64),
+            InnerInteger::I32(value) => {
                 if *value >= 0 {
                     Ok(*value as u64)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U64(value) => Ok(*value),
-            Self::I64(value) => {
+            InnerInteger::U64(value) => Ok(*value),
+            InnerInteger::I64(value) => {
                 if *value >= 0 {
                     Ok(*value as u64)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U128(_) | Self::I128(_) => Err(Error::ImpreciseCastWouldLoseData),
+            InnerInteger::U128(_) | InnerInteger::I128(_) => Err(Error::ImpreciseCastWouldLoseData),
         }
     }
 
     /// Returns the contained value as an u64, or an error if the value is unable to fit.
     #[allow(clippy::cast_sign_loss)]
     pub const fn as_u128(&self) -> Result<u128, Error> {
-        match self {
-            Self::I8(value) => {
+        match &self.0 {
+            InnerInteger::I8(value) => {
                 if *value >= 0 {
                     Ok(*value as u128)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U8(value) => Ok(*value as u128),
-            Self::I16(value) => {
+            InnerInteger::U8(value) => Ok(*value as u128),
+            InnerInteger::I16(value) => {
                 if *value >= 0 {
                     Ok(*value as u128)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U16(value) => Ok(*value as u128),
-            Self::U32(value) => Ok(*value as u128),
-            Self::I32(value) => {
+            InnerInteger::U16(value) => Ok(*value as u128),
+            InnerInteger::U32(value) => Ok(*value as u128),
+            InnerInteger::I32(value) => {
                 if *value >= 0 {
                     Ok(*value as u128)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U64(value) => Ok(*value as u128),
-            Self::I64(value) => {
+            InnerInteger::U64(value) => Ok(*value as u128),
+            InnerInteger::I64(value) => {
                 if *value >= 0 {
                     Ok(*value as u128)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::U128(value) => Ok(*value),
-            Self::I128(value) => {
+            InnerInteger::U128(value) => Ok(*value),
+            InnerInteger::I128(value) => {
                 if *value >= 0 {
                     Ok(*value as u128)
                 } else {
@@ -766,17 +772,17 @@ impl Integer {
 
     #[cfg(test)]
     fn write_to<W: WriteBytesExt>(&self, writer: &mut W) -> std::io::Result<usize> {
-        match *self {
-            Self::I8(value) => write_i8(writer, value),
-            Self::I16(value) => write_i16(writer, value),
-            Self::I32(value) => write_i32(writer, value),
-            Self::I64(value) => write_i64(writer, value),
-            Self::I128(value) => write_i128(writer, value),
-            Self::U8(value) => write_u8(writer, value),
-            Self::U16(value) => write_u16(writer, value),
-            Self::U32(value) => write_u32(writer, value),
-            Self::U64(value) => write_u64(writer, value),
-            Self::U128(value) => write_u128(writer, value),
+        match self.0 {
+            InnerInteger::I8(value) => write_i8(writer, value),
+            InnerInteger::I16(value) => write_i16(writer, value),
+            InnerInteger::I32(value) => write_i32(writer, value),
+            InnerInteger::I64(value) => write_i64(writer, value),
+            InnerInteger::I128(value) => write_i128(writer, value),
+            InnerInteger::U8(value) => write_u8(writer, value),
+            InnerInteger::U16(value) => write_u16(writer, value),
+            InnerInteger::U32(value) => write_u32(writer, value),
+            InnerInteger::U64(value) => write_u64(writer, value),
+            InnerInteger::U128(value) => write_u128(writer, value),
         }
     }
 
@@ -788,25 +794,25 @@ impl Integer {
         reader: &mut R,
     ) -> Result<Self, Error> {
         match kind {
-            Kind::Special => Ok(Self::U8(0)),
+            Kind::Special => Ok(InnerInteger::U8(0)),
             Kind::Int => match byte_len {
-                1 => Ok(Self::I8(reader.read_i8()?)),
-                2 => Ok(Self::I16(reader.read_i16::<LittleEndian>()?)),
-                3 => Ok(Self::I32(reader.read_i24::<LittleEndian>()?)),
-                4 => Ok(Self::I32(reader.read_i32::<LittleEndian>()?)),
-                6 => Ok(Self::I64(reader.read_i48::<LittleEndian>()?)),
-                8 => Ok(Self::I64(reader.read_i64::<LittleEndian>()?)),
-                16 => Ok(Self::I128(reader.read_i128::<LittleEndian>()?)),
+                1 => Ok(InnerInteger::I8(reader.read_i8()?)),
+                2 => Ok(InnerInteger::I16(reader.read_i16::<LittleEndian>()?)),
+                3 => Ok(InnerInteger::I32(reader.read_i24::<LittleEndian>()?)),
+                4 => Ok(InnerInteger::I32(reader.read_i32::<LittleEndian>()?)),
+                6 => Ok(InnerInteger::I64(reader.read_i48::<LittleEndian>()?)),
+                8 => Ok(InnerInteger::I64(reader.read_i64::<LittleEndian>()?)),
+                16 => Ok(InnerInteger::I128(reader.read_i128::<LittleEndian>()?)),
                 _ => Err(Error::custom("unsupported int byte count")),
             },
             Kind::UInt => match byte_len {
-                1 => Ok(Self::U8(reader.read_u8()?)),
-                2 => Ok(Self::U16(reader.read_u16::<LittleEndian>()?)),
-                3 => Ok(Self::U32(reader.read_u24::<LittleEndian>()?)),
-                4 => Ok(Self::U32(reader.read_u32::<LittleEndian>()?)),
-                6 => Ok(Self::U64(reader.read_u48::<LittleEndian>()?)),
-                8 => Ok(Self::U64(reader.read_u64::<LittleEndian>()?)),
-                16 => Ok(Self::U128(reader.read_u128::<LittleEndian>()?)),
+                1 => Ok(InnerInteger::U8(reader.read_u8()?)),
+                2 => Ok(InnerInteger::U16(reader.read_u16::<LittleEndian>()?)),
+                3 => Ok(InnerInteger::U32(reader.read_u24::<LittleEndian>()?)),
+                4 => Ok(InnerInteger::U32(reader.read_u32::<LittleEndian>()?)),
+                6 => Ok(InnerInteger::U64(reader.read_u48::<LittleEndian>()?)),
+                8 => Ok(InnerInteger::U64(reader.read_u64::<LittleEndian>()?)),
+                16 => Ok(InnerInteger::U128(reader.read_u128::<LittleEndian>()?)),
                 _ => Err(Error::custom("unsupported uint byte count")),
             },
             other => Err(Error::custom(format!(
@@ -814,6 +820,7 @@ impl Integer {
                 other
             ))),
         }
+        .map(Integer)
     }
 
     /// Converts this integer to an f32, but only if it can be done without losing precision.
@@ -842,10 +849,62 @@ impl Integer {
     #[allow(clippy::cast_precision_loss)]
     pub fn as_float(&self) -> Result<Float, Error> {
         self.as_f32()
-            .map(Float::F32)
-            .or_else(|_| self.as_f64().map(Float::F64))
+            .map(Float::from)
+            .or_else(|_| self.as_f64().map(Float::from))
     }
 }
+
+impl From<u8> for Integer {
+    fn from(value: u8) -> Self {
+        Self(InnerInteger::U8(value))
+    }
+}
+
+macro_rules! impl_from_unsigned_integer {
+    ($primitive:ty, $smaller_primitive:ty, $variant:ident) => {
+        impl From<$primitive> for Integer {
+            fn from(value: $primitive) -> Self {
+                if let Ok(value) = <$smaller_primitive>::try_from(value) {
+                    Self::from(value as $smaller_primitive)
+                } else {
+                    Integer(InnerInteger::$variant(value))
+                }
+            }
+        }
+    };
+}
+
+impl_from_unsigned_integer!(u16, u8, U16);
+impl_from_unsigned_integer!(u32, u16, U32);
+impl_from_unsigned_integer!(u64, u32, U64);
+impl_from_unsigned_integer!(u128, u64, U128);
+
+impl From<i8> for Integer {
+    fn from(value: i8) -> Self {
+        Self(InnerInteger::I8(value))
+    }
+}
+
+macro_rules! impl_from_unsigned_integer {
+    ($primitive:ty, $smaller_primitive:ty, $smaller_unsigned_primitive:ty, $variant:ident) => {
+        impl From<$primitive> for Integer {
+            fn from(value: $primitive) -> Self {
+                if let Ok(value) = <$smaller_primitive>::try_from(value) {
+                    Self::from(value as $smaller_primitive)
+                } else if let Ok(value) = <$smaller_unsigned_primitive>::try_from(value) {
+                    Self::from(value as $smaller_unsigned_primitive)
+                } else {
+                    Integer(InnerInteger::$variant(value))
+                }
+            }
+        }
+    };
+}
+
+impl_from_unsigned_integer!(i16, i8, u8, I16);
+impl_from_unsigned_integer!(i32, i16, u16, I32);
+impl_from_unsigned_integer!(i64, i32, u32, I64);
+impl_from_unsigned_integer!(i128, i64, u64, I128);
 
 /// Reads an atom.
 #[allow(clippy::cast_possible_truncation)]
@@ -933,18 +992,34 @@ pub struct Atom<'de> {
 
 /// A floating point number that can safely convert between other number types using compile-time evaluation when possible.
 #[derive(Debug, Serialize, Deserialize, Copy, Clone, PartialEq)]
-pub enum Float {
+#[serde(transparent)]
+pub struct Float(pub(crate) InnerFloat);
+
+#[derive(Debug, Serialize, Deserialize, Copy, Clone, PartialEq)]
+pub(crate) enum InnerFloat {
     /// An f64 value.
     F64(f64),
     /// An f32 value.
     F32(f32),
 }
 
+impl From<f32> for Float {
+    fn from(value: f32) -> Self {
+        Self(InnerFloat::F32(value))
+    }
+}
+
+impl From<f64> for Float {
+    fn from(value: f64) -> Self {
+        Self(InnerFloat::F64(value))
+    }
+}
+
 impl Display for Float {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::F32(value) => Display::fmt(value, f),
-            Self::F64(value) => Display::fmt(value, f),
+        match &self.0 {
+            InnerFloat::F32(value) => Display::fmt(value, f),
+            InnerFloat::F64(value) => Display::fmt(value, f),
         }
     }
 }
@@ -953,20 +1028,20 @@ impl Float {
     /// Returns true if the value contained is zero.
     #[must_use]
     pub fn is_zero(&self) -> bool {
-        match self {
-            Self::F32(value) => value.abs() <= f32::EPSILON,
-            Self::F64(value) => value.abs() <= f64::EPSILON,
+        match self.0 {
+            InnerFloat::F32(value) => value.abs() <= f32::EPSILON,
+            InnerFloat::F64(value) => value.abs() <= f64::EPSILON,
         }
     }
 
     /// Returns this number as an f32, if it can be done without losing precision.
     #[allow(clippy::float_cmp, clippy::cast_possible_truncation)]
     pub fn as_f32(&self) -> Result<f32, Error> {
-        match self {
-            Self::F32(value) => Ok(*value),
-            Self::F64(value) => {
-                let converted = *value as f32;
-                if f64::from(converted) == *value {
+        match self.0 {
+            InnerFloat::F32(value) => Ok(value),
+            InnerFloat::F64(value) => {
+                let converted = value as f32;
+                if f64::from(converted) == value {
                     Ok(converted)
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
@@ -978,27 +1053,27 @@ impl Float {
     /// Returns this number as an f64.
     #[must_use]
     pub const fn as_f64(&self) -> f64 {
-        match self {
-            Self::F64(value) => *value,
-            Self::F32(value) => *value as f64,
+        match self.0 {
+            InnerFloat::F64(value) => value,
+            InnerFloat::F32(value) => value as f64,
         }
     }
 
     /// Returns this number as an [`Integer`], if the stored value has no fractional part.
     #[allow(clippy::cast_possible_truncation)]
     pub fn as_integer(&self) -> Result<Integer, Error> {
-        match self {
-            Self::F64(value) => {
+        match self.0 {
+            InnerFloat::F64(value) => {
                 if value.fract().abs() < f64::EPSILON {
                     // no fraction, safe to convert
-                    Ok(Integer::I64(*value as i64))
+                    Ok(Integer::from(value as i64))
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
             }
-            Self::F32(value) => {
+            InnerFloat::F32(value) => {
                 if value.fract().abs() < f32::EPSILON {
-                    Ok(Integer::I32(*value as i32))
+                    Ok(Integer::from(value as i32))
                 } else {
                     Err(Error::ImpreciseCastWouldLoseData)
                 }
@@ -1015,9 +1090,9 @@ impl Float {
     ) -> Result<Self, Error> {
         if Kind::Float == kind {
             match byte_len {
-                2 => Ok(Self::F32(read_f16(reader)?)),
-                4 => Ok(Self::F32(reader.read_f32::<LittleEndian>()?)),
-                8 => Ok(Self::F64(reader.read_f64::<LittleEndian>()?)),
+                2 => Ok(Self::from(read_f16(reader)?)),
+                4 => Ok(Self::from(reader.read_f32::<LittleEndian>()?)),
+                8 => Ok(Self::from(reader.read_f64::<LittleEndian>()?)),
                 _ => Err(Error::custom("unsupported float byte count")),
             }
         } else {
@@ -1107,100 +1182,148 @@ mod tests {
 
     #[test]
     fn zero() {
-        test_roundtrip_integer(Integer::U64(0), Integer::U8(0), 2);
-        test_roundtrip_integer(Integer::I64(0), Integer::I8(0), 2);
+        test_roundtrip_integer(Integer::from(0_u64), Integer(InnerInteger::U8(0)), 2);
+        test_roundtrip_integer(Integer::from(0_i64), Integer(InnerInteger::I8(0)), 2);
     }
 
     #[test]
     fn u8_max() {
-        test_roundtrip_integer(Integer::U64(u64::from(u8::MAX)), Integer::U8(u8::MAX), 2);
+        test_roundtrip_integer(
+            Integer::from(u64::from(u8::MAX)),
+            Integer(InnerInteger::U8(u8::MAX)),
+            2,
+        );
     }
 
     #[test]
     fn i8_max() {
-        test_roundtrip_integer(Integer::I64(i64::from(i8::MAX)), Integer::I8(i8::MAX), 2);
+        test_roundtrip_integer(
+            Integer::from(i64::from(i8::MAX)),
+            Integer(InnerInteger::I8(i8::MAX)),
+            2,
+        );
     }
 
     #[test]
     fn i8_min() {
-        test_roundtrip_integer(Integer::I64(i64::from(i8::MIN)), Integer::I8(i8::MIN), 2);
+        test_roundtrip_integer(
+            Integer::from(i64::from(i8::MIN)),
+            Integer(InnerInteger::I8(i8::MIN)),
+            2,
+        );
     }
 
     #[test]
     fn u16_max() {
-        test_roundtrip_integer(Integer::U64(u64::from(u16::MAX)), Integer::U16(u16::MAX), 3);
+        test_roundtrip_integer(
+            Integer::from(u64::from(u16::MAX)),
+            Integer(InnerInteger::U16(u16::MAX)),
+            3,
+        );
     }
 
     #[test]
     fn i16_max() {
-        test_roundtrip_integer(Integer::I64(i64::from(i16::MAX)), Integer::I16(i16::MAX), 3);
+        test_roundtrip_integer(
+            Integer::from(i64::from(i16::MAX)),
+            Integer(InnerInteger::I16(i16::MAX)),
+            3,
+        );
     }
 
     #[test]
     fn i16_min() {
-        test_roundtrip_integer(Integer::I64(i64::from(i16::MIN)), Integer::I16(i16::MIN), 3);
+        test_roundtrip_integer(
+            Integer::from(i64::from(i16::MIN)),
+            Integer(InnerInteger::I16(i16::MIN)),
+            3,
+        );
     }
 
     #[test]
     fn u32_max() {
-        test_roundtrip_integer(Integer::U64(u64::from(u32::MAX)), Integer::U32(u32::MAX), 5);
+        test_roundtrip_integer(
+            Integer::from(u64::from(u32::MAX)),
+            Integer(InnerInteger::U32(u32::MAX)),
+            5,
+        );
     }
 
     #[test]
     fn i32_max() {
-        test_roundtrip_integer(Integer::I64(i64::from(i32::MAX)), Integer::I32(i32::MAX), 5);
+        test_roundtrip_integer(
+            Integer::from(i64::from(i32::MAX)),
+            Integer(InnerInteger::I32(i32::MAX)),
+            5,
+        );
     }
 
     #[test]
     fn i32_min() {
-        test_roundtrip_integer(Integer::I64(i64::from(i32::MIN)), Integer::I32(i32::MIN), 5);
+        test_roundtrip_integer(
+            Integer::from(i64::from(i32::MIN)),
+            Integer(InnerInteger::I32(i32::MIN)),
+            5,
+        );
     }
 
     #[test]
     fn u64_max() {
-        test_roundtrip_integer(Integer::U64(u64::MAX), Integer::U64(u64::MAX), 9);
+        test_roundtrip_integer(
+            Integer::from(u64::MAX),
+            Integer(InnerInteger::U64(u64::MAX)),
+            9,
+        );
     }
 
     #[test]
     fn i64_max() {
-        test_roundtrip_integer(Integer::I64(i64::MAX), Integer::I64(i64::MAX), 9);
+        test_roundtrip_integer(
+            Integer::from(i64::MAX),
+            Integer(InnerInteger::I64(i64::MAX)),
+            9,
+        );
     }
 
     #[test]
     fn i64_min() {
-        test_roundtrip_integer(Integer::I64(i64::MIN), Integer::I64(i64::MIN), 9);
+        test_roundtrip_integer(
+            Integer::from(i64::MIN),
+            Integer(InnerInteger::I64(i64::MIN)),
+            9,
+        );
     }
 
     #[test]
     fn integer_is_zero() {
-        assert!(Integer::I8(0).is_zero());
-        assert!(!Integer::I8(1).is_zero());
-        assert!(Integer::I16(0).is_zero());
-        assert!(!Integer::I16(1).is_zero());
-        assert!(Integer::I32(0).is_zero());
-        assert!(!Integer::I32(1).is_zero());
-        assert!(Integer::I64(0).is_zero());
-        assert!(!Integer::I64(1).is_zero());
-        assert!(Integer::I128(0).is_zero());
-        assert!(!Integer::I128(1).is_zero());
+        assert!(Integer::from(0_u8).is_zero());
+        assert!(!Integer::from(1_i8).is_zero());
+        assert!(Integer::from(0_i16).is_zero());
+        assert!(!Integer::from(1_i16).is_zero());
+        assert!(Integer::from(0_i32).is_zero());
+        assert!(!Integer::from(1_i32).is_zero());
+        assert!(Integer::from(0_i64).is_zero());
+        assert!(!Integer::from(1_i64).is_zero());
+        assert!(Integer::from(0_i128).is_zero());
+        assert!(!Integer::from(1_i128).is_zero());
 
-        assert!(Integer::U8(0).is_zero());
-        assert!(!Integer::U8(1).is_zero());
-        assert!(Integer::U16(0).is_zero());
-        assert!(!Integer::U16(1).is_zero());
-        assert!(Integer::U32(0).is_zero());
-        assert!(!Integer::U32(1).is_zero());
-        assert!(Integer::U64(0).is_zero());
-        assert!(!Integer::U64(1).is_zero());
-        assert!(Integer::U128(0).is_zero());
-        assert!(!Integer::U128(1).is_zero());
+        assert!(Integer::from(0_u8).is_zero());
+        assert!(!Integer::from(1_u8).is_zero());
+        assert!(Integer::from(0_u16).is_zero());
+        assert!(!Integer::from(1_u16).is_zero());
+        assert!(Integer::from(0_u32).is_zero());
+        assert!(!Integer::from(1_u32).is_zero());
+        assert!(Integer::from(0_u64).is_zero());
+        assert!(!Integer::from(1_u64).is_zero());
+        assert!(Integer::from(0_u128).is_zero());
+        assert!(!Integer::from(1_u128).is_zero());
     }
 
     #[test]
     fn float_is_zero() {
-        assert!(Float::F32(0.).is_zero());
-        assert!(!Float::F32(1.).is_zero());
-        assert!(Float::F64(0.).is_zero());
-        assert!(!Float::F64(1.).is_zero());
+        assert!(Float::from(0_f32).is_zero());
+        assert!(!Float::from(1_f32).is_zero());
+        assert!(Float::from(0_f64).is_zero());
+        assert!(!Float::from(1_f64).is_zero());
     }
 }

@@ -10,7 +10,7 @@ use serde::de::{
 use tracing::instrument;
 
 use crate::{
-    format::{self, Atom, Float, Integer, Nucleus, CURRENT_VERSION},
+    format::{self, Atom, Float, InnerFloat, InnerInteger, Integer, Nucleus, CURRENT_VERSION},
     reader::{IoReader, Reader, SliceReader},
     Error, Result,
 };
@@ -171,24 +171,40 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 _ => unreachable!("read_atom should never return anything else"),
             },
             Kind::Int => match atom.nucleus {
-                Some(Nucleus::Integer(Integer::I8(value))) => visitor.visit_i8(value),
-                Some(Nucleus::Integer(Integer::I16(value))) => visitor.visit_i16(value),
-                Some(Nucleus::Integer(Integer::I32(value))) => visitor.visit_i32(value),
-                Some(Nucleus::Integer(Integer::I64(value))) => visitor.visit_i64(value),
-                Some(Nucleus::Integer(Integer::I128(value))) => visitor.visit_i128(value),
+                Some(Nucleus::Integer(Integer(InnerInteger::I8(value)))) => visitor.visit_i8(value),
+                Some(Nucleus::Integer(Integer(InnerInteger::I16(value)))) => {
+                    visitor.visit_i16(value)
+                }
+                Some(Nucleus::Integer(Integer(InnerInteger::I32(value)))) => {
+                    visitor.visit_i32(value)
+                }
+                Some(Nucleus::Integer(Integer(InnerInteger::I64(value)))) => {
+                    visitor.visit_i64(value)
+                }
+                Some(Nucleus::Integer(Integer(InnerInteger::I128(value)))) => {
+                    visitor.visit_i128(value)
+                }
                 _ => unreachable!("read_atom should never return anything else"),
             },
             Kind::UInt => match atom.nucleus {
-                Some(Nucleus::Integer(Integer::U8(value))) => visitor.visit_u8(value),
-                Some(Nucleus::Integer(Integer::U16(value))) => visitor.visit_u16(value),
-                Some(Nucleus::Integer(Integer::U32(value))) => visitor.visit_u32(value),
-                Some(Nucleus::Integer(Integer::U64(value))) => visitor.visit_u64(value),
-                Some(Nucleus::Integer(Integer::U128(value))) => visitor.visit_u128(value),
+                Some(Nucleus::Integer(Integer(InnerInteger::U8(value)))) => visitor.visit_u8(value),
+                Some(Nucleus::Integer(Integer(InnerInteger::U16(value)))) => {
+                    visitor.visit_u16(value)
+                }
+                Some(Nucleus::Integer(Integer(InnerInteger::U32(value)))) => {
+                    visitor.visit_u32(value)
+                }
+                Some(Nucleus::Integer(Integer(InnerInteger::U64(value)))) => {
+                    visitor.visit_u64(value)
+                }
+                Some(Nucleus::Integer(Integer(InnerInteger::U128(value)))) => {
+                    visitor.visit_u128(value)
+                }
                 _ => unreachable!("read_atom should never return anything else"),
             },
             Kind::Float => match atom.nucleus {
-                Some(Nucleus::Float(Float::F32(value))) => visitor.visit_f32(value),
-                Some(Nucleus::Float(Float::F64(value))) => visitor.visit_f64(value),
+                Some(Nucleus::Float(Float(InnerFloat::F32(value)))) => visitor.visit_f32(value),
+                Some(Nucleus::Float(Float(InnerFloat::F64(value)))) => visitor.visit_f64(value),
                 _ => unreachable!("read_atom should never return anything else"),
             },
             Kind::Sequence => visitor.visit_seq(AtomList::new(self, atom.arg as usize)),

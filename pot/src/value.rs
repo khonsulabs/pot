@@ -10,7 +10,7 @@ use serde::{
     Deserialize, Serialize,
 };
 
-use crate::format::{Float, Integer};
+use crate::format::{Float, InnerFloat, InnerInteger, Integer};
 
 /// A `Pot` encoded value. This type can be used to deserialize to and from Pot without knowing the original data structure.
 #[derive(Debug, Clone, PartialEq)]
@@ -311,21 +311,21 @@ impl<'a> Serialize for Value<'a> {
             Value::None => serializer.serialize_none(),
             Value::Unit => serializer.serialize_unit(),
             Value::Bool(value) => serializer.serialize_bool(*value),
-            Value::Integer(integer) => match integer {
-                Integer::I8(value) => serializer.serialize_i8(*value),
-                Integer::I16(value) => serializer.serialize_i16(*value),
-                Integer::I32(value) => serializer.serialize_i32(*value),
-                Integer::I64(value) => serializer.serialize_i64(*value),
-                Integer::I128(value) => serializer.serialize_i128(*value),
-                Integer::U8(value) => serializer.serialize_u8(*value),
-                Integer::U16(value) => serializer.serialize_u16(*value),
-                Integer::U32(value) => serializer.serialize_u32(*value),
-                Integer::U64(value) => serializer.serialize_u64(*value),
-                Integer::U128(value) => serializer.serialize_u128(*value),
+            Value::Integer(integer) => match integer.0 {
+                InnerInteger::I8(value) => serializer.serialize_i8(value),
+                InnerInteger::I16(value) => serializer.serialize_i16(value),
+                InnerInteger::I32(value) => serializer.serialize_i32(value),
+                InnerInteger::I64(value) => serializer.serialize_i64(value),
+                InnerInteger::I128(value) => serializer.serialize_i128(value),
+                InnerInteger::U8(value) => serializer.serialize_u8(value),
+                InnerInteger::U16(value) => serializer.serialize_u16(value),
+                InnerInteger::U32(value) => serializer.serialize_u32(value),
+                InnerInteger::U64(value) => serializer.serialize_u64(value),
+                InnerInteger::U128(value) => serializer.serialize_u128(value),
             },
-            Value::Float(value) => match value {
-                Float::F64(value) => serializer.serialize_f64(*value),
-                Float::F32(value) => serializer.serialize_f32(*value),
+            Value::Float(value) => match value.0 {
+                InnerFloat::F64(value) => serializer.serialize_f64(value),
+                InnerFloat::F32(value) => serializer.serialize_f32(value),
             },
             Value::Bytes(value) => serializer.serialize_bytes(value),
             Value::String(value) => serializer.serialize_str(value),
@@ -384,84 +384,84 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
     where
         E: serde::de::Error,
     {
-        Ok(Value::Integer(Integer::I8(v)))
+        Ok(Value::Integer(Integer::from(v)))
     }
 
     fn visit_i32<E>(self, v: i32) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
     {
-        Ok(Value::Integer(Integer::I32(v)))
+        Ok(Value::Integer(Integer::from(v)))
     }
 
     fn visit_i16<E>(self, v: i16) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
     {
-        Ok(Value::Integer(Integer::I16(v)))
+        Ok(Value::Integer(Integer::from(v)))
     }
 
     fn visit_i64<E>(self, v: i64) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
     {
-        Ok(Value::Integer(Integer::I64(v)))
+        Ok(Value::Integer(Integer::from(v)))
     }
 
     fn visit_i128<E>(self, v: i128) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
     {
-        Ok(Value::Integer(Integer::I128(v)))
+        Ok(Value::Integer(Integer::from(v)))
     }
 
     fn visit_u8<E>(self, v: u8) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
     {
-        Ok(Value::Integer(Integer::U8(v)))
+        Ok(Value::Integer(Integer::from(v)))
     }
 
     fn visit_u16<E>(self, v: u16) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
     {
-        Ok(Value::Integer(Integer::U16(v)))
+        Ok(Value::Integer(Integer::from(v)))
     }
 
     fn visit_u32<E>(self, v: u32) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
     {
-        Ok(Value::Integer(Integer::U32(v)))
+        Ok(Value::Integer(Integer::from(v)))
     }
 
     fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
     {
-        Ok(Value::Integer(Integer::U64(v)))
+        Ok(Value::Integer(Integer::from(v)))
     }
 
     fn visit_u128<E>(self, v: u128) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
     {
-        Ok(Value::Integer(Integer::U128(v)))
+        Ok(Value::Integer(Integer::from(v)))
     }
 
     fn visit_f32<E>(self, v: f32) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
     {
-        Ok(Value::Float(Float::F32(v)))
+        Ok(Value::Float(Float::from(v)))
     }
 
     fn visit_f64<E>(self, v: f64) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
     {
-        Ok(Value::Float(Float::F64(v)))
+        Ok(Value::Float(Float::from(v)))
     }
 
     fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
@@ -577,7 +577,7 @@ macro_rules! define_value_from_primitive {
     ($container:ident, $variant:ident, $primitive:ty) => {
         impl<'a> From<$primitive> for Value<'a> {
             fn from(value: $primitive) -> Self {
-                Self::$container($container::$variant(value))
+                Self::$container($container::from(value))
             }
         }
     };
@@ -755,12 +755,58 @@ fn value_as_float_tests() {
 
 #[test]
 fn value_as_integer_tests() {
-    assert_eq!(
-        Value::from(255_f32)
-            .as_integer()
-            .expect("integer conversion failed")
-            .as_u64()
-            .unwrap(),
-        255,
-    );
+    macro_rules! test_signed {
+        ($primitive:ty, $signed_method:ident, $unsigned:ty, $unsigned_method:ident, $float:ty) => {
+            assert_eq!(
+                Value::from(<$float>::from(<$primitive>::MAX))
+                    .as_integer()
+                    .expect("integer conversion failed")
+                    .$signed_method()
+                    .unwrap(),
+                <$primitive>::MAX,
+            );
+            assert_eq!(
+                Value::from(<$float>::from(<$primitive>::MIN))
+                    .as_integer()
+                    .expect("integer conversion failed")
+                    .$signed_method()
+                    .unwrap(),
+                <$primitive>::MIN,
+            );
+            assert_eq!(
+                Value::from(<$float>::from(<$primitive>::MAX))
+                    .as_integer()
+                    .expect("integer conversion failed")
+                    .$unsigned_method()
+                    .unwrap(),
+                <$unsigned>::try_from(<$primitive>::MAX).unwrap(),
+            );
+        };
+    }
+
+    test_signed!(i8, as_i8, u8, as_u8, f32);
+    test_signed!(i16, as_i16, u16, as_u16, f32);
+    test_signed!(i32, as_i32, u32, as_u32, f64);
+
+    macro_rules! test_unsigned {
+        ($primitive:ty, $unsigned_method:ident, $signed:ty, $signed_method:ident, $float:ty) => {
+            assert_eq!(
+                Value::from(<$float>::from(<$primitive>::MAX))
+                    .as_integer()
+                    .expect("integer conversion failed")
+                    .$unsigned_method()
+                    .unwrap(),
+                <$primitive>::MAX,
+            );
+            assert!(Value::from(<$float>::from(<$primitive>::MAX))
+                .as_integer()
+                .expect("integer conversion failed")
+                .$signed_method()
+                .is_err());
+        };
+    }
+
+    test_unsigned!(u8, as_u8, i8, as_i8, f32);
+    test_unsigned!(u16, as_u16, i16, as_i16, f32);
+    test_unsigned!(u32, as_u32, i32, as_i32, f64);
 }
