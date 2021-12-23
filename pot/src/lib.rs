@@ -10,7 +10,6 @@
     future_incompatible,
     rust_2018_idioms,
 )]
-#![cfg_attr(doc, deny(rustdoc::all))]
 #![allow(
     clippy::missing_errors_doc, // TODO clippy::missing_errors_doc
     clippy::option_if_let_else,
@@ -26,10 +25,12 @@ pub mod format;
 pub mod reader;
 /// Types for serializing pots.
 pub mod ser;
+mod value;
 use std::io::Read;
 
 use byteorder::WriteBytesExt;
-pub use error::Error;
+
+pub use self::{error::Error, value::Value};
 /// A result alias that returns [`Error`].
 pub type Result<T> = std::result::Result<T, Error>;
 use serde::{Deserialize, Serialize};
@@ -147,9 +148,13 @@ impl Config {
 mod tests {
     use std::{borrow::Cow, marker::PhantomData};
 
-    use serde_json::{value::Value, Number};
+    use serde_json::{value::Value as JsonValue, Number};
 
     use super::*;
+    use crate::{
+        format::{Float, Integer},
+        value::Value,
+    };
 
     fn init_tracing() {
         drop(
@@ -409,20 +414,68 @@ mod tests {
     }
 
     #[test]
-    fn deserialize_any() {
-        test_serialization(&Value::Null, None);
-        test_serialization(&Value::Bool(false), None);
-        test_serialization(&Value::Bool(true), None);
-        test_serialization(&Value::Array(vec![serde_json::value::Value::Null]), None);
-        test_serialization(&Value::Number(Number::from_f64(1.).unwrap()), None);
-        test_serialization(&Value::String(String::from("Hello world")), None);
+    fn json_value() {
+        test_serialization(&JsonValue::Null, None);
+        test_serialization(&JsonValue::Bool(false), None);
+        test_serialization(&JsonValue::Bool(true), None);
         test_serialization(
-            &Value::Object(
-                [(String::from("key"), Value::Bool(true))]
+            &JsonValue::Array(vec![serde_json::value::Value::Null]),
+            None,
+        );
+        test_serialization(&JsonValue::Number(Number::from_f64(1.).unwrap()), None);
+        test_serialization(&JsonValue::String(String::from("Hello world")), None);
+        test_serialization(
+            &JsonValue::Object(
+                [(String::from("key"), JsonValue::Bool(true))]
                     .into_iter()
                     .collect(),
             ),
             None,
         );
+    }
+
+    #[test]
+    fn value() {
+        macro_rules! roundtrip {
+            ($value:expr) => {{
+                assert_eq!(
+                    from_slice::<Value<'_>>(&to_vec(&$value).unwrap()).unwrap(),
+                    $value
+                );
+            }};
+        }
+
+        roundtrip!(Value::None);
+        roundtrip!(Value::Unit);
+        roundtrip!(Value::Bool(true));
+        roundtrip!(Value::Integer(Integer::I8(i8::MAX)));
+        roundtrip!(Value::Integer(Integer::I16(i16::MAX)));
+        roundtrip!(Value::Integer(Integer::I32(i32::MAX)));
+        roundtrip!(Value::Integer(Integer::I64(i64::MAX)));
+        roundtrip!(Value::Integer(Integer::I128(i128::MAX)));
+        roundtrip!(Value::Integer(Integer::U8(u8::MAX)));
+        roundtrip!(Value::Integer(Integer::U16(u16::MAX)));
+        roundtrip!(Value::Integer(Integer::U32(u32::MAX)));
+        roundtrip!(Value::Integer(Integer::U64(u64::MAX)));
+        roundtrip!(Value::Integer(Integer::U128(u128::MAX)));
+        roundtrip!(Value::Float(Float::F64(std::f64::consts::PI)));
+        roundtrip!(Value::Float(Float::F32(std::f32::consts::PI)));
+        roundtrip!(Value::Sequence(vec![Value::None]));
+        roundtrip!(Value::Mappings(vec![(Value::None, Value::Unit)]));
+
+        let original_value = Value::Bytes(Cow::Borrowed(b"hello"));
+        let encoded_bytes = to_vec(&original_value).unwrap();
+        let borrowed_decoded: Value<'_> = from_slice(&encoded_bytes).unwrap();
+        assert_eq!(Value::String(Cow::Borrowed("hello")), borrowed_decoded);
+        assert!(matches!(borrowed_decoded, Value::String(Cow::Borrowed(_))));
+
+        let original_value = Value::Bytes(Cow::Borrowed(b"\xFE\xED\xD0\xD0"));
+        let encoded_bytes = to_vec(&original_value).unwrap();
+        let borrowed_decoded: Value<'_> = from_slice(&encoded_bytes).unwrap();
+        assert_eq!(
+            Value::Bytes(Cow::Borrowed(b"\xFE\xED\xD0\xD0")),
+            borrowed_decoded
+        );
+        assert!(matches!(borrowed_decoded, Value::Bytes(Cow::Borrowed(_))));
     }
 }

@@ -24,6 +24,6 @@ jobs:
         with:
           ref: ${{ matrix.branch }}
       - name: Audit
-        # ignores are both for chrono dependencies that are only in here for benchmarks.
+        # ignores are for chrono dependencies that are only in here for benchmarks, as well as the serde_cbor reference from criterion
         run: |
-          cargo audit -D warnings --ignore RUSTSEC-2020-0071 --ignore RUSTSEC-2020-0159
+          cargo audit -D warnings --ignore RUSTSEC-2020-0071 --ignore RUSTSEC-2020-0159 --ignore RUSTSEC-2021-0127

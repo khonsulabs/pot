@@ -1,8 +1,8 @@
-use std::borrow::Cow;
+use std::{borrow::Cow, fmt::Display};
 
 use byteorder::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
 use half::f16;
-use serde::de::Error as _;
+use serde::{de::Error as _, Deserialize, Serialize};
 
 pub(crate) const CURRENT_VERSION: u8 = 0;
 
@@ -434,7 +434,7 @@ pub fn write_bytes<W: WriteBytesExt>(writer: &mut W, value: &[u8]) -> std::io::R
 }
 
 /// An integer type that can safely convert between other number types using compile-time evaluation.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub enum Integer {
     /// An i8 value.
     I8(i8),
@@ -456,6 +456,23 @@ pub enum Integer {
     U64(u64),
     /// An u128 value.
     U128(u128),
+}
+
+impl Display for Integer {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Integer::I8(value) => Display::fmt(value, f),
+            Integer::I16(value) => Display::fmt(value, f),
+            Integer::I32(value) => Display::fmt(value, f),
+            Integer::I64(value) => Display::fmt(value, f),
+            Integer::I128(value) => Display::fmt(value, f),
+            Integer::U8(value) => Display::fmt(value, f),
+            Integer::U16(value) => Display::fmt(value, f),
+            Integer::U32(value) => Display::fmt(value, f),
+            Integer::U64(value) => Display::fmt(value, f),
+            Integer::U128(value) => Display::fmt(value, f),
+        }
+    }
 }
 
 impl Integer {
@@ -820,6 +837,14 @@ impl Integer {
             Ok(int as f64)
         }
     }
+
+    /// Converts this integer to an f64, but only if it can be done without losing precision.
+    #[allow(clippy::cast_precision_loss)]
+    pub fn as_float(&self) -> Result<Float, Error> {
+        self.as_f32()
+            .map(Float::F32)
+            .or_else(|_| self.as_f64().map(Float::F64))
+    }
 }
 
 /// Reads an atom.
@@ -907,7 +932,7 @@ pub struct Atom<'de> {
 }
 
 /// A floating point number that can safely convert between other number types using compile-time evaluation when possible.
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, Copy, Clone, PartialEq)]
 pub enum Float {
     /// An f64 value.
     F64(f64),
@@ -915,7 +940,25 @@ pub enum Float {
     F32(f32),
 }
 
+impl Display for Float {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::F32(value) => Display::fmt(value, f),
+            Self::F64(value) => Display::fmt(value, f),
+        }
+    }
+}
+
 impl Float {
+    /// Returns true if the value contained is zero.
+    #[must_use]
+    pub fn is_zero(&self) -> bool {
+        match self {
+            Self::F32(value) => value.abs() <= f32::EPSILON,
+            Self::F64(value) => value.abs() <= f64::EPSILON,
+        }
+    }
+
     /// Returns this number as an f32, if it can be done without losing precision.
     #[allow(clippy::float_cmp, clippy::cast_possible_truncation)]
     pub fn as_f32(&self) -> Result<f32, Error> {
@@ -1126,5 +1169,38 @@ mod tests {
     #[test]
     fn i64_min() {
         test_roundtrip_integer(Integer::I64(i64::MIN), Integer::I64(i64::MIN), 9);
+    }
+
+    #[test]
+    fn integer_is_zero() {
+        assert!(Integer::I8(0).is_zero());
+        assert!(!Integer::I8(1).is_zero());
+        assert!(Integer::I16(0).is_zero());
+        assert!(!Integer::I16(1).is_zero());
+        assert!(Integer::I32(0).is_zero());
+        assert!(!Integer::I32(1).is_zero());
+        assert!(Integer::I64(0).is_zero());
+        assert!(!Integer::I64(1).is_zero());
+        assert!(Integer::I128(0).is_zero());
+        assert!(!Integer::I128(1).is_zero());
+
+        assert!(Integer::U8(0).is_zero());
+        assert!(!Integer::U8(1).is_zero());
+        assert!(Integer::U16(0).is_zero());
+        assert!(!Integer::U16(1).is_zero());
+        assert!(Integer::U32(0).is_zero());
+        assert!(!Integer::U32(1).is_zero());
+        assert!(Integer::U64(0).is_zero());
+        assert!(!Integer::U64(1).is_zero());
+        assert!(Integer::U128(0).is_zero());
+        assert!(!Integer::U128(1).is_zero());
+    }
+
+    #[test]
+    fn float_is_zero() {
+        assert!(Float::F32(0.).is_zero());
+        assert!(!Float::F32(1.).is_zero());
+        assert!(Float::F64(0.).is_zero());
+        assert!(!Float::F64(1.).is_zero());
     }
 }
