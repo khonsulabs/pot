@@ -1128,11 +1128,87 @@
 <span id="1128">1128</span>
 <span id="1129">1129</span>
 <span id="1130">1130</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::borrow::Cow</span>;
+<span id="1131">1131</span>
+<span id="1132">1132</span>
+<span id="1133">1133</span>
+<span id="1134">1134</span>
+<span id="1135">1135</span>
+<span id="1136">1136</span>
+<span id="1137">1137</span>
+<span id="1138">1138</span>
+<span id="1139">1139</span>
+<span id="1140">1140</span>
+<span id="1141">1141</span>
+<span id="1142">1142</span>
+<span id="1143">1143</span>
+<span id="1144">1144</span>
+<span id="1145">1145</span>
+<span id="1146">1146</span>
+<span id="1147">1147</span>
+<span id="1148">1148</span>
+<span id="1149">1149</span>
+<span id="1150">1150</span>
+<span id="1151">1151</span>
+<span id="1152">1152</span>
+<span id="1153">1153</span>
+<span id="1154">1154</span>
+<span id="1155">1155</span>
+<span id="1156">1156</span>
+<span id="1157">1157</span>
+<span id="1158">1158</span>
+<span id="1159">1159</span>
+<span id="1160">1160</span>
+<span id="1161">1161</span>
+<span id="1162">1162</span>
+<span id="1163">1163</span>
+<span id="1164">1164</span>
+<span id="1165">1165</span>
+<span id="1166">1166</span>
+<span id="1167">1167</span>
+<span id="1168">1168</span>
+<span id="1169">1169</span>
+<span id="1170">1170</span>
+<span id="1171">1171</span>
+<span id="1172">1172</span>
+<span id="1173">1173</span>
+<span id="1174">1174</span>
+<span id="1175">1175</span>
+<span id="1176">1176</span>
+<span id="1177">1177</span>
+<span id="1178">1178</span>
+<span id="1179">1179</span>
+<span id="1180">1180</span>
+<span id="1181">1181</span>
+<span id="1182">1182</span>
+<span id="1183">1183</span>
+<span id="1184">1184</span>
+<span id="1185">1185</span>
+<span id="1186">1186</span>
+<span id="1187">1187</span>
+<span id="1188">1188</span>
+<span id="1189">1189</span>
+<span id="1190">1190</span>
+<span id="1191">1191</span>
+<span id="1192">1192</span>
+<span id="1193">1193</span>
+<span id="1194">1194</span>
+<span id="1195">1195</span>
+<span id="1196">1196</span>
+<span id="1197">1197</span>
+<span id="1198">1198</span>
+<span id="1199">1199</span>
+<span id="1200">1200</span>
+<span id="1201">1201</span>
+<span id="1202">1202</span>
+<span id="1203">1203</span>
+<span id="1204">1204</span>
+<span id="1205">1205</span>
+<span id="1206">1206</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">borrow::Cow</span>, <span class="ident">fmt::Display</span>};
 
 <span class="kw">use</span> <span class="ident">byteorder</span>::{<span class="ident">BigEndian</span>, <span class="ident">LittleEndian</span>, <span class="ident">ReadBytesExt</span>, <span class="ident">WriteBytesExt</span>};
 <span class="kw">use</span> <span class="ident">half::f16</span>;
-<span class="kw">use</span> <span class="ident">serde::de::Error</span> <span class="kw">as</span> <span class="kw">_</span>;
+<span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">de::Error</span> <span class="kw">as</span> <span class="kw">_</span>, <span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const</span> <span class="ident">CURRENT_VERSION</span>: <span class="ident">u8</span> <span class="op">=</span> <span class="number">0</span>;
 
@@ -1564,7 +1640,7 @@
 }
 
 <span class="doccomment">/// An integer type that can safely convert between other number types using compile-time evaluation.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Integer</span> {
     <span class="doccomment">/// An i8 value.</span>
     <span class="ident">I8</span>(<span class="ident">i8</span>),
@@ -1586,6 +1662,23 @@
     <span class="ident">U64</span>(<span class="ident">u64</span>),
     <span class="doccomment">/// An u128 value.</span>
     <span class="ident">U128</span>(<span class="ident">u128</span>),
+}
+
+<span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">Integer</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">std::fmt::Result</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident">Integer::I8</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">Integer::I16</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">Integer::I32</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">Integer::I64</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">Integer::I128</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">Integer::U8</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">Integer::U16</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">Integer::U32</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">Integer::U64</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">Integer::U128</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+        }
+    }
 }
 
 <span class="kw">impl</span> <span class="ident">Integer</span> {
@@ -1950,6 +2043,14 @@
             <span class="prelude-val">Ok</span>(<span class="ident">int</span> <span class="kw">as</span> <span class="ident">f64</span>)
         }
     }
+
+    <span class="doccomment">/// Converts this integer to an f64, but only if it can be done without losing precision.</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::cast_precision_loss</span>)]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_float</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Float</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">as_f32</span>()
+            .<span class="ident">map</span>(<span class="ident">Float::F32</span>)
+            .<span class="ident">or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">as_f64</span>().<span class="ident">map</span>(<span class="ident">Float::F64</span>))
+    }
 }
 
 <span class="doccomment">/// Reads an atom.</span>
@@ -2037,7 +2138,7 @@
 }
 
 <span class="doccomment">/// A floating point number that can safely convert between other number types using compile-time evaluation when possible.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Float</span> {
     <span class="doccomment">/// An f64 value.</span>
     <span class="ident">F64</span>(<span class="ident">f64</span>),
@@ -2045,7 +2146,25 @@
     <span class="ident">F32</span>(<span class="ident">f32</span>),
 }
 
+<span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">Float</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">std::fmt::Result</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident"><span class="self">Self</span>::F32</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident"><span class="self">Self</span>::F64</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+        }
+    }
+}
+
 <span class="kw">impl</span> <span class="ident">Float</span> {
+    <span class="doccomment">/// Returns true if the value contained is zero.</span>
+    <span class="attribute">#[<span class="ident">must_use</span>]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_zero</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident"><span class="self">Self</span>::F32</span>(<span class="ident">value</span>) =&gt; <span class="ident">value</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">f32::EPSILON</span>,
+            <span class="ident"><span class="self">Self</span>::F64</span>(<span class="ident">value</span>) =&gt; <span class="ident">value</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">f64::EPSILON</span>,
+        }
+    }
+
     <span class="doccomment">/// Returns this number as an f32, if it can be done without losing precision.</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::float_cmp</span>, <span class="ident">clippy::cast_possible_truncation</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_f32</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">f32</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
@@ -2256,6 +2375,39 @@
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">i64_min</span>() {
         <span class="ident">test_roundtrip_integer</span>(<span class="ident">Integer::I64</span>(<span class="ident">i64::MIN</span>), <span class="ident">Integer::I64</span>(<span class="ident">i64::MIN</span>), <span class="number">9</span>);
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">integer_is_zero</span>() {
+        <span class="macro">assert!</span>(<span class="ident">Integer::I8</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::I8</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Integer::I16</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::I16</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Integer::I32</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::I32</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Integer::I64</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::I64</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Integer::I128</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::I128</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
+
+        <span class="macro">assert!</span>(<span class="ident">Integer::U8</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::U8</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Integer::U16</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::U16</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Integer::U32</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::U32</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Integer::U64</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::U64</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Integer::U128</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::U128</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">float_is_zero</span>() {
+        <span class="macro">assert!</span>(<span class="ident">Float::F32</span>(<span class="number">0.</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Float::F32</span>(<span class="number">1.</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Float::F64</span>(<span class="number">0.</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Float::F64</span>(<span class="number">1.</span>).<span class="ident">is_zero</span>());
     }
 }
 </code></pre></div>
