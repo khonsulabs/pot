@@ -642,8 +642,32 @@
 <span id="642">642</span>
 <span id="643">643</span>
 <span id="644">644</span>
-</pre><pre class="rust"><code><span class="doccomment">//! A concise serialization format written for `BonsaiDb`.</span>
-
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
+<span id="663">663</span>
+<span id="664">664</span>
+<span id="665">665</span>
+<span id="666">666</span>
+<span id="667">667</span>
+<span id="668">668</span>
+<span id="669">669</span>
+</pre><pre class="rust"><code><span class="attribute">#![<span class="ident">doc</span> <span class="op">=</span> <span class="macro">include_str!</span>(<span class="string">&quot;../crate-docs.md&quot;</span>)]</span>
 <span class="attribute">#![<span class="ident">forbid</span>(<span class="ident">unsafe_code</span>)]</span>
 <span class="attribute">#![<span class="ident">warn</span>(
     <span class="ident">clippy::cargo</span>,
@@ -681,7 +705,13 @@
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::reader::IoReader</span>;
 
-<span class="doccomment">/// Serialize `value` using Pot into a `Vce&lt;u8&gt;`.</span>
+<span class="doccomment">/// Serialize `value` using Pot into a `Vec&lt;u8&gt;`.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```rust</span>
+<span class="doccomment">/// let serialized = pot::to_vec(&amp;&quot;hello world&quot;).unwrap();</span>
+<span class="doccomment">/// let deserialized = pot::from_slice::&lt;String&gt;(&amp;serialized).unwrap();</span>
+<span class="doccomment">/// assert_eq!(deserialized, &quot;hello world&quot;);</span>
+<span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">T</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">Serialize</span>,
@@ -690,6 +720,13 @@
 }
 
 <span class="doccomment">/// Serialize `value` using Pot into `writer`.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```rust</span>
+<span class="doccomment">/// let mut serialized = Vec::new();</span>
+<span class="doccomment">/// pot::to_writer(&amp;&quot;hello world&quot;, &amp;mut serialized).unwrap();</span>
+<span class="doccomment">/// let deserialized = pot::from_reader::&lt;String, _&gt;(&amp;serialized[..]).unwrap();</span>
+<span class="doccomment">/// assert_eq!(deserialized, &quot;hello world&quot;);</span>
+<span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_writer</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">W</span><span class="op">&gt;</span>(<span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">T</span>, <span class="ident">writer</span>: <span class="ident">W</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">Serialize</span>,
@@ -699,6 +736,12 @@
 }
 
 <span class="doccomment">/// Restore a previously Pot-serialized value from a slice.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```rust</span>
+<span class="doccomment">/// let serialized = pot::to_vec(&amp;&quot;hello world&quot;).unwrap();</span>
+<span class="doccomment">/// let deserialized = pot::from_slice::&lt;String&gt;(&amp;serialized).unwrap();</span>
+<span class="doccomment">/// assert_eq!(deserialized, &quot;hello world&quot;);</span>
+<span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_slice</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">serialized</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">Deserialize</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
@@ -707,6 +750,13 @@
 }
 
 <span class="doccomment">/// Restore a previously Pot-serialized value from a [`Read`] implementor.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// ```rust</span>
+<span class="doccomment">/// let mut serialized = Vec::new();</span>
+<span class="doccomment">/// pot::to_writer(&amp;&quot;hello world&quot;, &amp;mut serialized).unwrap();</span>
+<span class="doccomment">/// let deserialized = pot::from_reader::&lt;String, _&gt;(&amp;serialized[..]).unwrap();</span>
+<span class="doccomment">/// assert_eq!(deserialized, &quot;hello world&quot;);</span>
+<span class="doccomment">/// ```</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_reader</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span>, <span class="ident">T</span>, <span class="ident">R</span><span class="op">&gt;</span>(<span class="ident">reader</span>: <span class="ident">R</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">Deserialize</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span>,
