@@ -15,7 +15,7 @@ use crate::{
     Error, Result,
 };
 
-/// A `Pot` serializer.
+/// A Pot serializer.
 #[derive(DeriveWhere)]
 #[derive_where(Debug)]
 pub struct Serializer<'a, W: WriteBytesExt> {

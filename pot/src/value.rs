@@ -12,7 +12,8 @@ use serde::{
 
 use crate::format::{Float, InnerFloat, InnerInteger, Integer};
 
-/// A `Pot` encoded value. This type can be used to deserialize to and from Pot without knowing the original data structure.
+/// A Pot encoded value. This type can be used to deserialize to and from Pot
+/// without knowing the original data structure.
 #[derive(Debug, Clone, PartialEq)]
 #[must_use]
 pub enum Value<'a> {

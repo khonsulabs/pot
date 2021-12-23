@@ -15,7 +15,7 @@ use crate::{
     Error, Result,
 };
 
-/// Deserializer for the `Pot` format.
+/// Deserializer for the Pot format.
 #[derive(DeriveWhere)]
 #[derive_where(Debug)]
 pub struct Deserializer<'s, 'de, R: Reader<'de>> {

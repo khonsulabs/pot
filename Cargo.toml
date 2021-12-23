@@ -2,4 +2,4 @@
 members = ["xtask", "pot"]
 
 [profile.bench]
-debug = true
+# debug = true

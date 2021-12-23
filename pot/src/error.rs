@@ -4,10 +4,10 @@ use serde::{de, ser};
 
 use crate::format::Kind;
 
-/// All errors that `Pot` may return.
+/// All errors that Pot may return.
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
-    /// Payload is not a `Pot` payload.
+    /// Payload is not a Pot payload.
     #[error("not a pot: invalid header")]
     NotAPot,
     /// Data was written with an incompatible version.
