@@ -934,6 +934,22 @@
 <span id="934">934</span>
 <span id="935">935</span>
 <span id="936">936</span>
+<span id="937">937</span>
+<span id="938">938</span>
+<span id="939">939</span>
+<span id="940">940</span>
+<span id="941">941</span>
+<span id="942">942</span>
+<span id="943">943</span>
+<span id="944">944</span>
+<span id="945">945</span>
+<span id="946">946</span>
+<span id="947">947</span>
+<span id="948">948</span>
+<span id="949">949</span>
+<span id="950">950</span>
+<span id="951">951</span>
+<span id="952">952</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">borrow::Cow</span>, <span class="ident">collections::VecDeque</span>, <span class="ident">fmt::Debug</span>, <span class="ident">marker::PhantomData</span>};
 
 <span class="kw">use</span> <span class="ident">byteorder::ReadBytesExt</span>;
@@ -946,7 +962,7 @@
 <span class="kw">use</span> <span class="ident">tracing::instrument</span>;
 
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">format</span>::{<span class="self">self</span>, <span class="ident">Atom</span>, <span class="ident">Float</span>, <span class="ident">Integer</span>, <span class="ident">Nucleus</span>, <span class="ident">CURRENT_VERSION</span>},
+    <span class="ident">format</span>::{<span class="self">self</span>, <span class="ident">Atom</span>, <span class="ident">Float</span>, <span class="ident">InnerFloat</span>, <span class="ident">InnerInteger</span>, <span class="ident">Integer</span>, <span class="ident">Nucleus</span>, <span class="ident">CURRENT_VERSION</span>},
     <span class="ident">reader</span>::{<span class="ident">IoReader</span>, <span class="ident">Reader</span>, <span class="ident">SliceReader</span>},
     <span class="ident">Error</span>, <span class="prelude-ty">Result</span>,
 };
@@ -1107,24 +1123,40 @@
                 <span class="kw">_</span> =&gt; <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>),
             },
             <span class="ident">Kind::Int</span> =&gt; <span class="kw">match</span> <span class="ident">atom</span>.<span class="ident">nucleus</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer::I8</span>(<span class="ident">value</span>))) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_i8</span>(<span class="ident">value</span>),
-                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer::I16</span>(<span class="ident">value</span>))) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_i16</span>(<span class="ident">value</span>),
-                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer::I32</span>(<span class="ident">value</span>))) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_i32</span>(<span class="ident">value</span>),
-                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer::I64</span>(<span class="ident">value</span>))) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_i64</span>(<span class="ident">value</span>),
-                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer::I128</span>(<span class="ident">value</span>))) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_i128</span>(<span class="ident">value</span>),
+                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer</span>(<span class="ident">InnerInteger::I8</span>(<span class="ident">value</span>)))) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_i8</span>(<span class="ident">value</span>),
+                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer</span>(<span class="ident">InnerInteger::I16</span>(<span class="ident">value</span>)))) =&gt; {
+                    <span class="ident">visitor</span>.<span class="ident">visit_i16</span>(<span class="ident">value</span>)
+                }
+                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer</span>(<span class="ident">InnerInteger::I32</span>(<span class="ident">value</span>)))) =&gt; {
+                    <span class="ident">visitor</span>.<span class="ident">visit_i32</span>(<span class="ident">value</span>)
+                }
+                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer</span>(<span class="ident">InnerInteger::I64</span>(<span class="ident">value</span>)))) =&gt; {
+                    <span class="ident">visitor</span>.<span class="ident">visit_i64</span>(<span class="ident">value</span>)
+                }
+                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer</span>(<span class="ident">InnerInteger::I128</span>(<span class="ident">value</span>)))) =&gt; {
+                    <span class="ident">visitor</span>.<span class="ident">visit_i128</span>(<span class="ident">value</span>)
+                }
                 <span class="kw">_</span> =&gt; <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>),
             },
             <span class="ident">Kind::UInt</span> =&gt; <span class="kw">match</span> <span class="ident">atom</span>.<span class="ident">nucleus</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer::U8</span>(<span class="ident">value</span>))) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_u8</span>(<span class="ident">value</span>),
-                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer::U16</span>(<span class="ident">value</span>))) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_u16</span>(<span class="ident">value</span>),
-                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer::U32</span>(<span class="ident">value</span>))) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_u32</span>(<span class="ident">value</span>),
-                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer::U64</span>(<span class="ident">value</span>))) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_u64</span>(<span class="ident">value</span>),
-                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer::U128</span>(<span class="ident">value</span>))) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_u128</span>(<span class="ident">value</span>),
+                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer</span>(<span class="ident">InnerInteger::U8</span>(<span class="ident">value</span>)))) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_u8</span>(<span class="ident">value</span>),
+                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer</span>(<span class="ident">InnerInteger::U16</span>(<span class="ident">value</span>)))) =&gt; {
+                    <span class="ident">visitor</span>.<span class="ident">visit_u16</span>(<span class="ident">value</span>)
+                }
+                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer</span>(<span class="ident">InnerInteger::U32</span>(<span class="ident">value</span>)))) =&gt; {
+                    <span class="ident">visitor</span>.<span class="ident">visit_u32</span>(<span class="ident">value</span>)
+                }
+                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer</span>(<span class="ident">InnerInteger::U64</span>(<span class="ident">value</span>)))) =&gt; {
+                    <span class="ident">visitor</span>.<span class="ident">visit_u64</span>(<span class="ident">value</span>)
+                }
+                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer</span>(<span class="ident">InnerInteger::U128</span>(<span class="ident">value</span>)))) =&gt; {
+                    <span class="ident">visitor</span>.<span class="ident">visit_u128</span>(<span class="ident">value</span>)
+                }
                 <span class="kw">_</span> =&gt; <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>),
             },
             <span class="ident">Kind::Float</span> =&gt; <span class="kw">match</span> <span class="ident">atom</span>.<span class="ident">nucleus</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Float</span>(<span class="ident">Float::F32</span>(<span class="ident">value</span>))) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_f32</span>(<span class="ident">value</span>),
-                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Float</span>(<span class="ident">Float::F64</span>(<span class="ident">value</span>))) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_f64</span>(<span class="ident">value</span>),
+                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Float</span>(<span class="ident">Float</span>(<span class="ident">InnerFloat::F32</span>(<span class="ident">value</span>)))) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_f32</span>(<span class="ident">value</span>),
+                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Float</span>(<span class="ident">Float</span>(<span class="ident">InnerFloat::F64</span>(<span class="ident">value</span>)))) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_f64</span>(<span class="ident">value</span>),
                 <span class="kw">_</span> =&gt; <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>),
             },
             <span class="ident">Kind::Sequence</span> =&gt; <span class="ident">visitor</span>.<span class="ident">visit_seq</span>(<span class="ident">AtomList::new</span>(<span class="self">self</span>, <span class="ident">atom</span>.<span class="ident">arg</span> <span class="kw">as</span> <span class="ident">usize</span>)),

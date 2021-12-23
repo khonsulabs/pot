@@ -764,6 +764,52 @@
 <span id="764">764</span>
 <span id="765">765</span>
 <span id="766">766</span>
+<span id="767">767</span>
+<span id="768">768</span>
+<span id="769">769</span>
+<span id="770">770</span>
+<span id="771">771</span>
+<span id="772">772</span>
+<span id="773">773</span>
+<span id="774">774</span>
+<span id="775">775</span>
+<span id="776">776</span>
+<span id="777">777</span>
+<span id="778">778</span>
+<span id="779">779</span>
+<span id="780">780</span>
+<span id="781">781</span>
+<span id="782">782</span>
+<span id="783">783</span>
+<span id="784">784</span>
+<span id="785">785</span>
+<span id="786">786</span>
+<span id="787">787</span>
+<span id="788">788</span>
+<span id="789">789</span>
+<span id="790">790</span>
+<span id="791">791</span>
+<span id="792">792</span>
+<span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
+<span id="797">797</span>
+<span id="798">798</span>
+<span id="799">799</span>
+<span id="800">800</span>
+<span id="801">801</span>
+<span id="802">802</span>
+<span id="803">803</span>
+<span id="804">804</span>
+<span id="805">805</span>
+<span id="806">806</span>
+<span id="807">807</span>
+<span id="808">808</span>
+<span id="809">809</span>
+<span id="810">810</span>
+<span id="811">811</span>
+<span id="812">812</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">borrow::Cow</span>,
     <span class="ident">fmt</span>::{<span class="ident">Display</span>, <span class="ident">Write</span>},
@@ -776,7 +822,7 @@
     <span class="ident">Deserialize</span>, <span class="ident">Serialize</span>,
 };
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::format</span>::{<span class="ident">Float</span>, <span class="ident">Integer</span>};
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::format</span>::{<span class="ident">Float</span>, <span class="ident">InnerFloat</span>, <span class="ident">InnerInteger</span>, <span class="ident">Integer</span>};
 
 <span class="doccomment">/// A `Pot` encoded value. This type can be used to deserialize to and from Pot without knowing the original data structure.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
@@ -1077,21 +1123,21 @@
             <span class="ident">Value::None</span> =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_none</span>(),
             <span class="ident">Value::Unit</span> =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_unit</span>(),
             <span class="ident">Value::Bool</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_bool</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-            <span class="ident">Value::Integer</span>(<span class="ident">integer</span>) =&gt; <span class="kw">match</span> <span class="ident">integer</span> {
-                <span class="ident">Integer::I8</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_i8</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-                <span class="ident">Integer::I16</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_i16</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-                <span class="ident">Integer::I32</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_i32</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-                <span class="ident">Integer::I64</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_i64</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-                <span class="ident">Integer::I128</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_i128</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-                <span class="ident">Integer::U8</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_u8</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-                <span class="ident">Integer::U16</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_u16</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-                <span class="ident">Integer::U32</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_u32</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-                <span class="ident">Integer::U64</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_u64</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-                <span class="ident">Integer::U128</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_u128</span>(<span class="kw-2">*</span><span class="ident">value</span>),
+            <span class="ident">Value::Integer</span>(<span class="ident">integer</span>) =&gt; <span class="kw">match</span> <span class="ident">integer</span>.<span class="number">0</span> {
+                <span class="ident">InnerInteger::I8</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_i8</span>(<span class="ident">value</span>),
+                <span class="ident">InnerInteger::I16</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_i16</span>(<span class="ident">value</span>),
+                <span class="ident">InnerInteger::I32</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_i32</span>(<span class="ident">value</span>),
+                <span class="ident">InnerInteger::I64</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_i64</span>(<span class="ident">value</span>),
+                <span class="ident">InnerInteger::I128</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_i128</span>(<span class="ident">value</span>),
+                <span class="ident">InnerInteger::U8</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_u8</span>(<span class="ident">value</span>),
+                <span class="ident">InnerInteger::U16</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_u16</span>(<span class="ident">value</span>),
+                <span class="ident">InnerInteger::U32</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_u32</span>(<span class="ident">value</span>),
+                <span class="ident">InnerInteger::U64</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_u64</span>(<span class="ident">value</span>),
+                <span class="ident">InnerInteger::U128</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_u128</span>(<span class="ident">value</span>),
             },
-            <span class="ident">Value::Float</span>(<span class="ident">value</span>) =&gt; <span class="kw">match</span> <span class="ident">value</span> {
-                <span class="ident">Float::F64</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_f64</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-                <span class="ident">Float::F32</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_f32</span>(<span class="kw-2">*</span><span class="ident">value</span>),
+            <span class="ident">Value::Float</span>(<span class="ident">value</span>) =&gt; <span class="kw">match</span> <span class="ident">value</span>.<span class="number">0</span> {
+                <span class="ident">InnerFloat::F64</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_f64</span>(<span class="ident">value</span>),
+                <span class="ident">InnerFloat::F32</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_f32</span>(<span class="ident">value</span>),
             },
             <span class="ident">Value::Bytes</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_bytes</span>(<span class="ident">value</span>),
             <span class="ident">Value::String</span>(<span class="ident">value</span>) =&gt; <span class="ident">serializer</span>.<span class="ident">serialize_str</span>(<span class="ident">value</span>),
@@ -1150,84 +1196,84 @@
     <span class="kw">where</span>
         <span class="ident">E</span>: <span class="ident">serde::de::Error</span>,
     {
-        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::I8</span>(<span class="ident">v</span>)))
+        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">v</span>)))
     }
 
     <span class="kw">fn</span> <span class="ident">visit_i32</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">v</span>: <span class="ident">i32</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Value</span>, <span class="ident">E</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">E</span>: <span class="ident">serde::de::Error</span>,
     {
-        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::I32</span>(<span class="ident">v</span>)))
+        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">v</span>)))
     }
 
     <span class="kw">fn</span> <span class="ident">visit_i16</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">v</span>: <span class="ident">i16</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Value</span>, <span class="ident">E</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">E</span>: <span class="ident">serde::de::Error</span>,
     {
-        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::I16</span>(<span class="ident">v</span>)))
+        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">v</span>)))
     }
 
     <span class="kw">fn</span> <span class="ident">visit_i64</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">v</span>: <span class="ident">i64</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Value</span>, <span class="ident">E</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">E</span>: <span class="ident">serde::de::Error</span>,
     {
-        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::I64</span>(<span class="ident">v</span>)))
+        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">v</span>)))
     }
 
     <span class="kw">fn</span> <span class="ident">visit_i128</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">v</span>: <span class="ident">i128</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Value</span>, <span class="ident">E</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">E</span>: <span class="ident">serde::de::Error</span>,
     {
-        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::I128</span>(<span class="ident">v</span>)))
+        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">v</span>)))
     }
 
     <span class="kw">fn</span> <span class="ident">visit_u8</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">v</span>: <span class="ident">u8</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Value</span>, <span class="ident">E</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">E</span>: <span class="ident">serde::de::Error</span>,
     {
-        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::U8</span>(<span class="ident">v</span>)))
+        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">v</span>)))
     }
 
     <span class="kw">fn</span> <span class="ident">visit_u16</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">v</span>: <span class="ident">u16</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Value</span>, <span class="ident">E</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">E</span>: <span class="ident">serde::de::Error</span>,
     {
-        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::U16</span>(<span class="ident">v</span>)))
+        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">v</span>)))
     }
 
     <span class="kw">fn</span> <span class="ident">visit_u32</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">v</span>: <span class="ident">u32</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Value</span>, <span class="ident">E</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">E</span>: <span class="ident">serde::de::Error</span>,
     {
-        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::U32</span>(<span class="ident">v</span>)))
+        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">v</span>)))
     }
 
     <span class="kw">fn</span> <span class="ident">visit_u64</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">v</span>: <span class="ident">u64</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Value</span>, <span class="ident">E</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">E</span>: <span class="ident">serde::de::Error</span>,
     {
-        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::U64</span>(<span class="ident">v</span>)))
+        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">v</span>)))
     }
 
     <span class="kw">fn</span> <span class="ident">visit_u128</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">v</span>: <span class="ident">u128</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Value</span>, <span class="ident">E</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">E</span>: <span class="ident">serde::de::Error</span>,
     {
-        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::U128</span>(<span class="ident">v</span>)))
+        <span class="prelude-val">Ok</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">v</span>)))
     }
 
     <span class="kw">fn</span> <span class="ident">visit_f32</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">v</span>: <span class="ident">f32</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Value</span>, <span class="ident">E</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">E</span>: <span class="ident">serde::de::Error</span>,
     {
-        <span class="prelude-val">Ok</span>(<span class="ident">Value::Float</span>(<span class="ident">Float::F32</span>(<span class="ident">v</span>)))
+        <span class="prelude-val">Ok</span>(<span class="ident">Value::Float</span>(<span class="ident">Float::from</span>(<span class="ident">v</span>)))
     }
 
     <span class="kw">fn</span> <span class="ident">visit_f64</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">v</span>: <span class="ident">f64</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Value</span>, <span class="ident">E</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">E</span>: <span class="ident">serde::de::Error</span>,
     {
-        <span class="prelude-val">Ok</span>(<span class="ident">Value::Float</span>(<span class="ident">Float::F64</span>(<span class="ident">v</span>)))
+        <span class="prelude-val">Ok</span>(<span class="ident">Value::Float</span>(<span class="ident">Float::from</span>(<span class="ident">v</span>)))
     }
 
     <span class="kw">fn</span> <span class="ident">visit_str</span><span class="op">&lt;</span><span class="ident">E</span><span class="op">&gt;</span>(<span class="self">self</span>, <span class="ident">v</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Value</span>, <span class="ident">E</span><span class="op">&gt;</span>
@@ -1343,7 +1389,7 @@
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">container</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">variant</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span>:<span class="ident">ty</span>) =&gt; {
         <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">From</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Value</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
             <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">value</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span>) -&gt; <span class="self">Self</span> {
-                <span class="self">Self</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">container</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">container</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">variant</span>(<span class="ident">value</span>))
+                <span class="self">Self</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">container</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">container::from</span>(<span class="ident">value</span>))
             }
         }
     };
@@ -1521,14 +1567,60 @@
 
 <span class="attribute">#[<span class="ident">test</span>]</span>
 <span class="kw">fn</span> <span class="ident">value_as_integer_tests</span>() {
-    <span class="macro">assert_eq!</span>(
-        <span class="ident">Value::from</span>(<span class="number">255_f32</span>)
-            .<span class="ident">as_integer</span>()
-            .<span class="ident">expect</span>(<span class="string">&quot;integer conversion failed&quot;</span>)
-            .<span class="ident">as_u64</span>()
-            .<span class="ident">unwrap</span>(),
-        <span class="number">255</span>,
-    );
+    <span class="macro">macro_rules!</span> <span class="ident">test_signed</span> {
+        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">signed_method</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">unsigned</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">unsigned_method</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">float</span>:<span class="ident">ty</span>) =&gt; {
+            <span class="macro">assert_eq!</span>(
+                <span class="ident">Value::from</span>(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">float</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span><span class="op">&gt;</span><span class="ident">::MAX</span>))
+                    .<span class="ident">as_integer</span>()
+                    .<span class="ident">expect</span>(<span class="string">&quot;integer conversion failed&quot;</span>)
+                    .<span class="macro-nonterminal">$</span><span class="macro-nonterminal">signed_method</span>()
+                    .<span class="ident">unwrap</span>(),
+                <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span><span class="op">&gt;</span><span class="ident">::MAX</span>,
+            );
+            <span class="macro">assert_eq!</span>(
+                <span class="ident">Value::from</span>(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">float</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span><span class="op">&gt;</span><span class="ident">::MIN</span>))
+                    .<span class="ident">as_integer</span>()
+                    .<span class="ident">expect</span>(<span class="string">&quot;integer conversion failed&quot;</span>)
+                    .<span class="macro-nonterminal">$</span><span class="macro-nonterminal">signed_method</span>()
+                    .<span class="ident">unwrap</span>(),
+                <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span><span class="op">&gt;</span><span class="ident">::MIN</span>,
+            );
+            <span class="macro">assert_eq!</span>(
+                <span class="ident">Value::from</span>(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">float</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span><span class="op">&gt;</span><span class="ident">::MAX</span>))
+                    .<span class="ident">as_integer</span>()
+                    .<span class="ident">expect</span>(<span class="string">&quot;integer conversion failed&quot;</span>)
+                    .<span class="macro-nonterminal">$</span><span class="macro-nonterminal">unsigned_method</span>()
+                    .<span class="ident">unwrap</span>(),
+                <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">unsigned</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span><span class="op">&gt;</span><span class="ident">::MAX</span>).<span class="ident">unwrap</span>(),
+            );
+        };
+    }
+
+    <span class="macro">test_signed!</span>(<span class="ident">i8</span>, <span class="ident">as_i8</span>, <span class="ident">u8</span>, <span class="ident">as_u8</span>, <span class="ident">f32</span>);
+    <span class="macro">test_signed!</span>(<span class="ident">i16</span>, <span class="ident">as_i16</span>, <span class="ident">u16</span>, <span class="ident">as_u16</span>, <span class="ident">f32</span>);
+    <span class="macro">test_signed!</span>(<span class="ident">i32</span>, <span class="ident">as_i32</span>, <span class="ident">u32</span>, <span class="ident">as_u32</span>, <span class="ident">f64</span>);
+
+    <span class="macro">macro_rules!</span> <span class="ident">test_unsigned</span> {
+        (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">unsigned_method</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">signed</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">signed_method</span>:<span class="ident">ident</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">float</span>:<span class="ident">ty</span>) =&gt; {
+            <span class="macro">assert_eq!</span>(
+                <span class="ident">Value::from</span>(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">float</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span><span class="op">&gt;</span><span class="ident">::MAX</span>))
+                    .<span class="ident">as_integer</span>()
+                    .<span class="ident">expect</span>(<span class="string">&quot;integer conversion failed&quot;</span>)
+                    .<span class="macro-nonterminal">$</span><span class="macro-nonterminal">unsigned_method</span>()
+                    .<span class="ident">unwrap</span>(),
+                <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span><span class="op">&gt;</span><span class="ident">::MAX</span>,
+            );
+            <span class="macro">assert!</span>(<span class="ident">Value::from</span>(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">float</span><span class="op">&gt;</span><span class="ident">::from</span>(<span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span><span class="op">&gt;</span><span class="ident">::MAX</span>))
+                .<span class="ident">as_integer</span>()
+                .<span class="ident">expect</span>(<span class="string">&quot;integer conversion failed&quot;</span>)
+                .<span class="macro-nonterminal">$</span><span class="macro-nonterminal">signed_method</span>()
+                .<span class="ident">is_err</span>());
+        };
+    }
+
+    <span class="macro">test_unsigned!</span>(<span class="ident">u8</span>, <span class="ident">as_u8</span>, <span class="ident">i8</span>, <span class="ident">as_i8</span>, <span class="ident">f32</span>);
+    <span class="macro">test_unsigned!</span>(<span class="ident">u16</span>, <span class="ident">as_u16</span>, <span class="ident">i16</span>, <span class="ident">as_i16</span>, <span class="ident">f32</span>);
+    <span class="macro">test_unsigned!</span>(<span class="ident">u32</span>, <span class="ident">as_u32</span>, <span class="ident">i32</span>, <span class="ident">as_i32</span>, <span class="ident">f64</span>);
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pot" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>

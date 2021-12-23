@@ -1204,6 +1204,129 @@
 <span id="1204">1204</span>
 <span id="1205">1205</span>
 <span id="1206">1206</span>
+<span id="1207">1207</span>
+<span id="1208">1208</span>
+<span id="1209">1209</span>
+<span id="1210">1210</span>
+<span id="1211">1211</span>
+<span id="1212">1212</span>
+<span id="1213">1213</span>
+<span id="1214">1214</span>
+<span id="1215">1215</span>
+<span id="1216">1216</span>
+<span id="1217">1217</span>
+<span id="1218">1218</span>
+<span id="1219">1219</span>
+<span id="1220">1220</span>
+<span id="1221">1221</span>
+<span id="1222">1222</span>
+<span id="1223">1223</span>
+<span id="1224">1224</span>
+<span id="1225">1225</span>
+<span id="1226">1226</span>
+<span id="1227">1227</span>
+<span id="1228">1228</span>
+<span id="1229">1229</span>
+<span id="1230">1230</span>
+<span id="1231">1231</span>
+<span id="1232">1232</span>
+<span id="1233">1233</span>
+<span id="1234">1234</span>
+<span id="1235">1235</span>
+<span id="1236">1236</span>
+<span id="1237">1237</span>
+<span id="1238">1238</span>
+<span id="1239">1239</span>
+<span id="1240">1240</span>
+<span id="1241">1241</span>
+<span id="1242">1242</span>
+<span id="1243">1243</span>
+<span id="1244">1244</span>
+<span id="1245">1245</span>
+<span id="1246">1246</span>
+<span id="1247">1247</span>
+<span id="1248">1248</span>
+<span id="1249">1249</span>
+<span id="1250">1250</span>
+<span id="1251">1251</span>
+<span id="1252">1252</span>
+<span id="1253">1253</span>
+<span id="1254">1254</span>
+<span id="1255">1255</span>
+<span id="1256">1256</span>
+<span id="1257">1257</span>
+<span id="1258">1258</span>
+<span id="1259">1259</span>
+<span id="1260">1260</span>
+<span id="1261">1261</span>
+<span id="1262">1262</span>
+<span id="1263">1263</span>
+<span id="1264">1264</span>
+<span id="1265">1265</span>
+<span id="1266">1266</span>
+<span id="1267">1267</span>
+<span id="1268">1268</span>
+<span id="1269">1269</span>
+<span id="1270">1270</span>
+<span id="1271">1271</span>
+<span id="1272">1272</span>
+<span id="1273">1273</span>
+<span id="1274">1274</span>
+<span id="1275">1275</span>
+<span id="1276">1276</span>
+<span id="1277">1277</span>
+<span id="1278">1278</span>
+<span id="1279">1279</span>
+<span id="1280">1280</span>
+<span id="1281">1281</span>
+<span id="1282">1282</span>
+<span id="1283">1283</span>
+<span id="1284">1284</span>
+<span id="1285">1285</span>
+<span id="1286">1286</span>
+<span id="1287">1287</span>
+<span id="1288">1288</span>
+<span id="1289">1289</span>
+<span id="1290">1290</span>
+<span id="1291">1291</span>
+<span id="1292">1292</span>
+<span id="1293">1293</span>
+<span id="1294">1294</span>
+<span id="1295">1295</span>
+<span id="1296">1296</span>
+<span id="1297">1297</span>
+<span id="1298">1298</span>
+<span id="1299">1299</span>
+<span id="1300">1300</span>
+<span id="1301">1301</span>
+<span id="1302">1302</span>
+<span id="1303">1303</span>
+<span id="1304">1304</span>
+<span id="1305">1305</span>
+<span id="1306">1306</span>
+<span id="1307">1307</span>
+<span id="1308">1308</span>
+<span id="1309">1309</span>
+<span id="1310">1310</span>
+<span id="1311">1311</span>
+<span id="1312">1312</span>
+<span id="1313">1313</span>
+<span id="1314">1314</span>
+<span id="1315">1315</span>
+<span id="1316">1316</span>
+<span id="1317">1317</span>
+<span id="1318">1318</span>
+<span id="1319">1319</span>
+<span id="1320">1320</span>
+<span id="1321">1321</span>
+<span id="1322">1322</span>
+<span id="1323">1323</span>
+<span id="1324">1324</span>
+<span id="1325">1325</span>
+<span id="1326">1326</span>
+<span id="1327">1327</span>
+<span id="1328">1328</span>
+<span id="1329">1329</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">borrow::Cow</span>, <span class="ident">fmt::Display</span>};
 
 <span class="kw">use</span> <span class="ident">byteorder</span>::{<span class="ident">BigEndian</span>, <span class="ident">LittleEndian</span>, <span class="ident">ReadBytesExt</span>, <span class="ident">WriteBytesExt</span>};
@@ -1641,7 +1764,11 @@
 
 <span class="doccomment">/// An integer type that can safely convert between other number types using compile-time evaluation.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Integer</span> {
+<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">transparent</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Integer</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">InnerInteger</span>);
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>)]</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum</span> <span class="ident">InnerInteger</span> {
     <span class="doccomment">/// An i8 value.</span>
     <span class="ident">I8</span>(<span class="ident">i8</span>),
     <span class="doccomment">/// An i16 value.</span>
@@ -1666,17 +1793,17 @@
 
 <span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">Integer</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">std::fmt::Result</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Integer::I8</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
-            <span class="ident">Integer::I16</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
-            <span class="ident">Integer::I32</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
-            <span class="ident">Integer::I64</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
-            <span class="ident">Integer::I128</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
-            <span class="ident">Integer::U8</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
-            <span class="ident">Integer::U16</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
-            <span class="ident">Integer::U32</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
-            <span class="ident">Integer::U64</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
-            <span class="ident">Integer::U128</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+            <span class="ident">InnerInteger::I8</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">InnerInteger::I16</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">InnerInteger::I32</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">InnerInteger::I64</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">InnerInteger::I128</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">InnerInteger::U8</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">InnerInteger::U16</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">InnerInteger::U32</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">InnerInteger::U64</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">InnerInteger::U128</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
         }
     }
 }
@@ -1685,25 +1812,25 @@
     <span class="doccomment">/// Returns true if the value contained is zero.</span>
     <span class="attribute">#[<span class="ident">must_use</span>]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">is_zero</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Integer::I8</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
-            <span class="ident">Integer::I16</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
-            <span class="ident">Integer::I32</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
-            <span class="ident">Integer::I64</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
-            <span class="ident">Integer::I128</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
-            <span class="ident">Integer::U8</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
-            <span class="ident">Integer::U16</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
-            <span class="ident">Integer::U32</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
-            <span class="ident">Integer::U64</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
-            <span class="ident">Integer::U128</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+            <span class="ident">InnerInteger::I8</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
+            <span class="ident">InnerInteger::I16</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
+            <span class="ident">InnerInteger::I32</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
+            <span class="ident">InnerInteger::I64</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
+            <span class="ident">InnerInteger::I128</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
+            <span class="ident">InnerInteger::U8</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
+            <span class="ident">InnerInteger::U16</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
+            <span class="ident">InnerInteger::U32</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
+            <span class="ident">InnerInteger::U64</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
+            <span class="ident">InnerInteger::U128</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="op">==</span> <span class="number">0</span>,
         }
     }
     <span class="doccomment">/// Returns the contained value as an i8, or an error if the value is unable to fit.</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::cast_possible_wrap</span>)]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">as_i8</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">i8</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident"><span class="self">Self</span>::I8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::U8</span>(<span class="ident">value</span>) =&gt; {
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+            <span class="ident">InnerInteger::I8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
+            <span class="ident">InnerInteger::U8</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&lt;</span> <span class="ident">i8::MAX</span> <span class="kw">as</span> <span class="ident">u8</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i8</span>)
                 } <span class="kw">else</span> {
@@ -1717,9 +1844,9 @@
     <span class="doccomment">/// Returns the contained value as an u8, or an error if the value is unable to fit.</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::cast_sign_loss</span>)]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">as_u8</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident"><span class="self">Self</span>::U8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::I8</span>(<span class="ident">value</span>) =&gt; {
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+            <span class="ident">InnerInteger::U8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
+            <span class="ident">InnerInteger::I8</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u8</span>)
                 } <span class="kw">else</span> {
@@ -1733,147 +1860,149 @@
     <span class="doccomment">/// Returns the contained value as an i16, or an error if the value is unable to fit.</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::cast_possible_wrap</span>)]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">as_i16</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">i16</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident"><span class="self">Self</span>::I8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i16</span>),
-            <span class="ident"><span class="self">Self</span>::U8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i16</span>),
-            <span class="ident"><span class="self">Self</span>::I16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::U16</span>(<span class="ident">value</span>) =&gt; {
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+            <span class="ident">InnerInteger::I8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i16</span>),
+            <span class="ident">InnerInteger::U8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i16</span>),
+            <span class="ident">InnerInteger::I16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
+            <span class="ident">InnerInteger::U16</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&lt;</span> <span class="ident">i16::MAX</span> <span class="kw">as</span> <span class="ident">u16</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i16</span>)
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
                 }
             }
-            <span class="ident"><span class="self">Self</span>::U32</span>(<span class="kw">_</span>)
-            <span class="op">|</span> <span class="ident"><span class="self">Self</span>::I32</span>(<span class="kw">_</span>)
-            <span class="op">|</span> <span class="ident"><span class="self">Self</span>::U64</span>(<span class="kw">_</span>)
-            <span class="op">|</span> <span class="ident"><span class="self">Self</span>::I64</span>(<span class="kw">_</span>)
-            <span class="op">|</span> <span class="ident"><span class="self">Self</span>::U128</span>(<span class="kw">_</span>)
-            <span class="op">|</span> <span class="ident"><span class="self">Self</span>::I128</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>),
+            <span class="ident">InnerInteger::U32</span>(<span class="kw">_</span>)
+            <span class="op">|</span> <span class="ident">InnerInteger::I32</span>(<span class="kw">_</span>)
+            <span class="op">|</span> <span class="ident">InnerInteger::U64</span>(<span class="kw">_</span>)
+            <span class="op">|</span> <span class="ident">InnerInteger::I64</span>(<span class="kw">_</span>)
+            <span class="op">|</span> <span class="ident">InnerInteger::U128</span>(<span class="kw">_</span>)
+            <span class="op">|</span> <span class="ident">InnerInteger::I128</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>),
         }
     }
 
     <span class="doccomment">/// Returns the contained value as an u16, or an error if the value is unable to fit.</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::cast_sign_loss</span>)]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">as_u16</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u16</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident"><span class="self">Self</span>::I8</span>(<span class="ident">value</span>) =&gt; {
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+            <span class="ident">InnerInteger::I8</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u16</span>)
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
                 }
             }
-            <span class="ident"><span class="self">Self</span>::U8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u16</span>),
-            <span class="ident"><span class="self">Self</span>::U16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::I16</span>(<span class="ident">value</span>) =&gt; {
+            <span class="ident">InnerInteger::U8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u16</span>),
+            <span class="ident">InnerInteger::U16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
+            <span class="ident">InnerInteger::I16</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u16</span>)
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
                 }
             }
-            <span class="ident"><span class="self">Self</span>::U32</span>(<span class="kw">_</span>)
-            <span class="op">|</span> <span class="ident"><span class="self">Self</span>::I32</span>(<span class="kw">_</span>)
-            <span class="op">|</span> <span class="ident"><span class="self">Self</span>::U64</span>(<span class="kw">_</span>)
-            <span class="op">|</span> <span class="ident"><span class="self">Self</span>::I64</span>(<span class="kw">_</span>)
-            <span class="op">|</span> <span class="ident"><span class="self">Self</span>::U128</span>(<span class="kw">_</span>)
-            <span class="op">|</span> <span class="ident"><span class="self">Self</span>::I128</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>),
+            <span class="ident">InnerInteger::U32</span>(<span class="kw">_</span>)
+            <span class="op">|</span> <span class="ident">InnerInteger::I32</span>(<span class="kw">_</span>)
+            <span class="op">|</span> <span class="ident">InnerInteger::U64</span>(<span class="kw">_</span>)
+            <span class="op">|</span> <span class="ident">InnerInteger::I64</span>(<span class="kw">_</span>)
+            <span class="op">|</span> <span class="ident">InnerInteger::U128</span>(<span class="kw">_</span>)
+            <span class="op">|</span> <span class="ident">InnerInteger::I128</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>),
         }
     }
 
     <span class="doccomment">/// Returns the contained value as an i32, or an error if the value is unable to fit.</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::cast_possible_wrap</span>)]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">as_i32</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">i32</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident"><span class="self">Self</span>::I8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i32</span>),
-            <span class="ident"><span class="self">Self</span>::U8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i32</span>),
-            <span class="ident"><span class="self">Self</span>::I16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i32</span>),
-            <span class="ident"><span class="self">Self</span>::U16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i32</span>),
-            <span class="ident"><span class="self">Self</span>::I32</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::U32</span>(<span class="ident">value</span>) =&gt; {
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+            <span class="ident">InnerInteger::I8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i32</span>),
+            <span class="ident">InnerInteger::U8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i32</span>),
+            <span class="ident">InnerInteger::I16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i32</span>),
+            <span class="ident">InnerInteger::U16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i32</span>),
+            <span class="ident">InnerInteger::I32</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
+            <span class="ident">InnerInteger::U32</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&lt;</span> <span class="ident">i32::MAX</span> <span class="kw">as</span> <span class="ident">u32</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i32</span>)
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
                 }
             }
-            <span class="ident"><span class="self">Self</span>::U64</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident"><span class="self">Self</span>::I64</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident"><span class="self">Self</span>::U128</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident"><span class="self">Self</span>::I128</span>(<span class="kw">_</span>) =&gt; {
-                <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
-            }
+            <span class="ident">InnerInteger::U64</span>(<span class="kw">_</span>)
+            <span class="op">|</span> <span class="ident">InnerInteger::I64</span>(<span class="kw">_</span>)
+            <span class="op">|</span> <span class="ident">InnerInteger::U128</span>(<span class="kw">_</span>)
+            <span class="op">|</span> <span class="ident">InnerInteger::I128</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>),
         }
     }
 
     <span class="doccomment">/// Returns the contained value as an u32, or an error if the value is unable to fit.</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::cast_sign_loss</span>)]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">as_u32</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u32</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident"><span class="self">Self</span>::I8</span>(<span class="ident">value</span>) =&gt; {
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+            <span class="ident">InnerInteger::I8</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u32</span>)
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
                 }
             }
-            <span class="ident"><span class="self">Self</span>::U8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u32</span>),
-            <span class="ident"><span class="self">Self</span>::I16</span>(<span class="ident">value</span>) =&gt; {
+            <span class="ident">InnerInteger::U8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u32</span>),
+            <span class="ident">InnerInteger::I16</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u32</span>)
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
                 }
             }
-            <span class="ident"><span class="self">Self</span>::U16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u32</span>),
-            <span class="ident"><span class="self">Self</span>::U32</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::I32</span>(<span class="ident">value</span>) =&gt; {
+            <span class="ident">InnerInteger::U16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u32</span>),
+            <span class="ident">InnerInteger::U32</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
+            <span class="ident">InnerInteger::I32</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u32</span>)
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
                 }
             }
-            <span class="ident"><span class="self">Self</span>::U64</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident"><span class="self">Self</span>::I64</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident"><span class="self">Self</span>::U128</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident"><span class="self">Self</span>::I128</span>(<span class="kw">_</span>) =&gt; {
-                <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
-            }
+            <span class="ident">InnerInteger::U64</span>(<span class="kw">_</span>)
+            <span class="op">|</span> <span class="ident">InnerInteger::I64</span>(<span class="kw">_</span>)
+            <span class="op">|</span> <span class="ident">InnerInteger::U128</span>(<span class="kw">_</span>)
+            <span class="op">|</span> <span class="ident">InnerInteger::I128</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>),
         }
     }
 
     <span class="doccomment">/// Returns the contained value as an i64, or an error if the value is unable to fit.</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::cast_possible_wrap</span>)]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">as_i64</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">i64</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident"><span class="self">Self</span>::I8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i64</span>),
-            <span class="ident"><span class="self">Self</span>::U8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i64</span>),
-            <span class="ident"><span class="self">Self</span>::I16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i64</span>),
-            <span class="ident"><span class="self">Self</span>::U16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i64</span>),
-            <span class="ident"><span class="self">Self</span>::I32</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i64</span>),
-            <span class="ident"><span class="self">Self</span>::U32</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i64</span>),
-            <span class="ident"><span class="self">Self</span>::I64</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::U64</span>(<span class="ident">value</span>) =&gt; {
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+            <span class="ident">InnerInteger::I8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i64</span>),
+            <span class="ident">InnerInteger::U8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i64</span>),
+            <span class="ident">InnerInteger::I16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i64</span>),
+            <span class="ident">InnerInteger::U16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i64</span>),
+            <span class="ident">InnerInteger::I32</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i64</span>),
+            <span class="ident">InnerInteger::U32</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i64</span>),
+            <span class="ident">InnerInteger::I64</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
+            <span class="ident">InnerInteger::U64</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&lt;</span> <span class="ident">i64::MAX</span> <span class="kw">as</span> <span class="ident">u64</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i64</span>)
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
                 }
             }
-            <span class="ident"><span class="self">Self</span>::U128</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident"><span class="self">Self</span>::I128</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>),
+            <span class="ident">InnerInteger::U128</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">InnerInteger::I128</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>),
         }
     }
 
     <span class="doccomment">/// Returns the contained value as an i64, or an error if the value is unable to fit.</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::cast_possible_wrap</span>)]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">as_i128</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">i128</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident"><span class="self">Self</span>::I8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i128</span>),
-            <span class="ident"><span class="self">Self</span>::U8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i128</span>),
-            <span class="ident"><span class="self">Self</span>::I16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i128</span>),
-            <span class="ident"><span class="self">Self</span>::U16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i128</span>),
-            <span class="ident"><span class="self">Self</span>::I32</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i128</span>),
-            <span class="ident"><span class="self">Self</span>::U32</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i128</span>),
-            <span class="ident"><span class="self">Self</span>::I64</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i128</span>),
-            <span class="ident"><span class="self">Self</span>::U64</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i128</span>),
-            <span class="ident"><span class="self">Self</span>::I128</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::U128</span>(<span class="ident">value</span>) =&gt; {
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+            <span class="ident">InnerInteger::I8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i128</span>),
+            <span class="ident">InnerInteger::U8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i128</span>),
+            <span class="ident">InnerInteger::I16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i128</span>),
+            <span class="ident">InnerInteger::U16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i128</span>),
+            <span class="ident">InnerInteger::I32</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i128</span>),
+            <span class="ident">InnerInteger::U32</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i128</span>),
+            <span class="ident">InnerInteger::I64</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i128</span>),
+            <span class="ident">InnerInteger::U64</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i128</span>),
+            <span class="ident">InnerInteger::I128</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
+            <span class="ident">InnerInteger::U128</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&lt;</span> <span class="ident">i128::MAX</span> <span class="kw">as</span> <span class="ident">u128</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i128</span>)
                 } <span class="kw">else</span> {
@@ -1886,81 +2015,81 @@
     <span class="doccomment">/// Returns the contained value as an u64, or an error if the value is unable to fit.</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::cast_sign_loss</span>)]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">as_u64</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident"><span class="self">Self</span>::I8</span>(<span class="ident">value</span>) =&gt; {
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+            <span class="ident">InnerInteger::I8</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u64</span>)
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
                 }
             }
-            <span class="ident"><span class="self">Self</span>::U8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u64</span>),
-            <span class="ident"><span class="self">Self</span>::I16</span>(<span class="ident">value</span>) =&gt; {
+            <span class="ident">InnerInteger::U8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u64</span>),
+            <span class="ident">InnerInteger::I16</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u64</span>)
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
                 }
             }
-            <span class="ident"><span class="self">Self</span>::U16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u64</span>),
-            <span class="ident"><span class="self">Self</span>::U32</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u64</span>),
-            <span class="ident"><span class="self">Self</span>::I32</span>(<span class="ident">value</span>) =&gt; {
+            <span class="ident">InnerInteger::U16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u64</span>),
+            <span class="ident">InnerInteger::U32</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u64</span>),
+            <span class="ident">InnerInteger::I32</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u64</span>)
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
                 }
             }
-            <span class="ident"><span class="self">Self</span>::U64</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::I64</span>(<span class="ident">value</span>) =&gt; {
+            <span class="ident">InnerInteger::U64</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
+            <span class="ident">InnerInteger::I64</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u64</span>)
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
                 }
             }
-            <span class="ident"><span class="self">Self</span>::U128</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident"><span class="self">Self</span>::I128</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>),
+            <span class="ident">InnerInteger::U128</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">InnerInteger::I128</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>),
         }
     }
 
     <span class="doccomment">/// Returns the contained value as an u64, or an error if the value is unable to fit.</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::cast_sign_loss</span>)]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">as_u128</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u128</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident"><span class="self">Self</span>::I8</span>(<span class="ident">value</span>) =&gt; {
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+            <span class="ident">InnerInteger::I8</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u128</span>)
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
                 }
             }
-            <span class="ident"><span class="self">Self</span>::U8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u128</span>),
-            <span class="ident"><span class="self">Self</span>::I16</span>(<span class="ident">value</span>) =&gt; {
+            <span class="ident">InnerInteger::U8</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u128</span>),
+            <span class="ident">InnerInteger::I16</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u128</span>)
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
                 }
             }
-            <span class="ident"><span class="self">Self</span>::U16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u128</span>),
-            <span class="ident"><span class="self">Self</span>::U32</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u128</span>),
-            <span class="ident"><span class="self">Self</span>::I32</span>(<span class="ident">value</span>) =&gt; {
+            <span class="ident">InnerInteger::U16</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u128</span>),
+            <span class="ident">InnerInteger::U32</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u128</span>),
+            <span class="ident">InnerInteger::I32</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u128</span>)
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
                 }
             }
-            <span class="ident"><span class="self">Self</span>::U64</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u128</span>),
-            <span class="ident"><span class="self">Self</span>::I64</span>(<span class="ident">value</span>) =&gt; {
+            <span class="ident">InnerInteger::U64</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u128</span>),
+            <span class="ident">InnerInteger::I64</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u128</span>)
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
                 }
             }
-            <span class="ident"><span class="self">Self</span>::U128</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::I128</span>(<span class="ident">value</span>) =&gt; {
+            <span class="ident">InnerInteger::U128</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
+            <span class="ident">InnerInteger::I128</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="op">&gt;</span><span class="op">=</span> <span class="number">0</span> {
                     <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">u128</span>)
                 } <span class="kw">else</span> {
@@ -1972,17 +2101,17 @@
 
     <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
     <span class="kw">fn</span> <span class="ident">write_to</span><span class="op">&lt;</span><span class="ident">W</span>: <span class="ident">WriteBytesExt</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">writer</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">W</span>) -&gt; <span class="ident">std::io::Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="kw-2">*</span><span class="self">self</span> {
-            <span class="ident"><span class="self">Self</span>::I8</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_i8</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::I16</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_i16</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::I32</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_i32</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::I64</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_i64</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::I128</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_i128</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::U8</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_u8</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::U16</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_u16</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::U32</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_u32</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::U64</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_u64</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::U128</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_u128</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
+        <span class="kw">match</span> <span class="self">self</span>.<span class="number">0</span> {
+            <span class="ident">InnerInteger::I8</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_i8</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
+            <span class="ident">InnerInteger::I16</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_i16</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
+            <span class="ident">InnerInteger::I32</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_i32</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
+            <span class="ident">InnerInteger::I64</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_i64</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
+            <span class="ident">InnerInteger::I128</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_i128</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
+            <span class="ident">InnerInteger::U8</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_u8</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
+            <span class="ident">InnerInteger::U16</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_u16</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
+            <span class="ident">InnerInteger::U32</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_u32</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
+            <span class="ident">InnerInteger::U64</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_u64</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
+            <span class="ident">InnerInteger::U128</span>(<span class="ident">value</span>) =&gt; <span class="ident">write_u128</span>(<span class="ident">writer</span>, <span class="ident">value</span>),
         }
     }
 
@@ -1994,25 +2123,25 @@
         <span class="ident">reader</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">R</span>,
     ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">kind</span> {
-            <span class="ident">Kind::Special</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::U8</span>(<span class="number">0</span>)),
+            <span class="ident">Kind::Special</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">InnerInteger::U8</span>(<span class="number">0</span>)),
             <span class="ident">Kind::Int</span> =&gt; <span class="kw">match</span> <span class="ident">byte_len</span> {
-                <span class="number">1</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::I8</span>(<span class="ident">reader</span>.<span class="ident">read_i8</span>()<span class="question-mark">?</span>)),
-                <span class="number">2</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::I16</span>(<span class="ident">reader</span>.<span class="ident">read_i16</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
-                <span class="number">3</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::I32</span>(<span class="ident">reader</span>.<span class="ident">read_i24</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
-                <span class="number">4</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::I32</span>(<span class="ident">reader</span>.<span class="ident">read_i32</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
-                <span class="number">6</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::I64</span>(<span class="ident">reader</span>.<span class="ident">read_i48</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
-                <span class="number">8</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::I64</span>(<span class="ident">reader</span>.<span class="ident">read_i64</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
-                <span class="number">16</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::I128</span>(<span class="ident">reader</span>.<span class="ident">read_i128</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
+                <span class="number">1</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">InnerInteger::I8</span>(<span class="ident">reader</span>.<span class="ident">read_i8</span>()<span class="question-mark">?</span>)),
+                <span class="number">2</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">InnerInteger::I16</span>(<span class="ident">reader</span>.<span class="ident">read_i16</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
+                <span class="number">3</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">InnerInteger::I32</span>(<span class="ident">reader</span>.<span class="ident">read_i24</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
+                <span class="number">4</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">InnerInteger::I32</span>(<span class="ident">reader</span>.<span class="ident">read_i32</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
+                <span class="number">6</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">InnerInteger::I64</span>(<span class="ident">reader</span>.<span class="ident">read_i48</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
+                <span class="number">8</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">InnerInteger::I64</span>(<span class="ident">reader</span>.<span class="ident">read_i64</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
+                <span class="number">16</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">InnerInteger::I128</span>(<span class="ident">reader</span>.<span class="ident">read_i128</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
                 <span class="kw">_</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::custom</span>(<span class="string">&quot;unsupported int byte count&quot;</span>)),
             },
             <span class="ident">Kind::UInt</span> =&gt; <span class="kw">match</span> <span class="ident">byte_len</span> {
-                <span class="number">1</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::U8</span>(<span class="ident">reader</span>.<span class="ident">read_u8</span>()<span class="question-mark">?</span>)),
-                <span class="number">2</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::U16</span>(<span class="ident">reader</span>.<span class="ident">read_u16</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
-                <span class="number">3</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::U32</span>(<span class="ident">reader</span>.<span class="ident">read_u24</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
-                <span class="number">4</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::U32</span>(<span class="ident">reader</span>.<span class="ident">read_u32</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
-                <span class="number">6</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::U64</span>(<span class="ident">reader</span>.<span class="ident">read_u48</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
-                <span class="number">8</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::U64</span>(<span class="ident">reader</span>.<span class="ident">read_u64</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
-                <span class="number">16</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::U128</span>(<span class="ident">reader</span>.<span class="ident">read_u128</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
+                <span class="number">1</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">InnerInteger::U8</span>(<span class="ident">reader</span>.<span class="ident">read_u8</span>()<span class="question-mark">?</span>)),
+                <span class="number">2</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">InnerInteger::U16</span>(<span class="ident">reader</span>.<span class="ident">read_u16</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
+                <span class="number">3</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">InnerInteger::U32</span>(<span class="ident">reader</span>.<span class="ident">read_u24</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
+                <span class="number">4</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">InnerInteger::U32</span>(<span class="ident">reader</span>.<span class="ident">read_u32</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
+                <span class="number">6</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">InnerInteger::U64</span>(<span class="ident">reader</span>.<span class="ident">read_u48</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
+                <span class="number">8</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">InnerInteger::U64</span>(<span class="ident">reader</span>.<span class="ident">read_u64</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
+                <span class="number">16</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident">InnerInteger::U128</span>(<span class="ident">reader</span>.<span class="ident">read_u128</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
                 <span class="kw">_</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::custom</span>(<span class="string">&quot;unsupported uint byte count&quot;</span>)),
             },
             <span class="ident">other</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::custom</span>(<span class="macro">format!</span>(
@@ -2020,6 +2149,7 @@
                 <span class="ident">other</span>
             ))),
         }
+        .<span class="ident">map</span>(<span class="ident">Integer</span>)
     }
 
     <span class="doccomment">/// Converts this integer to an f32, but only if it can be done without losing precision.</span>
@@ -2048,10 +2178,62 @@
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::cast_precision_loss</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_float</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Float</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">as_f32</span>()
-            .<span class="ident">map</span>(<span class="ident">Float::F32</span>)
-            .<span class="ident">or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">as_f64</span>().<span class="ident">map</span>(<span class="ident">Float::F64</span>))
+            .<span class="ident">map</span>(<span class="ident">Float::from</span>)
+            .<span class="ident">or_else</span>(<span class="op">|</span><span class="kw">_</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">as_f64</span>().<span class="ident">map</span>(<span class="ident">Float::from</span>))
     }
 }
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Integer</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">value</span>: <span class="ident">u8</span>) -&gt; <span class="self">Self</span> {
+        <span class="self">Self</span>(<span class="ident">InnerInteger::U8</span>(<span class="ident">value</span>))
+    }
+}
+
+<span class="macro">macro_rules!</span> <span class="ident">impl_from_unsigned_integer</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">smaller_primitive</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">variant</span>:<span class="ident">ident</span>) =&gt; {
+        <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Integer</span> {
+            <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">value</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span>) -&gt; <span class="self">Self</span> {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">value</span>) <span class="op">=</span> <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">smaller_primitive</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="ident">value</span>) {
+                    <span class="ident"><span class="self">Self</span>::from</span>(<span class="ident">value</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">smaller_primitive</span>)
+                } <span class="kw">else</span> {
+                    <span class="ident">Integer</span>(<span class="ident">InnerInteger</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">variant</span>(<span class="ident">value</span>))
+                }
+            }
+        }
+    };
+}
+
+<span class="macro">impl_from_unsigned_integer!</span>(<span class="ident">u16</span>, <span class="ident">u8</span>, <span class="ident">U16</span>);
+<span class="macro">impl_from_unsigned_integer!</span>(<span class="ident">u32</span>, <span class="ident">u16</span>, <span class="ident">U32</span>);
+<span class="macro">impl_from_unsigned_integer!</span>(<span class="ident">u64</span>, <span class="ident">u32</span>, <span class="ident">U64</span>);
+<span class="macro">impl_from_unsigned_integer!</span>(<span class="ident">u128</span>, <span class="ident">u64</span>, <span class="ident">U128</span>);
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">i8</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Integer</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">value</span>: <span class="ident">i8</span>) -&gt; <span class="self">Self</span> {
+        <span class="self">Self</span>(<span class="ident">InnerInteger::I8</span>(<span class="ident">value</span>))
+    }
+}
+
+<span class="macro">macro_rules!</span> <span class="ident">impl_from_unsigned_integer</span> {
+    (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">smaller_primitive</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">smaller_unsigned_primitive</span>:<span class="ident">ty</span>, <span class="macro-nonterminal">$</span><span class="macro-nonterminal">variant</span>:<span class="ident">ident</span>) =&gt; {
+        <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Integer</span> {
+            <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">value</span>: <span class="macro-nonterminal">$</span><span class="macro-nonterminal">primitive</span>) -&gt; <span class="self">Self</span> {
+                <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">value</span>) <span class="op">=</span> <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">smaller_primitive</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="ident">value</span>) {
+                    <span class="ident"><span class="self">Self</span>::from</span>(<span class="ident">value</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">smaller_primitive</span>)
+                } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Ok</span>(<span class="ident">value</span>) <span class="op">=</span> <span class="op">&lt;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">smaller_unsigned_primitive</span><span class="op">&gt;</span><span class="ident">::try_from</span>(<span class="ident">value</span>) {
+                    <span class="ident"><span class="self">Self</span>::from</span>(<span class="ident">value</span> <span class="kw">as</span> <span class="macro-nonterminal">$</span><span class="macro-nonterminal">smaller_unsigned_primitive</span>)
+                } <span class="kw">else</span> {
+                    <span class="ident">Integer</span>(<span class="ident">InnerInteger</span>::<span class="macro-nonterminal">$</span><span class="macro-nonterminal">variant</span>(<span class="ident">value</span>))
+                }
+            }
+        }
+    };
+}
+
+<span class="macro">impl_from_unsigned_integer!</span>(<span class="ident">i16</span>, <span class="ident">i8</span>, <span class="ident">u8</span>, <span class="ident">I16</span>);
+<span class="macro">impl_from_unsigned_integer!</span>(<span class="ident">i32</span>, <span class="ident">i16</span>, <span class="ident">u16</span>, <span class="ident">I32</span>);
+<span class="macro">impl_from_unsigned_integer!</span>(<span class="ident">i64</span>, <span class="ident">i32</span>, <span class="ident">u32</span>, <span class="ident">I64</span>);
+<span class="macro">impl_from_unsigned_integer!</span>(<span class="ident">i128</span>, <span class="ident">i64</span>, <span class="ident">u64</span>, <span class="ident">I128</span>);
 
 <span class="doccomment">/// Reads an atom.</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::cast_possible_truncation</span>)]</span>
@@ -2139,18 +2321,34 @@
 
 <span class="doccomment">/// A floating point number that can safely convert between other number types using compile-time evaluation when possible.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Float</span> {
+<span class="attribute">#[<span class="ident">serde</span>(<span class="ident">transparent</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Float</span>(<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="ident">InnerFloat</span>);
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Copy</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum</span> <span class="ident">InnerFloat</span> {
     <span class="doccomment">/// An f64 value.</span>
     <span class="ident">F64</span>(<span class="ident">f64</span>),
     <span class="doccomment">/// An f32 value.</span>
     <span class="ident">F32</span>(<span class="ident">f32</span>),
 }
 
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Float</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">value</span>: <span class="ident">f32</span>) -&gt; <span class="self">Self</span> {
+        <span class="self">Self</span>(<span class="ident">InnerFloat::F32</span>(<span class="ident">value</span>))
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">f64</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Float</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">value</span>: <span class="ident">f64</span>) -&gt; <span class="self">Self</span> {
+        <span class="self">Self</span>(<span class="ident">InnerFloat::F64</span>(<span class="ident">value</span>))
+    }
+}
+
 <span class="kw">impl</span> <span class="ident">Display</span> <span class="kw">for</span> <span class="ident">Float</span> {
     <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">std::fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">std::fmt::Result</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident"><span class="self">Self</span>::F32</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
-            <span class="ident"><span class="self">Self</span>::F64</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+        <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span> {
+            <span class="ident">InnerFloat::F32</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
+            <span class="ident">InnerFloat::F64</span>(<span class="ident">value</span>) =&gt; <span class="ident">Display::fmt</span>(<span class="ident">value</span>, <span class="ident">f</span>),
         }
     }
 }
@@ -2159,20 +2357,20 @@
     <span class="doccomment">/// Returns true if the value contained is zero.</span>
     <span class="attribute">#[<span class="ident">must_use</span>]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_zero</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">bool</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident"><span class="self">Self</span>::F32</span>(<span class="ident">value</span>) =&gt; <span class="ident">value</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">f32::EPSILON</span>,
-            <span class="ident"><span class="self">Self</span>::F64</span>(<span class="ident">value</span>) =&gt; <span class="ident">value</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">f64::EPSILON</span>,
+        <span class="kw">match</span> <span class="self">self</span>.<span class="number">0</span> {
+            <span class="ident">InnerFloat::F32</span>(<span class="ident">value</span>) =&gt; <span class="ident">value</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">f32::EPSILON</span>,
+            <span class="ident">InnerFloat::F64</span>(<span class="ident">value</span>) =&gt; <span class="ident">value</span>.<span class="ident">abs</span>() <span class="op">&lt;</span><span class="op">=</span> <span class="ident">f64::EPSILON</span>,
         }
     }
 
     <span class="doccomment">/// Returns this number as an f32, if it can be done without losing precision.</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::float_cmp</span>, <span class="ident">clippy::cast_possible_truncation</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_f32</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">f32</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident"><span class="self">Self</span>::F32</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="kw-2">*</span><span class="ident">value</span>),
-            <span class="ident"><span class="self">Self</span>::F64</span>(<span class="ident">value</span>) =&gt; {
-                <span class="kw">let</span> <span class="ident">converted</span> <span class="op">=</span> <span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">f32</span>;
-                <span class="kw">if</span> <span class="ident">f64::from</span>(<span class="ident">converted</span>) <span class="op">==</span> <span class="kw-2">*</span><span class="ident">value</span> {
+        <span class="kw">match</span> <span class="self">self</span>.<span class="number">0</span> {
+            <span class="ident">InnerFloat::F32</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">value</span>),
+            <span class="ident">InnerFloat::F64</span>(<span class="ident">value</span>) =&gt; {
+                <span class="kw">let</span> <span class="ident">converted</span> <span class="op">=</span> <span class="ident">value</span> <span class="kw">as</span> <span class="ident">f32</span>;
+                <span class="kw">if</span> <span class="ident">f64::from</span>(<span class="ident">converted</span>) <span class="op">==</span> <span class="ident">value</span> {
                     <span class="prelude-val">Ok</span>(<span class="ident">converted</span>)
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
@@ -2184,27 +2382,27 @@
     <span class="doccomment">/// Returns this number as an f64.</span>
     <span class="attribute">#[<span class="ident">must_use</span>]</span>
     <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">as_f64</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">f64</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident"><span class="self">Self</span>::F64</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span>,
-            <span class="ident"><span class="self">Self</span>::F32</span>(<span class="ident">value</span>) =&gt; <span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">f64</span>,
+        <span class="kw">match</span> <span class="self">self</span>.<span class="number">0</span> {
+            <span class="ident">InnerFloat::F64</span>(<span class="ident">value</span>) =&gt; <span class="ident">value</span>,
+            <span class="ident">InnerFloat::F32</span>(<span class="ident">value</span>) =&gt; <span class="ident">value</span> <span class="kw">as</span> <span class="ident">f64</span>,
         }
     }
 
     <span class="doccomment">/// Returns this number as an [`Integer`], if the stored value has no fractional part.</span>
     <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::cast_possible_truncation</span>)]</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">as_integer</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Integer</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
-        <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident"><span class="self">Self</span>::F64</span>(<span class="ident">value</span>) =&gt; {
+        <span class="kw">match</span> <span class="self">self</span>.<span class="number">0</span> {
+            <span class="ident">InnerFloat::F64</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">fract</span>().<span class="ident">abs</span>() <span class="op">&lt;</span> <span class="ident">f64::EPSILON</span> {
                     <span class="comment">// no fraction, safe to convert</span>
-                    <span class="prelude-val">Ok</span>(<span class="ident">Integer::I64</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i64</span>))
+                    <span class="prelude-val">Ok</span>(<span class="ident">Integer::from</span>(<span class="ident">value</span> <span class="kw">as</span> <span class="ident">i64</span>))
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
                 }
             }
-            <span class="ident"><span class="self">Self</span>::F32</span>(<span class="ident">value</span>) =&gt; {
+            <span class="ident">InnerFloat::F32</span>(<span class="ident">value</span>) =&gt; {
                 <span class="kw">if</span> <span class="ident">value</span>.<span class="ident">fract</span>().<span class="ident">abs</span>() <span class="op">&lt;</span> <span class="ident">f32::EPSILON</span> {
-                    <span class="prelude-val">Ok</span>(<span class="ident">Integer::I32</span>(<span class="kw-2">*</span><span class="ident">value</span> <span class="kw">as</span> <span class="ident">i32</span>))
+                    <span class="prelude-val">Ok</span>(<span class="ident">Integer::from</span>(<span class="ident">value</span> <span class="kw">as</span> <span class="ident">i32</span>))
                 } <span class="kw">else</span> {
                     <span class="prelude-val">Err</span>(<span class="ident">Error::ImpreciseCastWouldLoseData</span>)
                 }
@@ -2221,9 +2419,9 @@
     ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="ident">Kind::Float</span> <span class="op">==</span> <span class="ident">kind</span> {
             <span class="kw">match</span> <span class="ident">byte_len</span> {
-                <span class="number">2</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::F32</span>(<span class="ident">read_f16</span>(<span class="ident">reader</span>)<span class="question-mark">?</span>)),
-                <span class="number">4</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::F32</span>(<span class="ident">reader</span>.<span class="ident">read_f32</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
-                <span class="number">8</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::F64</span>(<span class="ident">reader</span>.<span class="ident">read_f64</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
+                <span class="number">2</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::from</span>(<span class="ident">read_f16</span>(<span class="ident">reader</span>)<span class="question-mark">?</span>)),
+                <span class="number">4</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::from</span>(<span class="ident">reader</span>.<span class="ident">read_f32</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
+                <span class="number">8</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::from</span>(<span class="ident">reader</span>.<span class="ident">read_f64</span>::<span class="op">&lt;</span><span class="ident">LittleEndian</span><span class="op">&gt;</span>()<span class="question-mark">?</span>)),
                 <span class="kw">_</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::custom</span>(<span class="string">&quot;unsupported float byte count&quot;</span>)),
             }
         } <span class="kw">else</span> {
@@ -2313,101 +2511,149 @@
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">zero</span>() {
-        <span class="ident">test_roundtrip_integer</span>(<span class="ident">Integer::U64</span>(<span class="number">0</span>), <span class="ident">Integer::U8</span>(<span class="number">0</span>), <span class="number">2</span>);
-        <span class="ident">test_roundtrip_integer</span>(<span class="ident">Integer::I64</span>(<span class="number">0</span>), <span class="ident">Integer::I8</span>(<span class="number">0</span>), <span class="number">2</span>);
+        <span class="ident">test_roundtrip_integer</span>(<span class="ident">Integer::from</span>(<span class="number">0_u64</span>), <span class="ident">Integer</span>(<span class="ident">InnerInteger::U8</span>(<span class="number">0</span>)), <span class="number">2</span>);
+        <span class="ident">test_roundtrip_integer</span>(<span class="ident">Integer::from</span>(<span class="number">0_i64</span>), <span class="ident">Integer</span>(<span class="ident">InnerInteger::I8</span>(<span class="number">0</span>)), <span class="number">2</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">u8_max</span>() {
-        <span class="ident">test_roundtrip_integer</span>(<span class="ident">Integer::U64</span>(<span class="ident">u64::from</span>(<span class="ident">u8::MAX</span>)), <span class="ident">Integer::U8</span>(<span class="ident">u8::MAX</span>), <span class="number">2</span>);
+        <span class="ident">test_roundtrip_integer</span>(
+            <span class="ident">Integer::from</span>(<span class="ident">u64::from</span>(<span class="ident">u8::MAX</span>)),
+            <span class="ident">Integer</span>(<span class="ident">InnerInteger::U8</span>(<span class="ident">u8::MAX</span>)),
+            <span class="number">2</span>,
+        );
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">i8_max</span>() {
-        <span class="ident">test_roundtrip_integer</span>(<span class="ident">Integer::I64</span>(<span class="ident">i64::from</span>(<span class="ident">i8::MAX</span>)), <span class="ident">Integer::I8</span>(<span class="ident">i8::MAX</span>), <span class="number">2</span>);
+        <span class="ident">test_roundtrip_integer</span>(
+            <span class="ident">Integer::from</span>(<span class="ident">i64::from</span>(<span class="ident">i8::MAX</span>)),
+            <span class="ident">Integer</span>(<span class="ident">InnerInteger::I8</span>(<span class="ident">i8::MAX</span>)),
+            <span class="number">2</span>,
+        );
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">i8_min</span>() {
-        <span class="ident">test_roundtrip_integer</span>(<span class="ident">Integer::I64</span>(<span class="ident">i64::from</span>(<span class="ident">i8::MIN</span>)), <span class="ident">Integer::I8</span>(<span class="ident">i8::MIN</span>), <span class="number">2</span>);
+        <span class="ident">test_roundtrip_integer</span>(
+            <span class="ident">Integer::from</span>(<span class="ident">i64::from</span>(<span class="ident">i8::MIN</span>)),
+            <span class="ident">Integer</span>(<span class="ident">InnerInteger::I8</span>(<span class="ident">i8::MIN</span>)),
+            <span class="number">2</span>,
+        );
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">u16_max</span>() {
-        <span class="ident">test_roundtrip_integer</span>(<span class="ident">Integer::U64</span>(<span class="ident">u64::from</span>(<span class="ident">u16::MAX</span>)), <span class="ident">Integer::U16</span>(<span class="ident">u16::MAX</span>), <span class="number">3</span>);
+        <span class="ident">test_roundtrip_integer</span>(
+            <span class="ident">Integer::from</span>(<span class="ident">u64::from</span>(<span class="ident">u16::MAX</span>)),
+            <span class="ident">Integer</span>(<span class="ident">InnerInteger::U16</span>(<span class="ident">u16::MAX</span>)),
+            <span class="number">3</span>,
+        );
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">i16_max</span>() {
-        <span class="ident">test_roundtrip_integer</span>(<span class="ident">Integer::I64</span>(<span class="ident">i64::from</span>(<span class="ident">i16::MAX</span>)), <span class="ident">Integer::I16</span>(<span class="ident">i16::MAX</span>), <span class="number">3</span>);
+        <span class="ident">test_roundtrip_integer</span>(
+            <span class="ident">Integer::from</span>(<span class="ident">i64::from</span>(<span class="ident">i16::MAX</span>)),
+            <span class="ident">Integer</span>(<span class="ident">InnerInteger::I16</span>(<span class="ident">i16::MAX</span>)),
+            <span class="number">3</span>,
+        );
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">i16_min</span>() {
-        <span class="ident">test_roundtrip_integer</span>(<span class="ident">Integer::I64</span>(<span class="ident">i64::from</span>(<span class="ident">i16::MIN</span>)), <span class="ident">Integer::I16</span>(<span class="ident">i16::MIN</span>), <span class="number">3</span>);
+        <span class="ident">test_roundtrip_integer</span>(
+            <span class="ident">Integer::from</span>(<span class="ident">i64::from</span>(<span class="ident">i16::MIN</span>)),
+            <span class="ident">Integer</span>(<span class="ident">InnerInteger::I16</span>(<span class="ident">i16::MIN</span>)),
+            <span class="number">3</span>,
+        );
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">u32_max</span>() {
-        <span class="ident">test_roundtrip_integer</span>(<span class="ident">Integer::U64</span>(<span class="ident">u64::from</span>(<span class="ident">u32::MAX</span>)), <span class="ident">Integer::U32</span>(<span class="ident">u32::MAX</span>), <span class="number">5</span>);
+        <span class="ident">test_roundtrip_integer</span>(
+            <span class="ident">Integer::from</span>(<span class="ident">u64::from</span>(<span class="ident">u32::MAX</span>)),
+            <span class="ident">Integer</span>(<span class="ident">InnerInteger::U32</span>(<span class="ident">u32::MAX</span>)),
+            <span class="number">5</span>,
+        );
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">i32_max</span>() {
-        <span class="ident">test_roundtrip_integer</span>(<span class="ident">Integer::I64</span>(<span class="ident">i64::from</span>(<span class="ident">i32::MAX</span>)), <span class="ident">Integer::I32</span>(<span class="ident">i32::MAX</span>), <span class="number">5</span>);
+        <span class="ident">test_roundtrip_integer</span>(
+            <span class="ident">Integer::from</span>(<span class="ident">i64::from</span>(<span class="ident">i32::MAX</span>)),
+            <span class="ident">Integer</span>(<span class="ident">InnerInteger::I32</span>(<span class="ident">i32::MAX</span>)),
+            <span class="number">5</span>,
+        );
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">i32_min</span>() {
-        <span class="ident">test_roundtrip_integer</span>(<span class="ident">Integer::I64</span>(<span class="ident">i64::from</span>(<span class="ident">i32::MIN</span>)), <span class="ident">Integer::I32</span>(<span class="ident">i32::MIN</span>), <span class="number">5</span>);
+        <span class="ident">test_roundtrip_integer</span>(
+            <span class="ident">Integer::from</span>(<span class="ident">i64::from</span>(<span class="ident">i32::MIN</span>)),
+            <span class="ident">Integer</span>(<span class="ident">InnerInteger::I32</span>(<span class="ident">i32::MIN</span>)),
+            <span class="number">5</span>,
+        );
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">u64_max</span>() {
-        <span class="ident">test_roundtrip_integer</span>(<span class="ident">Integer::U64</span>(<span class="ident">u64::MAX</span>), <span class="ident">Integer::U64</span>(<span class="ident">u64::MAX</span>), <span class="number">9</span>);
+        <span class="ident">test_roundtrip_integer</span>(
+            <span class="ident">Integer::from</span>(<span class="ident">u64::MAX</span>),
+            <span class="ident">Integer</span>(<span class="ident">InnerInteger::U64</span>(<span class="ident">u64::MAX</span>)),
+            <span class="number">9</span>,
+        );
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">i64_max</span>() {
-        <span class="ident">test_roundtrip_integer</span>(<span class="ident">Integer::I64</span>(<span class="ident">i64::MAX</span>), <span class="ident">Integer::I64</span>(<span class="ident">i64::MAX</span>), <span class="number">9</span>);
+        <span class="ident">test_roundtrip_integer</span>(
+            <span class="ident">Integer::from</span>(<span class="ident">i64::MAX</span>),
+            <span class="ident">Integer</span>(<span class="ident">InnerInteger::I64</span>(<span class="ident">i64::MAX</span>)),
+            <span class="number">9</span>,
+        );
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">i64_min</span>() {
-        <span class="ident">test_roundtrip_integer</span>(<span class="ident">Integer::I64</span>(<span class="ident">i64::MIN</span>), <span class="ident">Integer::I64</span>(<span class="ident">i64::MIN</span>), <span class="number">9</span>);
+        <span class="ident">test_roundtrip_integer</span>(
+            <span class="ident">Integer::from</span>(<span class="ident">i64::MIN</span>),
+            <span class="ident">Integer</span>(<span class="ident">InnerInteger::I64</span>(<span class="ident">i64::MIN</span>)),
+            <span class="number">9</span>,
+        );
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">integer_is_zero</span>() {
-        <span class="macro">assert!</span>(<span class="ident">Integer::I8</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::I8</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="ident">Integer::I16</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::I16</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="ident">Integer::I32</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::I32</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="ident">Integer::I64</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::I64</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="ident">Integer::I128</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::I128</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Integer::from</span>(<span class="number">0_u8</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::from</span>(<span class="number">1_i8</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Integer::from</span>(<span class="number">0_i16</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::from</span>(<span class="number">1_i16</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Integer::from</span>(<span class="number">0_i32</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::from</span>(<span class="number">1_i32</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Integer::from</span>(<span class="number">0_i64</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::from</span>(<span class="number">1_i64</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Integer::from</span>(<span class="number">0_i128</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::from</span>(<span class="number">1_i128</span>).<span class="ident">is_zero</span>());
 
-        <span class="macro">assert!</span>(<span class="ident">Integer::U8</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::U8</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="ident">Integer::U16</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::U16</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="ident">Integer::U32</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::U32</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="ident">Integer::U64</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::U64</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="ident">Integer::U128</span>(<span class="number">0</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::U128</span>(<span class="number">1</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Integer::from</span>(<span class="number">0_u8</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::from</span>(<span class="number">1_u8</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Integer::from</span>(<span class="number">0_u16</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::from</span>(<span class="number">1_u16</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Integer::from</span>(<span class="number">0_u32</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::from</span>(<span class="number">1_u32</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Integer::from</span>(<span class="number">0_u64</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::from</span>(<span class="number">1_u64</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Integer::from</span>(<span class="number">0_u128</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Integer::from</span>(<span class="number">1_u128</span>).<span class="ident">is_zero</span>());
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">float_is_zero</span>() {
-        <span class="macro">assert!</span>(<span class="ident">Float::F32</span>(<span class="number">0.</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Float::F32</span>(<span class="number">1.</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="ident">Float::F64</span>(<span class="number">0.</span>).<span class="ident">is_zero</span>());
-        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Float::F64</span>(<span class="number">1.</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Float::from</span>(<span class="number">0_f32</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Float::from</span>(<span class="number">1_f32</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="ident">Float::from</span>(<span class="number">0_f64</span>).<span class="ident">is_zero</span>());
+        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">Float::from</span>(<span class="number">1_f64</span>).<span class="ident">is_zero</span>());
     }
 }
 </code></pre></div>
