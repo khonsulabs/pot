@@ -15,7 +15,7 @@
         <div>
             <p class="heading">Lines</p>
             <p class="title has-text-danger">
-                <abbr title="324 / 456">71.05 %</abbr></p>
+                <abbr title="351 / 483">72.67 %</abbr></p>
         </div>
     </div>
 
@@ -203,7 +203,7 @@
                 
             </div>
             <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">use crate::format::{Float, Integer};</pre>
+                <pre class="has-background-white py-0 px-2">use crate::format::{Float, InnerFloat, InnerInteger, Integer};</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -2761,7 +2761,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                15
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    pub fn as_integer(&amp;self) -&gt; Option&lt;Integer&gt; {</pre>
@@ -2774,7 +2774,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                15
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        match self {</pre>
@@ -2800,7 +2800,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                15
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            Value::Float(value) =&gt; value.as_integer().ok(),</pre>
@@ -2839,7 +2839,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                15
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    }</pre>
@@ -4116,7 +4116,7 @@
                 10
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            Value::Integer(integer) =&gt; match integer {</pre>
+                <pre class="has-background-success-light py-0 px-2">            Value::Integer(integer) =&gt; match integer.0 {</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -4129,7 +4129,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">                Integer::I8(value) =&gt; serializer.serialize_i8(*value),</pre>
+                <pre class="has-background-success-light py-0 px-2">                InnerInteger::I8(value) =&gt; serializer.serialize_i8(value),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -4142,7 +4142,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">                Integer::I16(value) =&gt; serializer.serialize_i16(*value),</pre>
+                <pre class="has-background-success-light py-0 px-2">                InnerInteger::I16(value) =&gt; serializer.serialize_i16(value),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -4155,7 +4155,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">                Integer::I32(value) =&gt; serializer.serialize_i32(*value),</pre>
+                <pre class="has-background-success-light py-0 px-2">                InnerInteger::I32(value) =&gt; serializer.serialize_i32(value),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -4168,7 +4168,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">                Integer::I64(value) =&gt; serializer.serialize_i64(*value),</pre>
+                <pre class="has-background-success-light py-0 px-2">                InnerInteger::I64(value) =&gt; serializer.serialize_i64(value),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -4181,7 +4181,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">                Integer::I128(value) =&gt; serializer.serialize_i128(*value),</pre>
+                <pre class="has-background-success-light py-0 px-2">                InnerInteger::I128(value) =&gt; serializer.serialize_i128(value),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -4194,7 +4194,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">                Integer::U8(value) =&gt; serializer.serialize_u8(*value),</pre>
+                <pre class="has-background-success-light py-0 px-2">                InnerInteger::U8(value) =&gt; serializer.serialize_u8(value),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -4207,7 +4207,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">                Integer::U16(value) =&gt; serializer.serialize_u16(*value),</pre>
+                <pre class="has-background-success-light py-0 px-2">                InnerInteger::U16(value) =&gt; serializer.serialize_u16(value),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -4220,7 +4220,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">                Integer::U32(value) =&gt; serializer.serialize_u32(*value),</pre>
+                <pre class="has-background-success-light py-0 px-2">                InnerInteger::U32(value) =&gt; serializer.serialize_u32(value),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -4233,7 +4233,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">                Integer::U64(value) =&gt; serializer.serialize_u64(*value),</pre>
+                <pre class="has-background-success-light py-0 px-2">                InnerInteger::U64(value) =&gt; serializer.serialize_u64(value),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -4246,7 +4246,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">                Integer::U128(value) =&gt; serializer.serialize_u128(*value),</pre>
+                <pre class="has-background-success-light py-0 px-2">                InnerInteger::U128(value) =&gt; serializer.serialize_u128(value),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -4272,7 +4272,7 @@
                 2
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            Value::Float(value) =&gt; match value {</pre>
+                <pre class="has-background-success-light py-0 px-2">            Value::Float(value) =&gt; match value.0 {</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -4285,7 +4285,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">                Float::F64(value) =&gt; serializer.serialize_f64(*value),</pre>
+                <pre class="has-background-success-light py-0 px-2">                InnerFloat::F64(value) =&gt; serializer.serialize_f64(value),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -4298,7 +4298,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">                Float::F32(value) =&gt; serializer.serialize_f32(*value),</pre>
+                <pre class="has-background-success-light py-0 px-2">                InnerFloat::F32(value) =&gt; serializer.serialize_f32(value),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -5065,7 +5065,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::I8(v)))</pre>
+                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::from(v)))</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -5156,7 +5156,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::I32(v)))</pre>
+                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::from(v)))</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -5247,7 +5247,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::I16(v)))</pre>
+                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::from(v)))</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -5338,7 +5338,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::I64(v)))</pre>
+                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::from(v)))</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -5429,7 +5429,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::I128(v)))</pre>
+                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::from(v)))</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -5520,7 +5520,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::U8(v)))</pre>
+                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::from(v)))</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -5611,7 +5611,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::U16(v)))</pre>
+                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::from(v)))</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -5702,7 +5702,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::U32(v)))</pre>
+                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::from(v)))</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -5793,7 +5793,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::U64(v)))</pre>
+                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::from(v)))</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -5884,7 +5884,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::U128(v)))</pre>
+                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Integer(Integer::from(v)))</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -5975,7 +5975,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Float(Float::F32(v)))</pre>
+                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Float(Float::from(v)))</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -6066,7 +6066,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Float(Float::F64(v)))</pre>
+                <pre class="has-background-success-light py-0 px-2">        Ok(Value::Float(Float::from(v)))</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7558,7 +7558,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                20
+                34
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            fn from(value: $primitive) -&gt; Self {</pre>
@@ -7571,10 +7571,10 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                20
+                34
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">                Self::$container($container::$variant(value))</pre>
+                <pre class="has-background-success-light py-0 px-2">                Self::$container($container::from(value))</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7584,7 +7584,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                20
+                34
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            }</pre>
@@ -9888,7 +9888,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    assert_eq!(</pre>
+                <pre class="has-background-success-light py-0 px-2">    macro_rules! test_signed {</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -9901,7 +9901,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        Value::from(255_f32)</pre>
+                <pre class="has-background-success-light py-0 px-2">        ($primitive:ty, $signed_method:ident, $unsigned:ty, $unsigned_method:ident, $float:ty) =&gt; {</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -9914,7 +9914,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            .as_integer()</pre>
+                <pre class="has-background-success-light py-0 px-2">            assert_eq!(</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -9927,7 +9927,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            .expect(&quot;integer conversion failed&quot;)</pre>
+                <pre class="has-background-success-light py-0 px-2">                Value::from(&lt;$float&gt;::from(&lt;$primitive&gt;::MAX))</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -9940,7 +9940,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            .as_u64()</pre>
+                <pre class="has-background-success-light py-0 px-2">                    .as_integer()</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -9953,7 +9953,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            .unwrap(),</pre>
+                <pre class="has-background-success-light py-0 px-2">                    .expect(&quot;integer conversion failed&quot;)</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -9966,7 +9966,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        255,</pre>
+                <pre class="has-background-success-light py-0 px-2">                    .$signed_method()</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -9979,7 +9979,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    );</pre>
+                <pre class="has-background-success-light py-0 px-2">                    .unwrap(),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -9992,12 +9992,610 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">                &lt;$primitive&gt;::MAX,</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="767">
+                <a href="#767">767</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">            );</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="768">
+                <a href="#768">768</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">            assert_eq!(</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="769">
+                <a href="#769">769</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">                Value::from(&lt;$float&gt;::from(&lt;$primitive&gt;::MIN))</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="770">
+                <a href="#770">770</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">                    .as_integer()</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="771">
+                <a href="#771">771</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">                    .expect(&quot;integer conversion failed&quot;)</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="772">
+                <a href="#772">772</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">                    .$signed_method()</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="773">
+                <a href="#773">773</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">                    .unwrap(),</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="774">
+                <a href="#774">774</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">                &lt;$primitive&gt;::MIN,</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="775">
+                <a href="#775">775</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">            );</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="776">
+                <a href="#776">776</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">            assert_eq!(</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="777">
+                <a href="#777">777</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">                Value::from(&lt;$float&gt;::from(&lt;$primitive&gt;::MAX))</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="778">
+                <a href="#778">778</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">                    .as_integer()</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="779">
+                <a href="#779">779</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">                    .expect(&quot;integer conversion failed&quot;)</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="780">
+                <a href="#780">780</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">                    .$unsigned_method()</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="781">
+                <a href="#781">781</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">                    .unwrap(),</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="782">
+                <a href="#782">782</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">                &lt;$unsigned&gt;::try_from(&lt;$primitive&gt;::MAX).unwrap(),</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="783">
+                <a href="#783">783</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">            );</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="784">
+                <a href="#784">784</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">        };</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="785">
+                <a href="#785">785</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">    }</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="786">
+                <a href="#786">786</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2"></pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="787">
+                <a href="#787">787</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">    test_signed!(i8, as_i8, u8, as_u8, f32);</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="788">
+                <a href="#788">788</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">    test_signed!(i16, as_i16, u16, as_u16, f32);</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="789">
+                <a href="#789">789</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">    test_signed!(i32, as_i32, u32, as_u32, f64);</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="790">
+                <a href="#790">790</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2"></pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="791">
+                <a href="#791">791</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">    macro_rules! test_unsigned {</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="792">
+                <a href="#792">792</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">        ($primitive:ty, $unsigned_method:ident, $signed:ty, $signed_method:ident, $float:ty) =&gt; {</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="793">
+                <a href="#793">793</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">            assert_eq!(</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="794">
+                <a href="#794">794</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">                Value::from(&lt;$float&gt;::from(&lt;$primitive&gt;::MAX))</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="795">
+                <a href="#795">795</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">                    .as_integer()</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="796">
+                <a href="#796">796</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">                    .expect(&quot;integer conversion failed&quot;)</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="797">
+                <a href="#797">797</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">                    .$unsigned_method()</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="798">
+                <a href="#798">798</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">                    .unwrap(),</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="799">
+                <a href="#799">799</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">                &lt;$primitive&gt;::MAX,</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="800">
+                <a href="#800">800</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">            );</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="801">
+                <a href="#801">801</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">            assert!(Value::from(&lt;$float&gt;::from(&lt;$primitive&gt;::MAX))</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="802">
+                <a href="#802">802</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">                .as_integer()</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="803">
+                <a href="#803">803</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">                .expect(&quot;integer conversion failed&quot;)</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="804">
+                <a href="#804">804</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">                .$signed_method()</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="805">
+                <a href="#805">805</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">                .is_err());</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="806">
+                <a href="#806">806</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">        };</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="807">
+                <a href="#807">807</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">    }</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="808">
+                <a href="#808">808</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2"></pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="809">
+                <a href="#809">809</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">    test_unsigned!(u8, as_u8, i8, as_i8, f32);</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="810">
+                <a href="#810">810</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">    test_unsigned!(u16, as_u16, i16, as_i16, f32);</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="811">
+                <a href="#811">811</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">    test_unsigned!(u32, as_u32, i32, as_i32, f64);</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="812">
+                <a href="#812">812</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">}</pre>
             </div>
         </div></div>
         <footer class="footer">
             <div class="content has-text-centered">
-                <p class="heading">Date: 2021-12-23 17:37</p>
+                <p class="heading">Date: 2021-12-23 19:07</p>
             </div>
         </footer>
     </body>
