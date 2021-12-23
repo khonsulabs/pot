@@ -1,3 +1,11 @@
+A concise storage format, written for [`BonsaiDb`](https://bonsaidb.io/).
+
+![`Pot` forbids unsafe code](https://img.shields.io/badge/unsafe-forbid-success)
+[![crate version](https://img.shields.io/crates/v/pot.svg)](https://crates.io/crates/pot)
+[![Live Build Status](https://img.shields.io/github/workflow/status/khonsulabs/pot/Tests/main)](https://github.com/khonsulabs/pot/actions?query=workflow:Tests)
+[![HTML Coverage Report for `main` branch](https://khonsulabs.github.io/pot/coverage/badge.svg)](https://khonsulabs.github.io/pot/coverage/)
+[![Documentation for `main` branch](https://img.shields.io/badge/docs-main-informational)](https://khonsulabs.github.io/pot/main/pot/)
+
 `Pot` is an encoding format used within [`BonsaiDb`](https://bonsaidb.io/). Its purpose is to
 provide an encoding format for [`serde`](https://serde.rs) that:
 
@@ -48,10 +56,3 @@ is only aimed at comparing the default performance for each library.
 ### Deserialize
 
 [![Deserialize Benchmark Violin Chart](https://pot.bonsaidb.io/benchmarks/logs_deserialize/report/violin.svg)](https://pot.bonsaidb.io/benchmarks/logs_deserialize/report/index.html)
-## Open-source Licenses
-
-This project, like all projects from [Khonsu Labs](https://khonsulabs.com/), are
-open-source. This repository is available under the [MIT License](./LICENSE-MIT)
-or the [Apache License 2.0](./LICENSE-APACHE).
-
-To learn more about contributing, please see [CONTRIBUTING.md](./CONTRIBUTING.md).

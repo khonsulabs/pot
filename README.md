@@ -1,6 +1,6 @@
 # Pot
 
-The storage format for [`BonsaiDb`](https://bonsaidb.io/).
+A concise storage format, written for [`BonsaiDb`](https://bonsaidb.io/).
 
 ![`Pot` forbids unsafe code](https://img.shields.io/badge/unsafe-forbid-success)
 [![crate version](https://img.shields.io/crates/v/pot.svg)](https://crates.io/crates/pot)
@@ -58,6 +58,7 @@ is only aimed at comparing the default performance for each library.
 ### Deserialize
 
 [![Deserialize Benchmark Violin Chart](https://pot.bonsaidb.io/benchmarks/logs_deserialize/report/violin.svg)](https://pot.bonsaidb.io/benchmarks/logs_deserialize/report/index.html)
+
 ## Open-source Licenses
 
 This project, like all projects from [Khonsu Labs](https://khonsulabs.com/), are

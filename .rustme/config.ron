@@ -7,7 +7,6 @@ Configuration(
         ],
         "../pot/crate-docs.md":  [
             "docs.md",
-            "https://github.com/khonsulabs/.github/raw/main/snippets/readme-footer.md",
         ],
         "../CONTRIBUTING.md":  [
             "https://github.com/khonsulabs/.github/raw/main/docs/CONTRIBUTING.md",
