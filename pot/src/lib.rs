@@ -1,5 +1,4 @@
-//! A concise serialization format written for `BonsaiDb`.
-
+#![doc = include_str!("../crate-docs.md")]
 #![forbid(unsafe_code)]
 #![warn(
     clippy::cargo,
@@ -37,7 +36,13 @@ use serde::{Deserialize, Serialize};
 
 use crate::reader::IoReader;
 
-/// Serialize `value` using Pot into a `Vce<u8>`.
+/// Serialize `value` using Pot into a `Vec<u8>`.
+///
+/// ```rust
+/// let serialized = pot::to_vec(&"hello world").unwrap();
+/// let deserialized = pot::from_slice::<String>(&serialized).unwrap();
+/// assert_eq!(deserialized, "hello world");
+/// ```
 pub fn to_vec<T>(value: &T) -> Result<Vec<u8>>
 where
     T: Serialize,
@@ -46,6 +51,13 @@ where
 }
 
 /// Serialize `value` using Pot into `writer`.
+///
+/// ```rust
+/// let mut serialized = Vec::new();
+/// pot::to_writer(&"hello world", &mut serialized).unwrap();
+/// let deserialized = pot::from_reader::<String, _>(&serialized[..]).unwrap();
+/// assert_eq!(deserialized, "hello world");
+/// ```
 pub fn to_writer<T, W>(value: &T, writer: W) -> Result<()>
 where
     T: Serialize,
@@ -55,6 +67,12 @@ where
 }
 
 /// Restore a previously Pot-serialized value from a slice.
+///
+/// ```rust
+/// let serialized = pot::to_vec(&"hello world").unwrap();
+/// let deserialized = pot::from_slice::<String>(&serialized).unwrap();
+/// assert_eq!(deserialized, "hello world");
+/// ```
 pub fn from_slice<'a, T>(serialized: &'a [u8]) -> Result<T>
 where
     T: Deserialize<'a>,
@@ -63,6 +81,13 @@ where
 }
 
 /// Restore a previously Pot-serialized value from a [`Read`] implementor.
+///
+/// ```rust
+/// let mut serialized = Vec::new();
+/// pot::to_writer(&"hello world", &mut serialized).unwrap();
+/// let deserialized = pot::from_reader::<String, _>(&serialized[..]).unwrap();
+/// assert_eq!(deserialized, "hello world");
+/// ```
 pub fn from_reader<'de, T, R>(reader: R) -> Result<T>
 where
     T: Deserialize<'de>,
