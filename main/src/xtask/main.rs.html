@@ -14,21 +14,6 @@
 <span id="14">14</span>
 <span id="15">15</span>
 <span id="16">16</span>
-<span id="17">17</span>
-<span id="18">18</span>
-<span id="19">19</span>
-<span id="20">20</span>
-<span id="21">21</span>
-<span id="22">22</span>
-<span id="23">23</span>
-<span id="24">24</span>
-<span id="25">25</span>
-<span id="26">26</span>
-<span id="27">27</span>
-<span id="28">28</span>
-<span id="29">29</span>
-<span id="30">30</span>
-<span id="31">31</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">khonsu_tools</span>::{
     <span class="ident">anyhow</span>,
     <span class="ident">code_coverage</span>::{<span class="self">self</span>, <span class="ident">CodeCoverage</span>},
@@ -41,23 +26,8 @@
     <span class="kw">match</span> <span class="ident">command</span> {
         <span class="ident">Commands::GenerateCodeCoverageReport</span> {
             <span class="ident">install_dependencies</span>,
-        } =&gt; <span class="ident">CodeCoverage</span>::<span class="op">&lt;</span><span class="ident">CoverageConfig</span><span class="op">&gt;</span><span class="ident">::execute</span>(<span class="ident">install_dependencies</span>),
+        } =&gt; <span class="ident">CodeCoverage</span>::<span class="op">&lt;</span><span class="ident">code_coverage::DefaultConfig</span><span class="op">&gt;</span><span class="ident">::execute</span>(<span class="ident">install_dependencies</span>),
         <span class="ident">Commands::InstallPreCommitHook</span> <span class="op">|</span> <span class="ident">Commands::Audit</span> { .. } =&gt; <span class="macro">todo!</span>(),
-    }
-}
-
-<span class="kw">struct</span> <span class="ident">CoverageConfig</span>;
-
-<span class="kw">impl</span> <span class="ident">code_coverage::Config</span> <span class="kw">for</span> <span class="ident">CoverageConfig</span> {
-    <span class="doccomment">/// The cargo command after `cargo`.</span>
-    <span class="kw">fn</span> <span class="ident">cargo_args</span>() -&gt; <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span> {
-        <span class="macro">vec!</span>[
-            <span class="ident">String::from</span>(<span class="string">&quot;+nightly&quot;</span>),
-            <span class="ident">String::from</span>(<span class="string">&quot;test&quot;</span>),
-            <span class="ident">String::from</span>(<span class="string">&quot;--workspace&quot;</span>),
-            <span class="ident">String::from</span>(<span class="string">&quot;--all-features&quot;</span>),
-            <span class="ident">String::from</span>(<span class="string">&quot;--all-targets&quot;</span>),
-        ]
     }
 }
 </code></pre></div>

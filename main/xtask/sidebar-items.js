@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["main",""]],"struct":[["CoverageConfig",""]]});
+initSidebarItems({"fn":[["main",""]]});
