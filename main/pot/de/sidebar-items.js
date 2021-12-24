@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["SymbolMap","A collection of deserialized symbols."]],"struct":[["Deserializer","Deserializer for the `Pot` format."]]});
+initSidebarItems({"enum":[["SymbolMap","A collection of deserialized symbols."]],"struct":[["Deserializer","Deserializer for the Pot format."]]});

@@ -80,10 +80,10 @@
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::format::Kind</span>;
 
-<span class="doccomment">/// All errors that `Pot` may return.</span>
+<span class="doccomment">/// All errors that Pot may return.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">thiserror::Error</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span> {
-    <span class="doccomment">/// Payload is not a `Pot` payload.</span>
+    <span class="doccomment">/// Payload is not a Pot payload.</span>
     <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;not a pot: invalid header&quot;</span>)]</span>
     <span class="ident">NotAPot</span>,
     <span class="doccomment">/// Data was written with an incompatible version.</span>

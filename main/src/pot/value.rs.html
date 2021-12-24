@@ -810,6 +810,7 @@
 <span id="810">810</span>
 <span id="811">811</span>
 <span id="812">812</span>
+<span id="813">813</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{
     <span class="ident">borrow::Cow</span>,
     <span class="ident">fmt</span>::{<span class="ident">Display</span>, <span class="ident">Write</span>},
@@ -824,7 +825,8 @@
 
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::format</span>::{<span class="ident">Float</span>, <span class="ident">InnerFloat</span>, <span class="ident">InnerInteger</span>, <span class="ident">Integer</span>};
 
-<span class="doccomment">/// A `Pot` encoded value. This type can be used to deserialize to and from Pot without knowing the original data structure.</span>
+<span class="doccomment">/// A Pot encoded value. This type can be used to deserialize to and from Pot</span>
+<span class="doccomment">/// without knowing the original data structure.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="attribute">#[<span class="ident">must_use</span>]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Value</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
