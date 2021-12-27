@@ -98,6 +98,7 @@ where
 
 /// Serialization and deserialization configuration.
 #[must_use]
+#[derive(Clone, Debug)]
 pub struct Config {
     allocation_budget: usize,
 }
