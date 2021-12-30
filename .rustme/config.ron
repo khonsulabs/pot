@@ -22,6 +22,6 @@ Configuration(
         ],
     },
     glossaries: [
-        External("https://github.com/khonsulabs/.github/raw/main/snippets/glossary.ron")
+        "https://github.com/khonsulabs/.github/raw/main/snippets/glossary.ron"
     ],
 )
