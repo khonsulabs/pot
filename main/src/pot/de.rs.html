@@ -948,9 +948,7 @@
 <span id="948">948</span>
 <span id="949">949</span>
 <span id="950">950</span>
-<span id="951">951</span>
-<span id="952">952</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">borrow::Cow</span>, <span class="ident">collections::VecDeque</span>, <span class="ident">fmt::Debug</span>, <span class="ident">marker::PhantomData</span>};
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">borrow::Cow</span>, <span class="ident">collections::VecDeque</span>, <span class="ident">fmt::Debug</span>};
 
 <span class="kw">use</span> <span class="ident">byteorder::ReadBytesExt</span>;
 <span class="kw">use</span> <span class="ident">derive_where::DeriveWhere</span>;
@@ -976,7 +974,6 @@
     <span class="ident">symbols</span>: <span class="ident">SymbolMap</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span><span class="op">&gt;</span>,
     <span class="ident">peeked_atom</span>: <span class="ident">VecDeque</span><span class="op">&lt;</span><span class="ident">Atom</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">remaining_budget</span>: <span class="ident">usize</span>,
-    <span class="ident">_phantom</span>: <span class="ident">PhantomData</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;de</span> <span class="ident">R</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span><span class="op">&gt;</span> <span class="ident">Deserializer</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, <span class="ident">SliceReader</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span><span class="op">&gt;</span> {
@@ -1028,7 +1025,6 @@
             <span class="ident">symbols</span>,
             <span class="ident">peeked_atom</span>: <span class="ident">VecDeque::new</span>(),
             <span class="ident">remaining_budget</span>: <span class="ident">maximum_bytes_allocatable</span>,
-            <span class="ident">_phantom</span>: <span class="ident">PhantomData::default</span>(),
         };
         <span class="ident">deserializer</span>.<span class="ident">read_header</span>()<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="ident">deserializer</span>)
