@@ -19,6 +19,10 @@ jobs:
       - name: Run benchmarks
         run: |
           cargo bench
+      
+      - name: Make plots have a solid white background
+        run: |
+          find target/criterion -name "*.svg" -exec sed -i 's/<svg/<svg style="background-color:#EEE;"/g' {} \;
 
       - name: Deploy Docs
         if: ${{ github.ref == 'refs/heads/main'  }}
