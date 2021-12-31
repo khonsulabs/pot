@@ -32,7 +32,7 @@ use byteorder::WriteBytesExt;
 pub use self::{error::Error, value::Value};
 /// A result alias that returns [`Error`].
 pub type Result<T> = std::result::Result<T, Error>;
-use serde::{Deserialize, Serialize};
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 use crate::reader::IoReader;
 
@@ -88,10 +88,10 @@ where
 /// let deserialized = pot::from_reader::<String, _>(&serialized[..]).unwrap();
 /// assert_eq!(deserialized, "hello world");
 /// ```
-pub fn from_reader<'de, T, R>(reader: R) -> Result<T>
+pub fn from_reader<T, R>(reader: R) -> Result<T>
 where
-    T: Deserialize<'de>,
-    R: Read + 'de,
+    T: DeserializeOwned,
+    R: Read,
 {
     Config::default().deserialize_from(reader)
 }
@@ -140,9 +140,9 @@ impl Config {
 
     /// Deserializes a value from a [`Read`] implementor using the configured
     /// options.
-    pub fn deserialize_from<'de, T, R: Read + 'de>(&self, reader: R) -> Result<T>
+    pub fn deserialize_from<T, R: Read>(&self, reader: R) -> Result<T>
     where
-        T: Deserialize<'de>,
+        T: DeserializeOwned,
     {
         let mut deserializer =
             de::Deserializer::from_read(IoReader::new(reader), self.allocation_budget)?;
@@ -566,13 +566,6 @@ mod tests {
 
         assert!(matches!(
             from_slice::<Value<'_>>(&valid_bytes),
-            Err(Error::InvalidUtf8(_))
-        ));
-
-        // Reading from a reader means we can't borrow the bytes, which yields a
-        // different internal error path.
-        assert!(matches!(
-            from_reader::<Value<'_>, _>(&valid_bytes[..]),
             Err(Error::InvalidUtf8(_))
         ));
     }

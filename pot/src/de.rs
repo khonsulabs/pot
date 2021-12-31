@@ -1,4 +1,4 @@
-use std::{borrow::Cow, collections::VecDeque, fmt::Debug, marker::PhantomData};
+use std::{borrow::Cow, collections::VecDeque, fmt::Debug};
 
 use byteorder::ReadBytesExt;
 use derive_where::DeriveWhere;
@@ -24,7 +24,6 @@ pub struct Deserializer<'s, 'de, R: Reader<'de>> {
     symbols: SymbolMap<'s, 'de>,
     peeked_atom: VecDeque<Atom<'de>>,
     remaining_budget: usize,
-    _phantom: PhantomData<&'de R>,
 }
 
 impl<'s, 'de> Deserializer<'s, 'de, SliceReader<'de>> {
@@ -76,7 +75,6 @@ impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
             symbols,
             peeked_atom: VecDeque::new(),
             remaining_budget: maximum_bytes_allocatable,
-            _phantom: PhantomData::default(),
         };
         deserializer.read_header()?;
         Ok(deserializer)
