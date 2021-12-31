@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["main",""]]});
+initSidebarItems({"enum":[["Config",""]],"fn":[["main",""]]});
