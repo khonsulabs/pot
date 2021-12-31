@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.0.0-rc.3
 
-### Added
+### Changed
 
 - `from_reader` and `Config::deserialize_from` to `DeserializeOwned`. This
   prevents errors at compile time that would arise at runtime when deserializing
@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## v1.0.0-rc.2
 
-### Added
+### Changed
 
 - `Config` now implements `Clone` and `Debug`.
 
