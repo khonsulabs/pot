@@ -15,7 +15,7 @@
         <div>
             <p class="heading">Lines</p>
             <p class="title has-text-success">
-                <abbr title="445 / 447">99.55 %</abbr></p>
+                <abbr title="443 / 445">99.55 %</abbr></p>
         </div>
     </div>
 
@@ -23,7 +23,7 @@
         <div>
             <p class="heading">Functions</p>
             <p class="title has-text-warning">
-                <abbr title="275 / 323">85.14 %</abbr></p>
+                <abbr title="273 / 321">85.05 %</abbr></p>
         </div>
     </div>
 
@@ -489,7 +489,7 @@
                 
             </div>
             <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">use serde::{Deserialize, Serialize};</pre>
+                <pre class="has-background-white py-0 px-2">use serde::{de::DeserializeOwned, Deserialize, Serialize};</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -1214,10 +1214,10 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                64
+                63
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">pub fn from_reader&lt;&#x27;de, T, R&gt;(reader: R) -&gt; Result&lt;T&gt;</pre>
+                <pre class="has-background-success-light py-0 px-2">pub fn from_reader&lt;T, R&gt;(reader: R) -&gt; Result&lt;T&gt;</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -1227,7 +1227,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                64
+                63
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">where</pre>
@@ -1240,10 +1240,10 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                64
+                63
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    T: Deserialize&lt;&#x27;de&gt;,</pre>
+                <pre class="has-background-success-light py-0 px-2">    T: DeserializeOwned,</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -1253,10 +1253,10 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                64
+                63
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    R: Read + &#x27;de,</pre>
+                <pre class="has-background-success-light py-0 px-2">    R: Read,</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -1266,7 +1266,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                64
+                63
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">{</pre>
@@ -1279,7 +1279,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                64
+                63
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    Config::default().deserialize_from(reader)</pre>
@@ -1292,7 +1292,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                64
+                63
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">}</pre>
@@ -1422,7 +1422,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                3339
+                3338
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    fn default() -&gt; Self {</pre>
@@ -1435,7 +1435,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                3339
+                3338
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        Self {</pre>
@@ -1448,7 +1448,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                3339
+                3338
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            allocation_budget: usize::MAX,</pre>
@@ -1461,7 +1461,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                3339
+                3338
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        }</pre>
@@ -1474,7 +1474,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                3339
+                3338
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    }</pre>
@@ -1890,10 +1890,10 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                64
+                63
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    pub fn deserialize_from&lt;&#x27;de, T, R: Read + &#x27;de&gt;(&amp;self, reader: R) -&gt; Result&lt;T&gt;</pre>
+                <pre class="has-background-success-light py-0 px-2">    pub fn deserialize_from&lt;T, R: Read&gt;(&amp;self, reader: R) -&gt; Result&lt;T&gt;</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -1903,7 +1903,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                64
+                63
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    where</pre>
@@ -1916,10 +1916,10 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                64
+                63
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        T: Deserialize&lt;&#x27;de&gt;,</pre>
+                <pre class="has-background-success-light py-0 px-2">        T: DeserializeOwned,</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -1929,7 +1929,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                64
+                63
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    {</pre>
@@ -1942,7 +1942,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                64
+                63
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        let mut deserializer =</pre>
@@ -1955,7 +1955,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                64
+                63
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            de::Deserializer::from_read(IoReader::new(reader), self.allocation_budget)?;</pre>
@@ -1968,7 +1968,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                64
+                63
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        T::deserialize(&amp;mut deserializer)</pre>
@@ -1981,7 +1981,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                64
+                63
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    }</pre>
@@ -7453,11 +7453,11 @@
                 <a href="#571">571</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2"></pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">    }</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7470,7 +7470,7 @@
                 
             </div>
             <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">        &#x2F;&#x2F; Reading from a reader means we can&#x27;t borrow the bytes, which yields a</pre>
+                <pre class="has-background-white py-0 px-2"></pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7479,11 +7479,11 @@
                 <a href="#573">573</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">        &#x2F;&#x2F; different internal error path.</pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">    #[test]</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7496,7 +7496,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        assert!(matches!(</pre>
+                <pre class="has-background-success-light py-0 px-2">    fn unknown_special() {</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7509,7 +7509,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            from_reader::&lt;Value&lt;&#x27;_&gt;, _&gt;(&amp;valid_bytes[..]),</pre>
+                <pre class="has-background-success-light py-0 px-2">        let mut invalid_bytes = Vec::new();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7518,11 +7518,11 @@
                 <a href="#576">576</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">            Err(Error::InvalidUtf8(_))</pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">        format::write_header(&amp;mut invalid_bytes, CURRENT_VERSION).unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7531,11 +7531,11 @@
                 <a href="#577">577</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">        ));</pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">        format::write_atom_header(</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7548,7 +7548,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    }</pre>
+                <pre class="has-background-success-light py-0 px-2">            &amp;mut invalid_bytes,</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7557,11 +7557,11 @@
                 <a href="#579">579</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2"></pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">            format::Kind::Special,</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7574,7 +7574,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    #[test]</pre>
+                <pre class="has-background-success-light py-0 px-2">            Some(format::SPECIAL_COUNT),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7587,7 +7587,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    fn unknown_special() {</pre>
+                <pre class="has-background-success-light py-0 px-2">        )</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7600,7 +7600,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        let mut invalid_bytes = Vec::new();</pre>
+                <pre class="has-background-success-light py-0 px-2">        .unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7609,11 +7609,11 @@
                 <a href="#583">583</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        format::write_header(&amp;mut invalid_bytes, CURRENT_VERSION).unwrap();</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2"></pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7626,7 +7626,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        format::write_atom_header(</pre>
+                <pre class="has-background-success-light py-0 px-2">        assert!(matches!(from_slice::&lt;()&gt;(&amp;invalid_bytes), Err(_)));</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7639,7 +7639,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            &amp;mut invalid_bytes,</pre>
+                <pre class="has-background-success-light py-0 px-2">    }</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7648,11 +7648,11 @@
                 <a href="#586">586</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            format::Kind::Special,</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2"></pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7665,7 +7665,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            Some(format::SPECIAL_COUNT),</pre>
+                <pre class="has-background-success-light py-0 px-2">    #[test]</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7678,7 +7678,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        )</pre>
+                <pre class="has-background-success-light py-0 px-2">    fn invalid_numbers() {</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7691,7 +7691,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        .unwrap();</pre>
+                <pre class="has-background-success-light py-0 px-2">        let mut invalid_float_byte_len = Vec::new();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7700,11 +7700,11 @@
                 <a href="#590">590</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2"></pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">        format::write_header(&amp;mut invalid_float_byte_len, CURRENT_VERSION).unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7717,7 +7717,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        assert!(matches!(from_slice::&lt;()&gt;(&amp;invalid_bytes), Err(_)));</pre>
+                <pre class="has-background-success-light py-0 px-2">        format::write_atom_header(&amp;mut invalid_float_byte_len, format::Kind::Float, Some(0))</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7730,7 +7730,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    }</pre>
+                <pre class="has-background-success-light py-0 px-2">            .unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7756,7 +7756,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    #[test]</pre>
+                <pre class="has-background-success-light py-0 px-2">        assert!(matches!(from_slice::&lt;f32&gt;(&amp;invalid_float_byte_len), Err(_)));</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7765,11 +7765,11 @@
                 <a href="#595">595</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    fn invalid_numbers() {</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2"></pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7782,7 +7782,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        let mut invalid_float_byte_len = Vec::new();</pre>
+                <pre class="has-background-success-light py-0 px-2">        assert!(matches!(</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7795,7 +7795,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        format::write_header(&amp;mut invalid_float_byte_len, CURRENT_VERSION).unwrap();</pre>
+                <pre class="has-background-success-light py-0 px-2">            format::Float::read_from(format::Kind::Symbol, 0, &amp;mut &amp;invalid_float_byte_len[..]),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7804,11 +7804,11 @@
                 <a href="#598">598</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        format::write_atom_header(&amp;mut invalid_float_byte_len, format::Kind::Float, Some(0))</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">            Err(_)</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7817,11 +7817,11 @@
                 <a href="#599">599</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            .unwrap();</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">        ));</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7847,7 +7847,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        assert!(matches!(from_slice::&lt;f32&gt;(&amp;invalid_float_byte_len), Err(_)));</pre>
+                <pre class="has-background-success-light py-0 px-2">        let mut invalid_signed_byte_len = Vec::new();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7856,11 +7856,11 @@
                 <a href="#602">602</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2"></pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">        format::write_header(&amp;mut invalid_signed_byte_len, CURRENT_VERSION).unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7873,7 +7873,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        assert!(matches!(</pre>
+                <pre class="has-background-success-light py-0 px-2">        format::write_atom_header(&amp;mut invalid_signed_byte_len, format::Kind::Int, Some(10))</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7886,7 +7886,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            format::Float::read_from(format::Kind::Symbol, 0, &amp;mut &amp;invalid_float_byte_len[..]),</pre>
+                <pre class="has-background-success-light py-0 px-2">            .unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7899,13 +7899,52 @@
                 
             </div>
             <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">            Err(_)</pre>
+                <pre class="has-background-white py-0 px-2"></pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
                 class="column is-1 is-narrow p-0 has-text-centered"
                 id="606">
                 <a href="#606">606</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">        assert!(matches!(</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="607">
+                <a href="#607">607</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
+            </div>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">            from_slice::&lt;i32&gt;(&amp;invalid_signed_byte_len),</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="608">
+                <a href="#608">608</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">            Err(_)</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="609">
+                <a href="#609">609</a>
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
@@ -7917,8 +7956,8 @@
         </div><div class="columns p-0 m-0">
             <div
                 class="column is-1 is-narrow p-0 has-text-centered"
-                id="607">
-                <a href="#607">607</a>
+                id="610">
+                <a href="#610">610</a>
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
@@ -7926,45 +7965,6 @@
             </div>
             <div class="column has-background-white p-0">
                 <pre class="has-background-white py-0 px-2"></pre>
-            </div>
-        </div><div class="columns p-0 m-0">
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered"
-                id="608">
-                <a href="#608">608</a>
-            </div>
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
-            </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        let mut invalid_signed_byte_len = Vec::new();</pre>
-            </div>
-        </div><div class="columns p-0 m-0">
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered"
-                id="609">
-                <a href="#609">609</a>
-            </div>
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
-            </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        format::write_header(&amp;mut invalid_signed_byte_len, CURRENT_VERSION).unwrap();</pre>
-            </div>
-        </div><div class="columns p-0 m-0">
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered"
-                id="610">
-                <a href="#610">610</a>
-            </div>
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
-            </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        format::write_atom_header(&amp;mut invalid_signed_byte_len, format::Kind::Int, Some(10))</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7977,7 +7977,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            .unwrap();</pre>
+                <pre class="has-background-success-light py-0 px-2">        assert!(matches!(</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7986,11 +7986,11 @@
                 <a href="#612">612</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2"></pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">            format::Integer::read_from(format::Kind::Symbol, 0, &amp;mut &amp;invalid_signed_byte_len[..]),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -7999,11 +7999,11 @@
                 <a href="#613">613</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        assert!(matches!(</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">            Err(_)</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8012,11 +8012,11 @@
                 <a href="#614">614</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            from_slice::&lt;i32&gt;(&amp;invalid_signed_byte_len),</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">        ));</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8029,7 +8029,7 @@
                 
             </div>
             <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">            Err(_)</pre>
+                <pre class="has-background-white py-0 px-2"></pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8038,11 +8038,11 @@
                 <a href="#616">616</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">        ));</pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">        let mut invalid_unsigned_byte_len = Vec::new();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8051,11 +8051,11 @@
                 <a href="#617">617</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2"></pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">        format::write_header(&amp;mut invalid_unsigned_byte_len, CURRENT_VERSION).unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8068,7 +8068,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        assert!(matches!(</pre>
+                <pre class="has-background-success-light py-0 px-2">        format::write_atom_header(&amp;mut invalid_unsigned_byte_len, format::Kind::UInt, Some(10))</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8081,7 +8081,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            format::Integer::read_from(format::Kind::Symbol, 0, &amp;mut &amp;invalid_signed_byte_len[..]),</pre>
+                <pre class="has-background-success-light py-0 px-2">            .unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8094,7 +8094,7 @@
                 
             </div>
             <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">            Err(_)</pre>
+                <pre class="has-background-white py-0 px-2"></pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8103,11 +8103,11 @@
                 <a href="#621">621</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">        ));</pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">        assert!(matches!(</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8116,11 +8116,11 @@
                 <a href="#622">622</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2"></pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">            from_slice::&lt;u32&gt;(&amp;invalid_unsigned_byte_len),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8129,11 +8129,11 @@
                 <a href="#623">623</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        let mut invalid_unsigned_byte_len = Vec::new();</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">            Err(_)</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8142,11 +8142,11 @@
                 <a href="#624">624</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        format::write_header(&amp;mut invalid_unsigned_byte_len, CURRENT_VERSION).unwrap();</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">        ));</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8159,26 +8159,13 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        format::write_atom_header(&amp;mut invalid_unsigned_byte_len, format::Kind::UInt, Some(10))</pre>
+                <pre class="has-background-success-light py-0 px-2">    }</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
                 class="column is-1 is-narrow p-0 has-text-centered"
                 id="626">
                 <a href="#626">626</a>
-            </div>
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
-            </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            .unwrap();</pre>
-            </div>
-        </div><div class="columns p-0 m-0">
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered"
-                id="627">
-                <a href="#627">627</a>
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
@@ -8190,15 +8177,28 @@
         </div><div class="columns p-0 m-0">
             <div
                 class="column is-1 is-narrow p-0 has-text-centered"
-                id="628">
-                <a href="#628">628</a>
+                id="627">
+                <a href="#627">627</a>
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        assert!(matches!(</pre>
+                <pre class="has-background-success-light py-0 px-2">    #[test]</pre>
+            </div>
+        </div><div class="columns p-0 m-0">
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered"
+                id="628">
+                <a href="#628">628</a>
+            </div>
+            <div
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
+            </div>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">    #[allow(clippy::unnecessary_mut_passed)] &#x2F;&#x2F; It&#x27;s necessary.</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8211,7 +8211,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            from_slice::&lt;u32&gt;(&amp;invalid_unsigned_byte_len),</pre>
+                <pre class="has-background-success-light py-0 px-2">    fn not_human_readable() {</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8220,11 +8220,11 @@
                 <a href="#630">630</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">            Err(_)</pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">        let mut bytes = Vec::new();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8233,11 +8233,11 @@
                 <a href="#631">631</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">        ));</pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">        let mut serializer = ser::Serializer::new(&amp;mut bytes).unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8250,7 +8250,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    }</pre>
+                <pre class="has-background-success-light py-0 px-2">        assert!(!(&amp;mut serializer).is_human_readable());</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8259,11 +8259,11 @@
                 <a href="#633">633</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2"></pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">        ().serialize(&amp;mut serializer).unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8276,7 +8276,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    #[test]</pre>
+                <pre class="has-background-success-light py-0 px-2"></pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8285,11 +8285,11 @@
                 <a href="#635">635</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">    #[allow(clippy::unnecessary_mut_passed)] &#x2F;&#x2F; It&#x27;s necessary.</pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">        let bytes = to_vec(&amp;()).unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8302,7 +8302,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    fn not_human_readable() {</pre>
+                <pre class="has-background-success-light py-0 px-2">        let mut deserializer = de::Deserializer::from_slice(&amp;bytes, usize::MAX).unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8315,7 +8315,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        let mut bytes = Vec::new();</pre>
+                <pre class="has-background-success-light py-0 px-2">        assert!(!(&amp;mut deserializer).is_human_readable());</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8328,7 +8328,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        let mut serializer = ser::Serializer::new(&amp;mut bytes).unwrap();</pre>
+                <pre class="has-background-success-light py-0 px-2">    }</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8337,11 +8337,11 @@
                 <a href="#639">639</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        assert!(!(&amp;mut serializer).is_human_readable());</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2"></pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8354,7 +8354,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        ().serialize(&amp;mut serializer).unwrap();</pre>
+                <pre class="has-background-success-light py-0 px-2">    #[test]</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8367,7 +8367,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2"></pre>
+                <pre class="has-background-success-light py-0 px-2">    fn unexpected_eof() {</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8380,7 +8380,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        let bytes = to_vec(&amp;()).unwrap();</pre>
+                <pre class="has-background-success-light py-0 px-2">        let mut invalid_bytes = Vec::new();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8393,7 +8393,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        let mut deserializer = de::Deserializer::from_slice(&amp;bytes, usize::MAX).unwrap();</pre>
+                <pre class="has-background-success-light py-0 px-2">        format::write_header(&amp;mut invalid_bytes, CURRENT_VERSION).unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8406,7 +8406,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        assert!(!(&amp;mut deserializer).is_human_readable());</pre>
+                <pre class="has-background-success-light py-0 px-2">        format::write_atom_header(&amp;mut invalid_bytes, format::Kind::Bytes, Some(10)).unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8419,7 +8419,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    }</pre>
+                <pre class="has-background-success-light py-0 px-2">        assert!(matches!(</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8428,11 +8428,11 @@
                 <a href="#646">646</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2"></pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">            from_slice::&lt;Vec&lt;u8&gt;&gt;(&amp;invalid_bytes),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8441,11 +8441,11 @@
                 <a href="#647">647</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    #[test]</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">            Err(Error::Eof)</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8454,11 +8454,11 @@
                 <a href="#648">648</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    fn unexpected_eof() {</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">        ));</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8471,7 +8471,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        let mut invalid_bytes = Vec::new();</pre>
+                <pre class="has-background-success-light py-0 px-2">    }</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8480,11 +8480,11 @@
                 <a href="#650">650</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        format::write_header(&amp;mut invalid_bytes, CURRENT_VERSION).unwrap();</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2"></pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8497,7 +8497,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        format::write_atom_header(&amp;mut invalid_bytes, format::Kind::Bytes, Some(10)).unwrap();</pre>
+                <pre class="has-background-success-light py-0 px-2">    #[test]</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8510,7 +8510,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        assert!(matches!(</pre>
+                <pre class="has-background-success-light py-0 px-2">    fn too_big_read() {</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8523,7 +8523,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            from_slice::&lt;Vec&lt;u8&gt;&gt;(&amp;invalid_bytes),</pre>
+                <pre class="has-background-success-light py-0 px-2">        let mut invalid_bytes = Vec::new();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8532,11 +8532,11 @@
                 <a href="#654">654</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">            Err(Error::Eof)</pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">        format::write_header(&amp;mut invalid_bytes, CURRENT_VERSION).unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8545,11 +8545,11 @@
                 <a href="#655">655</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">        ));</pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">        format::write_atom_header(&amp;mut invalid_bytes, format::Kind::Bytes, Some(10)).unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8562,7 +8562,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    }</pre>
+                <pre class="has-background-success-light py-0 px-2">        assert!(matches!(</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8571,11 +8571,11 @@
                 <a href="#657">657</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2"></pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">            Config::default()</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8588,7 +8588,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    #[test]</pre>
+                <pre class="has-background-success-light py-0 px-2">                .allocation_budget(9)</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8601,7 +8601,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    fn too_big_read() {</pre>
+                <pre class="has-background-success-light py-0 px-2">                .deserialize::&lt;Vec&lt;u8&gt;&gt;(&amp;invalid_bytes),</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8610,11 +8610,11 @@
                 <a href="#660">660</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        let mut invalid_bytes = Vec::new();</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">            Err(Error::TooManyBytesRead)</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8623,11 +8623,11 @@
                 <a href="#661">661</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        format::write_header(&amp;mut invalid_bytes, CURRENT_VERSION).unwrap();</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2">        ));</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -8640,104 +8640,13 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        format::write_atom_header(&amp;mut invalid_bytes, format::Kind::Bytes, Some(10)).unwrap();</pre>
+                <pre class="has-background-success-light py-0 px-2">    }</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
                 class="column is-1 is-narrow p-0 has-text-centered"
                 id="663">
                 <a href="#663">663</a>
-            </div>
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
-            </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        assert!(matches!(</pre>
-            </div>
-        </div><div class="columns p-0 m-0">
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered"
-                id="664">
-                <a href="#664">664</a>
-            </div>
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
-            </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">            Config::default()</pre>
-            </div>
-        </div><div class="columns p-0 m-0">
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered"
-                id="665">
-                <a href="#665">665</a>
-            </div>
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
-            </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">                .allocation_budget(9)</pre>
-            </div>
-        </div><div class="columns p-0 m-0">
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered"
-                id="666">
-                <a href="#666">666</a>
-            </div>
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
-            </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">                .deserialize::&lt;Vec&lt;u8&gt;&gt;(&amp;invalid_bytes),</pre>
-            </div>
-        </div><div class="columns p-0 m-0">
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered"
-                id="667">
-                <a href="#667">667</a>
-            </div>
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
-            </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">            Err(Error::TooManyBytesRead)</pre>
-            </div>
-        </div><div class="columns p-0 m-0">
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered"
-                id="668">
-                <a href="#668">668</a>
-            </div>
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
-            </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">        ));</pre>
-            </div>
-        </div><div class="columns p-0 m-0">
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered"
-                id="669">
-                <a href="#669">669</a>
-            </div>
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
-            </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    }</pre>
-            </div>
-        </div><div class="columns p-0 m-0">
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered"
-                id="670">
-                <a href="#670">670</a>
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
@@ -8749,7 +8658,7 @@
         </div></div>
         <footer class="footer">
             <div class="content has-text-centered">
-                <p class="heading">Date: 2021-12-30 15:40</p>
+                <p class="heading">Date: 2021-12-31 15:22</p>
             </div>
         </footer>
     </body>
