@@ -1,12 +1,10 @@
 use khonsu_tools::{
-    universal::{anyhow, DefaultConfig},
+    universal::{anyhow, DefaultConfig, clap::Parser},
     Commands,
 };
-use structopt::StructOpt;
 
 fn main() -> anyhow::Result<()> {
-    let command = Commands::from_args();
-    command.execute::<Config>()
+    Commands::parse().execute::<Config>()
 }
 
 enum Config {}
