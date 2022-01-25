@@ -20,17 +20,13 @@
 <span id="19">19</span>
 <span id="20">20</span>
 <span id="21">21</span>
-<span id="22">22</span>
-<span id="23">23</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">khonsu_tools</span>::{
-    <span class="ident">universal</span>::{<span class="ident">anyhow</span>, <span class="ident">DefaultConfig</span>},
+    <span class="ident">universal</span>::{<span class="ident">anyhow</span>, <span class="ident">DefaultConfig</span>, <span class="ident">clap::Parser</span>},
     <span class="ident">Commands</span>,
 };
-<span class="kw">use</span> <span class="ident">structopt::StructOpt</span>;
 
 <span class="kw">fn</span> <span class="ident">main</span>() -&gt; <span class="ident">anyhow::Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">command</span> <span class="op">=</span> <span class="ident">Commands::from_args</span>();
-    <span class="ident">command</span>.<span class="ident">execute</span>::<span class="op">&lt;</span><span class="ident">Config</span><span class="op">&gt;</span>()
+    <span class="ident">Commands::parse</span>().<span class="ident">execute</span>::<span class="op">&lt;</span><span class="ident">Config</span><span class="op">&gt;</span>()
 }
 
 <span class="kw">enum</span> <span class="ident">Config</span> {}
