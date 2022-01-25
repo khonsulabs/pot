@@ -21,7 +21,7 @@ tracing = { version = "0.1", features = [
 byteorder = "1"
 bytes = "1"
 half = "1"
-derive-where = "1.0.0-rc.1"
+derive-where = "=1.0.0-rc.2"
 
 [dev-dependencies]
 tracing-subscriber = { version = "0.3" }

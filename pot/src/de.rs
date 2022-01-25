@@ -1,7 +1,7 @@
 use std::{borrow::Cow, collections::VecDeque, fmt::Debug};
 
 use byteorder::ReadBytesExt;
-use derive_where::DeriveWhere;
+use derive_where::derive_where;
 use format::Kind;
 use serde::de::{
     self, DeserializeSeed, EnumAccess, Error as _, MapAccess, SeqAccess, VariantAccess, Visitor,
@@ -16,7 +16,6 @@ use crate::{
 };
 
 /// Deserializer for the Pot format.
-#[derive(DeriveWhere)]
 #[derive_where(Debug)]
 pub struct Deserializer<'s, 'de, R: Reader<'de>> {
     #[derive_where(skip)]
@@ -740,7 +739,6 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 }
 
-#[derive(DeriveWhere)]
 #[derive_where(Debug)]
 struct AtomList<'a, 's, 'de, R: Reader<'de>> {
     de: &'a mut Deserializer<'s, 'de, R>,

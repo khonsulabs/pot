@@ -5,7 +5,7 @@ use std::{
 };
 
 use byteorder::WriteBytesExt;
-use derive_where::DeriveWhere;
+use derive_where::derive_where;
 use serde::{ser, Serialize};
 #[cfg(feature = "tracing")]
 use tracing::instrument;
@@ -16,7 +16,6 @@ use crate::{
 };
 
 /// A Pot serializer.
-#[derive(DeriveWhere)]
 #[derive_where(Debug)]
 pub struct Serializer<'a, W: WriteBytesExt> {
     symbol_map: SymbolMapRef<'a>,
