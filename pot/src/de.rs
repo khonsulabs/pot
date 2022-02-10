@@ -163,9 +163,13 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Special => match &atom.nucleus {
                 Some(Nucleus::Boolean(value)) => visitor.visit_bool(*value),
                 Some(Nucleus::Unit) => visitor.visit_unit(),
-                Some(Nucleus::Named) => visitor.visit_map(AtomList::new(self, 1)),
+                Some(Nucleus::Named) => visitor.visit_map(AtomList::new(self, Some(1))),
+                Some(Nucleus::DynamicMap) => visitor.visit_map(AtomList::new(self, None)),
+                Some(Nucleus::DynamicEnd) => Err(Error::custom("unexpected dynamic end")),
+                Some(Nucleus::Bytes(_) | Nucleus::Integer(_) | Nucleus::Float(_)) => {
+                    unreachable!("read_atom can't return this nucleus as a Special")
+                }
                 None => visitor.visit_none(),
-                _ => unreachable!("read_atom should never return anything else"),
             },
             Kind::Int => match atom.nucleus {
                 Some(Nucleus::Integer(Integer(InnerInteger::I8(value)))) => visitor.visit_i8(value),
@@ -204,8 +208,8 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 Some(Nucleus::Float(Float(InnerFloat::F64(value)))) => visitor.visit_f64(value),
                 _ => unreachable!("read_atom should never return anything else"),
             },
-            Kind::Sequence => visitor.visit_seq(AtomList::new(self, atom.arg as usize)),
-            Kind::Map => visitor.visit_map(AtomList::new(self, atom.arg as usize)),
+            Kind::Sequence => visitor.visit_seq(AtomList::new(self, Some(atom.arg as usize))),
+            Kind::Map => visitor.visit_map(AtomList::new(self, Some(atom.arg as usize))),
             Kind::Symbol => self.visit_symbol(&atom, visitor),
             Kind::Bytes => match &atom.nucleus {
                 Some(Nucleus::Bytes(bytes)) => match bytes {
@@ -636,7 +640,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     {
         let atom = self.read_atom()?;
         if atom.kind == Kind::Sequence {
-            visitor.visit_seq(AtomList::new(self, atom.arg as usize))
+            visitor.visit_seq(AtomList::new(self, Some(atom.arg as usize)))
         } else {
             Err(Error::custom(format!(
                 "expected sequence, got {:?}",
@@ -672,10 +676,12 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         V: Visitor<'de>,
     {
         let atom = self.read_atom()?;
-        if atom.kind == Kind::Map {
-            visitor.visit_map(AtomList::new(self, atom.arg as usize))
-        } else {
-            Err(Error::custom(format!("expected map, got {:?}", atom.kind)))
+        match (atom.kind, atom.nucleus) {
+            (Kind::Map, _) => visitor.visit_map(AtomList::new(self, Some(atom.arg as usize))),
+            (Kind::Special, Some(Nucleus::DynamicMap)) => {
+                visitor.visit_map(AtomList::new(self, None))
+            }
+            (kind, _) => Err(Error::custom(format!("expected map, got {:?}", kind))),
         }
     }
 
@@ -743,16 +749,40 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
 struct AtomList<'a, 's, 'de, R: Reader<'de>> {
     de: &'a mut Deserializer<'s, 'de, R>,
     consumed: usize,
-    count: usize,
+    count: Option<usize>,
+    eof: bool,
 }
 
 impl<'a, 's, 'de, R: Reader<'de>> AtomList<'a, 's, 'de, R> {
-    fn new(de: &'a mut Deserializer<'s, 'de, R>, count: usize) -> Self {
+    fn new(de: &'a mut Deserializer<'s, 'de, R>, count: Option<usize>) -> Self {
         Self {
             de,
             count,
             consumed: 0,
+            eof: false,
         }
+    }
+
+    fn is_eof(&mut self) -> Result<bool> {
+        if self.eof {
+            return Ok(true);
+        } else if let Some(count) = self.count {
+            if count == self.consumed {
+                self.eof = true;
+                return Ok(true);
+            }
+        } else {
+            let atom = self.de.peek_atom()?;
+            if matches!(atom.kind, Kind::Special)
+                && matches!(atom.nucleus, Some(Nucleus::DynamicEnd))
+            {
+                self.eof = true;
+                drop(self.de.read_atom()?);
+                return Ok(true);
+            }
+        }
+
+        Ok(false)
     }
 }
 
@@ -764,7 +794,7 @@ impl<'a, 's, 'de, R: Reader<'de>> SeqAccess<'de> for AtomList<'a, 's, 'de, R> {
     where
         T: DeserializeSeed<'de>,
     {
-        if self.count == self.consumed {
+        if self.is_eof()? {
             Ok(None)
         } else {
             self.consumed += 1;
@@ -773,7 +803,7 @@ impl<'a, 's, 'de, R: Reader<'de>> SeqAccess<'de> for AtomList<'a, 's, 'de, R> {
     }
 
     fn size_hint(&self) -> Option<usize> {
-        Some(self.count)
+        self.count
     }
 }
 
@@ -785,7 +815,7 @@ impl<'a, 's, 'de, R: Reader<'de>> MapAccess<'de> for AtomList<'a, 's, 'de, R> {
     where
         T: DeserializeSeed<'de>,
     {
-        if self.count == self.consumed {
+        if self.is_eof()? {
             Ok(None)
         } else {
             self.consumed += 1;
@@ -803,7 +833,7 @@ impl<'a, 's, 'de, R: Reader<'de>> MapAccess<'de> for AtomList<'a, 's, 'de, R> {
     }
 
     fn size_hint(&self) -> Option<usize> {
-        Some(self.count)
+        self.count
     }
 }
 

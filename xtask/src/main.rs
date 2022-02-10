@@ -1,5 +1,5 @@
 use khonsu_tools::{
-    universal::{anyhow, DefaultConfig, clap::Parser},
+    universal::{anyhow, clap::Parser, DefaultConfig},
     Commands,
 };
 

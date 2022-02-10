@@ -11,7 +11,7 @@ use serde::{ser, Serialize};
 use tracing::instrument;
 
 use crate::{
-    format::{self, Kind, CURRENT_VERSION},
+    format::{self, Kind, Special, CURRENT_VERSION},
     Error, Result,
 };
 
@@ -62,7 +62,7 @@ impl<'a, W: WriteBytesExt> Serializer<'a, W> {
     }
 }
 
-impl<'de, 'a: 'de, W: WriteBytesExt> ser::Serializer for &'de mut Serializer<'a, W> {
+impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::Serializer for &'de mut Serializer<'a, W> {
     type Ok = ();
     type Error = Error;
 
@@ -70,9 +70,9 @@ impl<'de, 'a: 'de, W: WriteBytesExt> ser::Serializer for &'de mut Serializer<'a,
     type SerializeTuple = Self;
     type SerializeTupleStruct = Self;
     type SerializeTupleVariant = Self;
-    type SerializeMap = Self;
-    type SerializeStruct = Self;
-    type SerializeStructVariant = Self;
+    type SerializeMap = MapSerializer<'de, 'a, W>;
+    type SerializeStruct = MapSerializer<'de, 'a, W>;
+    type SerializeStructVariant = MapSerializer<'de, 'a, W>;
 
     fn is_human_readable(&self) -> bool {
         false
@@ -273,10 +273,20 @@ impl<'de, 'a: 'de, W: WriteBytesExt> ser::Serializer for &'de mut Serializer<'a,
 
     #[cfg_attr(feature = "tracing", instrument)]
     fn serialize_map(self, len: Option<usize>) -> Result<Self::SerializeMap> {
-        let len = len.ok_or(Error::SequenceSizeMustBeKnown)?;
-        self.bytes_written +=
-            format::write_atom_header(&mut self.output, Kind::Map, Some(len as u64))?;
-        Ok(self)
+        if let Some(len) = len {
+            self.bytes_written +=
+                format::write_atom_header(&mut self.output, Kind::Map, Some(len as u64))?;
+            Ok(MapSerializer {
+                serializer: self,
+                known_length: true,
+            })
+        } else {
+            self.bytes_written += format::write_special(&mut self.output, Special::DynamicMap)?;
+            Ok(MapSerializer {
+                serializer: self,
+                known_length: false,
+            })
+        }
     }
 
     #[cfg_attr(feature = "tracing", instrument)]
@@ -298,7 +308,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt> ser::Serializer for &'de mut Serializer<'a,
     }
 }
 
-impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeSeq for &'de mut Serializer<'a, W> {
+impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeSeq for &'de mut Serializer<'a, W> {
     type Ok = ();
     type Error = Error;
 
@@ -314,7 +324,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeSeq for &'de mut Serializer<'
     }
 }
 
-impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeTuple for &'de mut Serializer<'a, W> {
+impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeTuple for &'de mut Serializer<'a, W> {
     type Ok = ();
     type Error = Error;
 
@@ -330,7 +340,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeTuple for &'de mut Serializer
     }
 }
 
-impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeTupleStruct for &'de mut Serializer<'a, W> {
+impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeTupleStruct for &'de mut Serializer<'a, W> {
     type Ok = ();
     type Error = Error;
 
@@ -346,7 +356,9 @@ impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeTupleStruct for &'de mut Seri
     }
 }
 
-impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeTupleVariant for &'de mut Serializer<'a, W> {
+impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeTupleVariant
+    for &'de mut Serializer<'a, W>
+{
     type Ok = ();
     type Error = Error;
 
@@ -362,7 +374,13 @@ impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeTupleVariant for &'de mut Ser
     }
 }
 
-impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeMap for &'de mut Serializer<'a, W> {
+/// Serializes map-like values.
+pub struct MapSerializer<'de, 'a, W: WriteBytesExt> {
+    serializer: &'de mut Serializer<'a, W>,
+    known_length: bool,
+}
+
+impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeMap for MapSerializer<'de, 'a, W> {
     type Ok = ();
     type Error = Error;
 
@@ -370,22 +388,25 @@ impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeMap for &'de mut Serializer<'
     where
         T: ?Sized + Serialize,
     {
-        key.serialize(&mut **self)
+        key.serialize(&mut *self.serializer)
     }
 
     fn serialize_value<T>(&mut self, value: &T) -> Result<()>
     where
         T: ?Sized + Serialize,
     {
-        value.serialize(&mut **self)
+        value.serialize(&mut *self.serializer)
     }
 
     fn end(self) -> Result<()> {
+        if !self.known_length {
+            format::write_special(&mut self.serializer.output, Special::DynamicEnd)?;
+        }
         Ok(())
     }
 }
 
-impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeStruct for &'de mut Serializer<'a, W> {
+impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeStruct for MapSerializer<'de, 'a, W> {
     type Ok = ();
     type Error = Error;
 
@@ -393,16 +414,21 @@ impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeStruct for &'de mut Serialize
     where
         T: ?Sized + Serialize,
     {
-        self.write_symbol(key)?;
-        value.serialize(&mut **self)
+        self.serializer.write_symbol(key)?;
+        value.serialize(&mut *self.serializer)
     }
 
     fn end(self) -> Result<()> {
+        if !self.known_length {
+            format::write_special(&mut self.serializer.output, Special::DynamicEnd)?;
+        }
         Ok(())
     }
 }
 
-impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeStructVariant for &'de mut Serializer<'a, W> {
+impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeStructVariant
+    for MapSerializer<'de, 'a, W>
+{
     type Ok = ();
     type Error = Error;
 
@@ -410,11 +436,14 @@ impl<'de, 'a: 'de, W: WriteBytesExt> ser::SerializeStructVariant for &'de mut Se
     where
         T: ?Sized + Serialize,
     {
-        self.write_symbol(key)?;
-        value.serialize(&mut **self)
+        self.serializer.write_symbol(key)?;
+        value.serialize(&mut *self.serializer)
     }
 
     fn end(self) -> Result<()> {
+        if !self.known_length {
+            format::write_special(&mut self.serializer.output, Special::DynamicEnd)?;
+        }
         Ok(())
     }
 }

@@ -660,4 +660,30 @@ mod tests {
             Err(Error::TooManyBytesRead)
         ));
     }
+
+    #[derive(Serialize, Deserialize, Debug, PartialEq)]
+    struct Flatten {
+        #[serde(flatten)]
+        structure: Flattened,
+        #[serde(flatten)]
+        enumeration: EnumVariants,
+    }
+
+    #[derive(Serialize, Deserialize, Debug, PartialEq)]
+    struct Flattened {
+        field: String,
+    }
+
+    #[test]
+    fn test_flatten() {
+        test_serialization(
+            &Flatten {
+                structure: Flattened {
+                    field: String::from("flat"),
+                },
+                enumeration: EnumVariants::Struct { arg: 1 },
+            },
+            None,
+        );
+    }
 }

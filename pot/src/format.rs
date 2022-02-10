@@ -132,6 +132,10 @@ pub enum Special {
     True = 3,
     /// A named value. A symbol followed by another value.
     Named = 4,
+    /// A sequence of key-value pairs with an unknown length.
+    DynamicMap = 5,
+    /// A terminal value for a [`Self::DynamicMap`].
+    DynamicEnd = 6,
 }
 
 #[cfg(test)]
@@ -147,6 +151,8 @@ impl TryFrom<u64> for Special {
             2 => Ok(Self::False),
             3 => Ok(Self::True),
             4 => Ok(Self::Named),
+            5 => Ok(Self::DynamicMap),
+            6 => Ok(Self::DynamicEnd),
             _ => Err(Error::custom("unknown special type")),
         }
     }
@@ -934,6 +940,8 @@ pub fn read_atom<'de, R: Reader<'de>>(
                 Special::False => Some(Nucleus::Boolean(false)),
                 Special::True => Some(Nucleus::Boolean(true)),
                 Special::Named => Some(Nucleus::Named),
+                Special::DynamicMap => Some(Nucleus::DynamicMap),
+                Special::DynamicEnd => Some(Nucleus::DynamicEnd),
             },
         },
         Kind::Int | Kind::UInt => {
@@ -1122,6 +1130,10 @@ pub enum Nucleus<'de> {
     Unit,
     /// A named value.
     Named,
+    /// A marker denoting a map with unknown length is next in the file.
+    DynamicMap,
+    /// A marker denoting the end of a map with unknown length.
+    DynamicEnd,
 }
 
 #[cfg(test)]
