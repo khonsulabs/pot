@@ -1656,6 +1656,18 @@
 <span id="1655">1655</span>
 <span id="1656">1656</span>
 <span id="1657">1657</span>
+<span id="1658">1658</span>
+<span id="1659">1659</span>
+<span id="1660">1660</span>
+<span id="1661">1661</span>
+<span id="1662">1662</span>
+<span id="1663">1663</span>
+<span id="1664">1664</span>
+<span id="1665">1665</span>
+<span id="1666">1666</span>
+<span id="1667">1667</span>
+<span id="1668">1668</span>
+<span id="1669">1669</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">borrow::Cow</span>, <span class="ident">fmt::Display</span>};
 
 <span class="kw">use</span> <span class="ident">byteorder</span>::{<span class="ident">BigEndian</span>, <span class="ident">LittleEndian</span>, <span class="ident">ReadBytesExt</span>, <span class="ident">WriteBytesExt</span>};
@@ -1790,6 +1802,10 @@
     <span class="ident">True</span> <span class="op">=</span> <span class="number">3</span>,
     <span class="doccomment">/// A named value. A symbol followed by another value.</span>
     <span class="ident">Named</span> <span class="op">=</span> <span class="number">4</span>,
+    <span class="doccomment">/// A sequence of key-value pairs with an unknown length.</span>
+    <span class="ident">DynamicMap</span> <span class="op">=</span> <span class="number">5</span>,
+    <span class="doccomment">/// A terminal value for a [`Self::DynamicMap`].</span>
+    <span class="ident">DynamicEnd</span> <span class="op">=</span> <span class="number">6</span>,
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
@@ -1805,6 +1821,8 @@
             <span class="number">2</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::False</span>),
             <span class="number">3</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::True</span>),
             <span class="number">4</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::Named</span>),
+            <span class="number">5</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::DynamicMap</span>),
+            <span class="number">6</span> =&gt; <span class="prelude-val">Ok</span>(<span class="ident"><span class="self">Self</span>::DynamicEnd</span>),
             <span class="kw">_</span> =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::custom</span>(<span class="string">&quot;unknown special type&quot;</span>)),
         }
     }
@@ -2592,6 +2610,8 @@
                 <span class="ident">Special::False</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Boolean</span>(<span class="bool-val">false</span>)),
                 <span class="ident">Special::True</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Boolean</span>(<span class="bool-val">true</span>)),
                 <span class="ident">Special::Named</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Named</span>),
+                <span class="ident">Special::DynamicMap</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">Nucleus::DynamicMap</span>),
+                <span class="ident">Special::DynamicEnd</span> =&gt; <span class="prelude-val">Some</span>(<span class="ident">Nucleus::DynamicEnd</span>),
             },
         },
         <span class="ident">Kind::Int</span> <span class="op">|</span> <span class="ident">Kind::UInt</span> =&gt; {
@@ -2780,6 +2800,10 @@
     <span class="ident">Unit</span>,
     <span class="doccomment">/// A named value.</span>
     <span class="ident">Named</span>,
+    <span class="doccomment">/// A marker denoting a map with unknown length is next in the file.</span>
+    <span class="ident">DynamicMap</span>,
+    <span class="doccomment">/// A marker denoting the end of a map with unknown length.</span>
+    <span class="ident">DynamicEnd</span>,
 }
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>

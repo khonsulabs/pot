@@ -947,6 +947,36 @@
 <span id="946">946</span>
 <span id="947">947</span>
 <span id="948">948</span>
+<span id="949">949</span>
+<span id="950">950</span>
+<span id="951">951</span>
+<span id="952">952</span>
+<span id="953">953</span>
+<span id="954">954</span>
+<span id="955">955</span>
+<span id="956">956</span>
+<span id="957">957</span>
+<span id="958">958</span>
+<span id="959">959</span>
+<span id="960">960</span>
+<span id="961">961</span>
+<span id="962">962</span>
+<span id="963">963</span>
+<span id="964">964</span>
+<span id="965">965</span>
+<span id="966">966</span>
+<span id="967">967</span>
+<span id="968">968</span>
+<span id="969">969</span>
+<span id="970">970</span>
+<span id="971">971</span>
+<span id="972">972</span>
+<span id="973">973</span>
+<span id="974">974</span>
+<span id="975">975</span>
+<span id="976">976</span>
+<span id="977">977</span>
+<span id="978">978</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">borrow::Cow</span>, <span class="ident">collections::VecDeque</span>, <span class="ident">fmt::Debug</span>};
 
 <span class="kw">use</span> <span class="ident">byteorder::ReadBytesExt</span>;
@@ -1112,9 +1142,13 @@
             <span class="ident">Kind::Special</span> =&gt; <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">atom</span>.<span class="ident">nucleus</span> {
                 <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Boolean</span>(<span class="ident">value</span>)) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_bool</span>(<span class="kw-2">*</span><span class="ident">value</span>),
                 <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Unit</span>) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_unit</span>(),
-                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Named</span>) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_map</span>(<span class="ident">AtomList::new</span>(<span class="self">self</span>, <span class="number">1</span>)),
+                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Named</span>) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_map</span>(<span class="ident">AtomList::new</span>(<span class="self">self</span>, <span class="prelude-val">Some</span>(<span class="number">1</span>))),
+                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::DynamicMap</span>) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_map</span>(<span class="ident">AtomList::new</span>(<span class="self">self</span>, <span class="prelude-val">None</span>)),
+                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::DynamicEnd</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::custom</span>(<span class="string">&quot;unexpected dynamic end&quot;</span>)),
+                <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Bytes</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">Nucleus::Integer</span>(<span class="kw">_</span>) <span class="op">|</span> <span class="ident">Nucleus::Float</span>(<span class="kw">_</span>)) =&gt; {
+                    <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom can&#39;t return this nucleus as a Special&quot;</span>)
+                }
                 <span class="prelude-val">None</span> =&gt; <span class="ident">visitor</span>.<span class="ident">visit_none</span>(),
-                <span class="kw">_</span> =&gt; <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>),
             },
             <span class="ident">Kind::Int</span> =&gt; <span class="kw">match</span> <span class="ident">atom</span>.<span class="ident">nucleus</span> {
                 <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Integer</span>(<span class="ident">Integer</span>(<span class="ident">InnerInteger::I8</span>(<span class="ident">value</span>)))) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_i8</span>(<span class="ident">value</span>),
@@ -1153,8 +1187,8 @@
                 <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Float</span>(<span class="ident">Float</span>(<span class="ident">InnerFloat::F64</span>(<span class="ident">value</span>)))) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_f64</span>(<span class="ident">value</span>),
                 <span class="kw">_</span> =&gt; <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>),
             },
-            <span class="ident">Kind::Sequence</span> =&gt; <span class="ident">visitor</span>.<span class="ident">visit_seq</span>(<span class="ident">AtomList::new</span>(<span class="self">self</span>, <span class="ident">atom</span>.<span class="ident">arg</span> <span class="kw">as</span> <span class="ident">usize</span>)),
-            <span class="ident">Kind::Map</span> =&gt; <span class="ident">visitor</span>.<span class="ident">visit_map</span>(<span class="ident">AtomList::new</span>(<span class="self">self</span>, <span class="ident">atom</span>.<span class="ident">arg</span> <span class="kw">as</span> <span class="ident">usize</span>)),
+            <span class="ident">Kind::Sequence</span> =&gt; <span class="ident">visitor</span>.<span class="ident">visit_seq</span>(<span class="ident">AtomList::new</span>(<span class="self">self</span>, <span class="prelude-val">Some</span>(<span class="ident">atom</span>.<span class="ident">arg</span> <span class="kw">as</span> <span class="ident">usize</span>))),
+            <span class="ident">Kind::Map</span> =&gt; <span class="ident">visitor</span>.<span class="ident">visit_map</span>(<span class="ident">AtomList::new</span>(<span class="self">self</span>, <span class="prelude-val">Some</span>(<span class="ident">atom</span>.<span class="ident">arg</span> <span class="kw">as</span> <span class="ident">usize</span>))),
             <span class="ident">Kind::Symbol</span> =&gt; <span class="self">self</span>.<span class="ident">visit_symbol</span>(<span class="kw-2">&amp;</span><span class="ident">atom</span>, <span class="ident">visitor</span>),
             <span class="ident">Kind::Bytes</span> =&gt; <span class="kw">match</span> <span class="kw-2">&amp;</span><span class="ident">atom</span>.<span class="ident">nucleus</span> {
                 <span class="prelude-val">Some</span>(<span class="ident">Nucleus::Bytes</span>(<span class="ident">bytes</span>)) =&gt; <span class="kw">match</span> <span class="ident">bytes</span> {
@@ -1585,7 +1619,7 @@
     {
         <span class="kw">let</span> <span class="ident">atom</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">read_atom</span>()<span class="question-mark">?</span>;
         <span class="kw">if</span> <span class="ident">atom</span>.<span class="ident">kind</span> <span class="op">==</span> <span class="ident">Kind::Sequence</span> {
-            <span class="ident">visitor</span>.<span class="ident">visit_seq</span>(<span class="ident">AtomList::new</span>(<span class="self">self</span>, <span class="ident">atom</span>.<span class="ident">arg</span> <span class="kw">as</span> <span class="ident">usize</span>))
+            <span class="ident">visitor</span>.<span class="ident">visit_seq</span>(<span class="ident">AtomList::new</span>(<span class="self">self</span>, <span class="prelude-val">Some</span>(<span class="ident">atom</span>.<span class="ident">arg</span> <span class="kw">as</span> <span class="ident">usize</span>)))
         } <span class="kw">else</span> {
             <span class="prelude-val">Err</span>(<span class="ident">Error::custom</span>(<span class="macro">format!</span>(
                 <span class="string">&quot;expected sequence, got {:?}&quot;</span>,
@@ -1621,10 +1655,12 @@
         <span class="ident">V</span>: <span class="ident">Visitor</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span>,
     {
         <span class="kw">let</span> <span class="ident">atom</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">read_atom</span>()<span class="question-mark">?</span>;
-        <span class="kw">if</span> <span class="ident">atom</span>.<span class="ident">kind</span> <span class="op">==</span> <span class="ident">Kind::Map</span> {
-            <span class="ident">visitor</span>.<span class="ident">visit_map</span>(<span class="ident">AtomList::new</span>(<span class="self">self</span>, <span class="ident">atom</span>.<span class="ident">arg</span> <span class="kw">as</span> <span class="ident">usize</span>))
-        } <span class="kw">else</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">Error::custom</span>(<span class="macro">format!</span>(<span class="string">&quot;expected map, got {:?}&quot;</span>, <span class="ident">atom</span>.<span class="ident">kind</span>)))
+        <span class="kw">match</span> (<span class="ident">atom</span>.<span class="ident">kind</span>, <span class="ident">atom</span>.<span class="ident">nucleus</span>) {
+            (<span class="ident">Kind::Map</span>, <span class="kw">_</span>) =&gt; <span class="ident">visitor</span>.<span class="ident">visit_map</span>(<span class="ident">AtomList::new</span>(<span class="self">self</span>, <span class="prelude-val">Some</span>(<span class="ident">atom</span>.<span class="ident">arg</span> <span class="kw">as</span> <span class="ident">usize</span>))),
+            (<span class="ident">Kind::Special</span>, <span class="prelude-val">Some</span>(<span class="ident">Nucleus::DynamicMap</span>)) =&gt; {
+                <span class="ident">visitor</span>.<span class="ident">visit_map</span>(<span class="ident">AtomList::new</span>(<span class="self">self</span>, <span class="prelude-val">None</span>))
+            }
+            (<span class="ident">kind</span>, <span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::custom</span>(<span class="macro">format!</span>(<span class="string">&quot;expected map, got {:?}&quot;</span>, <span class="ident">kind</span>))),
         }
     }
 
@@ -1692,16 +1728,40 @@
 <span class="kw">struct</span> <span class="ident">AtomList</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, <span class="ident">R</span>: <span class="ident">Reader</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span><span class="op">&gt;</span> {
     <span class="ident">de</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">Deserializer</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, <span class="ident">R</span><span class="op">&gt;</span>,
     <span class="ident">consumed</span>: <span class="ident">usize</span>,
-    <span class="ident">count</span>: <span class="ident">usize</span>,
+    <span class="ident">count</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+    <span class="ident">eof</span>: <span class="ident">bool</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, <span class="ident">R</span>: <span class="ident">Reader</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="ident">AtomList</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, <span class="ident">R</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">de</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">Deserializer</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, <span class="ident">R</span><span class="op">&gt;</span>, <span class="ident">count</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">de</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="ident">Deserializer</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, <span class="ident">R</span><span class="op">&gt;</span>, <span class="ident">count</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> {
             <span class="ident">de</span>,
             <span class="ident">count</span>,
             <span class="ident">consumed</span>: <span class="number">0</span>,
+            <span class="ident">eof</span>: <span class="bool-val">false</span>,
         }
+    }
+
+    <span class="kw">fn</span> <span class="ident">is_eof</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">eof</span> {
+            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
+        } <span class="kw">else</span> <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">count</span>) <span class="op">=</span> <span class="self">self</span>.<span class="ident">count</span> {
+            <span class="kw">if</span> <span class="ident">count</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">consumed</span> {
+                <span class="self">self</span>.<span class="ident">eof</span> <span class="op">=</span> <span class="bool-val">true</span>;
+                <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
+            }
+        } <span class="kw">else</span> {
+            <span class="kw">let</span> <span class="ident">atom</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">de</span>.<span class="ident">peek_atom</span>()<span class="question-mark">?</span>;
+            <span class="kw">if</span> <span class="macro">matches!</span>(<span class="ident">atom</span>.<span class="ident">kind</span>, <span class="ident">Kind::Special</span>)
+                <span class="op">&amp;&amp;</span> <span class="macro">matches!</span>(<span class="ident">atom</span>.<span class="ident">nucleus</span>, <span class="prelude-val">Some</span>(<span class="ident">Nucleus::DynamicEnd</span>))
+            {
+                <span class="self">self</span>.<span class="ident">eof</span> <span class="op">=</span> <span class="bool-val">true</span>;
+                <span class="ident">drop</span>(<span class="self">self</span>.<span class="ident">de</span>.<span class="ident">read_atom</span>()<span class="question-mark">?</span>);
+                <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
+            }
+        }
+
+        <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)
     }
 }
 
@@ -1713,7 +1773,7 @@
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">DeserializeSeed</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span>,
     {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">count</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">consumed</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_eof</span>()<span class="question-mark">?</span> {
             <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
         } <span class="kw">else</span> {
             <span class="self">self</span>.<span class="ident">consumed</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
@@ -1722,7 +1782,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">size_hint</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">count</span>)
+        <span class="self">self</span>.<span class="ident">count</span>
     }
 }
 
@@ -1734,7 +1794,7 @@
     <span class="kw">where</span>
         <span class="ident">T</span>: <span class="ident">DeserializeSeed</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span>,
     {
-        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">count</span> <span class="op">==</span> <span class="self">self</span>.<span class="ident">consumed</span> {
+        <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_eof</span>()<span class="question-mark">?</span> {
             <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
         } <span class="kw">else</span> {
             <span class="self">self</span>.<span class="ident">consumed</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>;
@@ -1752,7 +1812,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">size_hint</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">count</span>)
+        <span class="self">self</span>.<span class="ident">count</span>
     }
 }
 
