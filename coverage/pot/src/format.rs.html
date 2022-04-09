@@ -200,7 +200,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2241645
+                2241521
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">pub fn write_atom_header&lt;W: WriteBytesExt&gt;(</pre>
@@ -213,7 +213,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2241645
+                2241521
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    writer: &amp;mut W,</pre>
@@ -226,7 +226,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2241645
+                2241521
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    kind: Kind,</pre>
@@ -239,7 +239,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2241645
+                2241521
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    arg: Option&lt;u64&gt;,</pre>
@@ -252,7 +252,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2241645
+                2241521
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">) -&gt; std::io::Result&lt;usize&gt; {</pre>
@@ -265,7 +265,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2241645
+                2241521
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    &#x2F;&#x2F; 8 + 64 total bits, with 4 in the first u8, and 7 in the remaining. Total</pre>
@@ -278,7 +278,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2241645
+                2241521
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    &#x2F;&#x2F; of 10 bytes required. to store a u64::MAX.</pre>
@@ -291,7 +291,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2241645
+                2241521
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    let mut bytes = [0_u8; 10];</pre>
@@ -304,7 +304,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2241645
+                2241521
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    &#x2F;&#x2F; Kind is the 3 bits.</pre>
@@ -317,7 +317,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2241645
+                2241521
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    let mut first_byte = (kind as u8) &lt;&lt; 5;</pre>
@@ -330,7 +330,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2241645
+                2241521
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    let mut arg = arg.unwrap_or_default();</pre>
@@ -343,7 +343,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2241645
+                2241521
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    if arg &gt; 0 {</pre>
@@ -369,7 +369,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2170521
+                2171077
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        first_byte |= arg as u8 &amp; 0b1111;</pre>
@@ -382,7 +382,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2170521
+                2171077
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        arg &gt;&gt;= 4;</pre>
@@ -395,7 +395,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2170521
+                2171077
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        &#x2F;&#x2F; If the arg requires more than 4 bits, set the 5th bit.</pre>
@@ -408,7 +408,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2170521
+                2171077
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        if arg &gt; 0 {</pre>
@@ -421,7 +421,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                583428
+                583683
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            first_byte |= 0b10000;</pre>
@@ -434,7 +434,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1587886
+                1588213
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        }</pre>
@@ -447,7 +447,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                71124
+                70444
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    }</pre>
@@ -460,7 +460,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2242438
+                2242340
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    bytes[0] = first_byte;</pre>
@@ -473,7 +473,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2242438
+                2242340
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    let mut length = 1;</pre>
@@ -486,7 +486,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2825884
+                2826051
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    while arg &gt; 0 {</pre>
@@ -499,7 +499,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                584198
+                583896
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        let mut byte = arg as u8 &amp; 0x7F;</pre>
@@ -512,7 +512,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                584198
+                583896
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        arg &gt;&gt;= 7;</pre>
@@ -525,7 +525,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                584198
+                583896
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        if arg &gt; 0 {</pre>
@@ -551,7 +551,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                583434
+                583699
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        }</pre>
@@ -564,7 +564,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                583446
+                583711
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        bytes[length] = byte;</pre>
@@ -577,7 +577,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                583446
+                583711
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        length += 1;</pre>
@@ -616,7 +616,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2241686
+                2242155
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    writer.write_all(&amp;bytes[..length])?;</pre>
@@ -642,7 +642,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2241686
+                2242155
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    Ok(length)</pre>
@@ -655,7 +655,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2241686
+                2242155
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">}</pre>
@@ -759,7 +759,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                41980
+                41965
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        let mut bytes_read = 1;</pre>
@@ -772,7 +772,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                41980
+                41965
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        let mut offset = 4;</pre>
@@ -798,7 +798,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                41989
+                41974
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            let byte = reader.read_u8()?;</pre>
@@ -811,7 +811,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                41989
+                41974
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            bytes_read += 1;</pre>
@@ -824,7 +824,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                41989
+                41974
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            arg |= u64::from(byte &amp; 0x7f) &lt;&lt; offset;</pre>
@@ -837,7 +837,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                41989
+                41974
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            offset += 7;</pre>
@@ -850,7 +850,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                41989
+                41974
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            if byte &amp; 0b1000_0000 == 0 || bytes_read == 10 {</pre>
@@ -863,7 +863,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                41980
+                41965
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">                break;</pre>
@@ -902,7 +902,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                118634
+                118649
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    }</pre>
@@ -1461,7 +1461,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                15142
+                15060
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            0 =&gt; Ok(Self::Special),</pre>
@@ -1552,7 +1552,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                34945
+                35027
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            7 =&gt; Ok(Self::Bytes),</pre>
@@ -1942,7 +1942,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                45349
+                45103
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    fn try_from(value: u64) -&gt; Result&lt;Self, Self::Error&gt; {</pre>
@@ -1955,7 +1955,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                45349
+                45103
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        match value {</pre>
@@ -1968,7 +1968,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                15308
+                15062
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            0 =&gt; Ok(Self::None),</pre>
@@ -2085,7 +2085,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                45349
+                45103
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    }</pre>
@@ -2384,7 +2384,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                210620
+                210270
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">pub fn write_special&lt;W: WriteBytesExt&gt;(writer: &amp;mut W, special: Special) -&gt; std::io::Result&lt;usize&gt; {</pre>
@@ -2397,7 +2397,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                210620
+                210270
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    write_atom_header(writer, Kind::Special, Some(special as u64))</pre>
@@ -2410,7 +2410,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                210620
+                210270
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">}</pre>
@@ -2449,7 +2449,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                70596
+                70259
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">pub fn write_none&lt;W: WriteBytesExt&gt;(writer: &amp;mut W) -&gt; std::io::Result&lt;usize&gt; {</pre>
@@ -2462,7 +2462,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                70596
+                70259
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    write_special(writer, Special::None)</pre>
@@ -2475,7 +2475,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                70596
+                70259
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">}</pre>
@@ -2579,7 +2579,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                140012
+                140013
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">pub fn write_named&lt;W: WriteBytesExt&gt;(writer: &amp;mut W) -&gt; std::io::Result&lt;usize&gt; {</pre>
@@ -2592,7 +2592,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                140012
+                140013
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    write_special(writer, Special::Named)</pre>
@@ -2605,7 +2605,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                140012
+                140013
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">}</pre>
@@ -3892,7 +3892,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                648
+                612
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">pub fn write_u8&lt;W: WriteBytesExt&gt;(writer: &amp;mut W, value: u8) -&gt; std::io::Result&lt;usize&gt; {</pre>
@@ -3905,7 +3905,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                648
+                612
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    let header_len = write_atom_header(</pre>
@@ -3918,7 +3918,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                648
+                612
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        writer,</pre>
@@ -3931,7 +3931,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                648
+                612
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        Kind::UInt,</pre>
@@ -3944,7 +3944,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                648
+                612
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        Some(std::mem::size_of::&lt;u8&gt;() as u64 - 1),</pre>
@@ -3957,7 +3957,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                648
+                612
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    )?;</pre>
@@ -3970,7 +3970,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                648
+                612
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    writer</pre>
@@ -3983,7 +3983,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                648
+                612
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        .write_u8(value)</pre>
@@ -3996,7 +3996,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                648
+                612
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        .map(|_| std::mem::size_of::&lt;u8&gt;() + header_len)</pre>
@@ -4009,7 +4009,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                648
+                612
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">}</pre>
@@ -4061,7 +4061,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                140058
+                140057
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    if let Ok(value) = u8::try_from(value) {</pre>
@@ -4074,7 +4074,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                624
+                588
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        write_u8(writer, value)</pre>
@@ -4100,7 +4100,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                139439
+                139476
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        let header_len = write_atom_header(</pre>
@@ -4113,7 +4113,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                139434
+                139469
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            writer,</pre>
@@ -4126,7 +4126,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                139434
+                139469
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            Kind::UInt,</pre>
@@ -4139,7 +4139,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                139434
+                139469
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            Some(std::mem::size_of::&lt;u16&gt;() as u64 - 1),</pre>
@@ -4152,7 +4152,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                139434
+                139469
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        )?;</pre>
@@ -4165,7 +4165,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                139439
+                139476
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        writer</pre>
@@ -4178,7 +4178,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                139439
+                139476
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            .write_u16::&lt;LittleEndian&gt;(value)</pre>
@@ -4191,7 +4191,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                139439
+                139477
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            .map(|_| std::mem::size_of::&lt;u16&gt;() + header_len)</pre>
@@ -4217,7 +4217,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                140063
+                140064
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">}</pre>
@@ -4724,7 +4724,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                140057
+                140054
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">pub fn write_u64&lt;W: WriteBytesExt&gt;(writer: &amp;mut W, value: u64) -&gt; std::io::Result&lt;usize&gt; {</pre>
@@ -4737,7 +4737,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                140057
+                140054
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    if value &lt; 2_u64.pow(48) {</pre>
@@ -4815,7 +4815,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                140010
+                140012
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            .map(|_| std::mem::size_of::&lt;u64&gt;() + header_len)</pre>
@@ -5660,7 +5660,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                489327
+                489673
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">pub fn write_str&lt;W: WriteBytesExt&gt;(writer: &amp;mut W, value: &amp;str) -&gt; std::io::Result&lt;usize&gt; {</pre>
@@ -5673,7 +5673,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                489327
+                489673
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    write_bytes(writer, value.as_bytes())</pre>
@@ -5686,7 +5686,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                489327
+                489673
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">}</pre>
@@ -5725,7 +5725,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                489364
+                489690
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">pub fn write_bytes&lt;W: WriteBytesExt&gt;(writer: &amp;mut W, value: &amp;[u8]) -&gt; std::io::Result&lt;usize&gt; {</pre>
@@ -5738,7 +5738,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                489364
+                489690
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    let header_len = write_atom_header(writer, Kind::Bytes, Some(value.len() as u64))?;</pre>
@@ -5751,7 +5751,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                489364
+                489690
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    writer.write_all(value)?;</pre>
@@ -5764,7 +5764,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                489399
+                489751
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    Ok(value.len() + header_len)</pre>
@@ -5777,7 +5777,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                489399
+                489751
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">}</pre>
@@ -7519,7 +7519,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                145
+                109
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            InnerInteger::U8(value) =&gt; Ok(*value as u16),</pre>
@@ -7532,7 +7532,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                29877
+                29913
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            InnerInteger::U16(value) =&gt; Ok(*value),</pre>
@@ -10704,7 +10704,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                130
+                118
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">                1 =&gt; Ok(InnerInteger::U8(reader.read_u8()?)),</pre>
@@ -10717,7 +10717,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                9967
+                9979
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">                2 =&gt; Ok(InnerInteger::U16(reader.read_u16::&lt;LittleEndian&gt;()?)),</pre>
@@ -12186,7 +12186,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                15141
+                15059
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            kind,</pre>
@@ -12199,7 +12199,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                15141
+                15059
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            arg,</pre>
@@ -12212,7 +12212,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                15141
+                15059
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            nucleus: match Special::try_from(arg)? {</pre>
@@ -12225,7 +12225,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                5106
+                5024
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">                Special::None =&gt; None,</pre>
@@ -12589,7 +12589,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                34944
+                35026
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            let bytes = arg as usize;</pre>
@@ -12602,7 +12602,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                34944
+                35026
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            update_budget(remaining_budget, bytes)?;</pre>
@@ -12615,7 +12615,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                34942
+                35024
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            let bytes = reader.buffered_read_bytes(bytes)?;</pre>
@@ -12628,7 +12628,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                34941
+                35023
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            Atom {</pre>
@@ -12641,7 +12641,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                34941
+                35023
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">                kind,</pre>
@@ -12654,7 +12654,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                34941
+                35023
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">                arg,</pre>
@@ -12667,7 +12667,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                34941
+                35023
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">                nucleus: Some(Nucleus::Bytes(bytes)),</pre>
@@ -12680,7 +12680,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                34941
+                35023
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            }</pre>
@@ -12875,7 +12875,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                165063
+                165309
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">    if let Some(remaining) = budget.checked_sub(read_amount) {</pre>
@@ -12888,7 +12888,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                165060
+                165306
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        *budget = remaining;</pre>
@@ -12901,7 +12901,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                165060
+                165306
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">        Ok(())</pre>
@@ -12953,7 +12953,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                165063
+                165309
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">}</pre>
@@ -21736,7 +21736,7 @@
         </div></div>
         <footer class="footer">
             <div class="content has-text-centered">
-                <p class="heading">Date: 2022-02-10 15:56</p>
+                <p class="heading">Date: 2022-04-09 22:29</p>
             </div>
         </footer>
     </body>
