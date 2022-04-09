@@ -1,6 +1,6 @@
 [package]
 name = "pot"
-version = "1.0.1"
+version = "1.0.2"
 edition = "2021"
 description = "A concise binary serialization format written for `BonsaiDb`."
 license = "MIT OR Apache-2.0"
@@ -15,9 +15,7 @@ default = []
 [dependencies]
 serde = { version = "1.0.136", features = ["derive"] }
 thiserror = "1.0.30"
-tracing = { version = "0.1.30", features = [
-    "release_max_level_off",
-], optional = true }
+tracing = { version = "0.1.30", optional = true }
 byteorder = "1.4.3"
 bytes = "1.1.0"
 half = "1.8.2"
