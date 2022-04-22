@@ -763,7 +763,7 @@ impl<'a, 's, 'de, R: Reader<'de>> AtomList<'a, 's, 'de, R> {
         }
     }
 
-    fn is_eof(&mut self) -> Result<bool> {
+    fn check_is_eof(&mut self) -> Result<bool> {
         if self.eof {
             return Ok(true);
         } else if let Some(count) = self.count {
@@ -794,7 +794,7 @@ impl<'a, 's, 'de, R: Reader<'de>> SeqAccess<'de> for AtomList<'a, 's, 'de, R> {
     where
         T: DeserializeSeed<'de>,
     {
-        if self.is_eof()? {
+        if self.check_is_eof()? {
             Ok(None)
         } else {
             self.consumed += 1;
@@ -815,7 +815,7 @@ impl<'a, 's, 'de, R: Reader<'de>> MapAccess<'de> for AtomList<'a, 's, 'de, R> {
     where
         T: DeserializeSeed<'de>,
     {
-        if self.is_eof()? {
+        if self.check_is_eof()? {
             Ok(None)
         } else {
             self.consumed += 1;

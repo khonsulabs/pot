@@ -26,30 +26,39 @@ fn main() -> anyhow::Result<()> {
 
     cli_table::print_stdout(
         vec![
-            vec!["pot".cell(), pbor_bytes.len().separate_with_commas().cell()],
+            vec![
+                "pot".cell(),
+                pbor_bytes.len().separate_with_commas().cell(),
+                "yes".cell(),
+            ],
             vec![
                 "cbor".cell(),
                 cbor_bytes.len().separate_with_commas().cell(),
+                "yes".cell(),
+            ],
+            vec![
+                "msgpack(named)".cell(),
+                msgpack_bytes.len().separate_with_commas().cell(),
+                "yes".cell(),
+            ],
+            vec![
+                "msgpack".cell(),
+                msgpack_compact_bytes.len().separate_with_commas().cell(),
+                "no".cell(),
             ],
             vec![
                 "bincode(varint)".cell(),
                 bincode_varint_bytes.len().separate_with_commas().cell(),
+                "no".cell(),
             ],
             vec![
                 "bincode".cell(),
                 bincode_bytes.len().separate_with_commas().cell(),
-            ],
-            vec![
-                "msgpack".cell(),
-                msgpack_bytes.len().separate_with_commas().cell(),
-            ],
-            vec![
-                "msgpack(compact)".cell(),
-                msgpack_compact_bytes.len().separate_with_commas().cell(),
+                "no".cell(),
             ],
         ]
         .table()
-        .title(vec!["Format", "Bytes"]),
+        .title(vec!["Format", "Bytes", "Self-Describing"]),
     )?;
 
     // With Pot, you can also use a persistent encoding session to save more
