@@ -72,11 +72,12 @@ enum Backend {
     Pbor,
     Cbor,
     Bincode,
+    Msgpack,
 }
 
 impl Backend {
-    fn all() -> [Self; 3] {
-        [Self::Pbor, Self::Cbor, Self::Bincode]
+    fn all() -> [Self; 4] {
+        [Self::Pbor, Self::Cbor, Self::Bincode, Self::Msgpack]
     }
 }
 
@@ -86,6 +87,7 @@ impl Display for Backend {
             Self::Pbor => "pot",
             Self::Cbor => "cbor",
             Self::Bincode => "bincode",
+            Self::Msgpack => "msgpack",
         })
     }
 }
@@ -110,6 +112,7 @@ fn bench_logs(c: &mut Criterion) {
                 cbor_bytes
             },
             Backend::Bincode => |logs| bincode::serialize(logs).unwrap(),
+            Backend::Msgpack => |logs| rmp_serde::to_vec(logs).unwrap(),
         };
         serialize_group.bench_function(backend.to_string(), |b| {
             b.iter(|| {
@@ -126,6 +129,7 @@ fn bench_logs(c: &mut Criterion) {
             Backend::Pbor => pbor_serialize_into,
             Backend::Cbor => cbor_serialize_into,
             Backend::Bincode => bincode_serialize_into,
+            Backend::Msgpack => msgpack_serialize_into,
         };
 
         serialize_reuse_group.bench_function(backend.to_string(), |b| {
@@ -144,6 +148,7 @@ fn bench_logs(c: &mut Criterion) {
             Backend::Pbor => |logs| pot::from_slice::<LogArchive>(logs).unwrap(),
             Backend::Cbor => |logs| ciborium::de::from_reader(logs).unwrap(),
             Backend::Bincode => |logs| bincode::deserialize(logs).unwrap(),
+            Backend::Msgpack => |logs| rmp_serde::from_slice(logs).unwrap(),
         };
         let bytes = match backend {
             Backend::Pbor => pot::to_vec(&logs).unwrap(),
@@ -153,6 +158,7 @@ fn bench_logs(c: &mut Criterion) {
                 cbor_bytes
             }
             Backend::Bincode => bincode::serialize(&logs).unwrap(),
+            Backend::Msgpack => rmp_serde::to_vec(&logs).unwrap(),
         };
         deserialize_group.bench_function(backend.to_string(), |b| {
             b.iter(|| {
@@ -173,6 +179,10 @@ fn cbor_serialize_into(logs: &LogArchive, buffer: &mut Vec<u8>) {
 
 fn bincode_serialize_into(logs: &LogArchive, buffer: &mut Vec<u8>) {
     bincode::serialize_into(buffer, logs).unwrap();
+}
+
+fn msgpack_serialize_into(logs: &LogArchive, buffer: &mut Vec<u8>) {
+    rmp_serde::encode::write(buffer, logs).unwrap()
 }
 
 fn criterion_benchmark(c: &mut Criterion) {

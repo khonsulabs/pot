@@ -21,6 +21,8 @@ fn main() -> anyhow::Result<()> {
         .serialize(&logs)?;
     let mut cbor_bytes = Vec::new();
     ciborium::ser::into_writer(&logs, &mut cbor_bytes)?;
+    let msgpack_bytes = rmp_serde::to_vec_named(&logs)?;
+    let msgpack_compact_bytes = rmp_serde::to_vec(&logs)?;
 
     cli_table::print_stdout(
         vec![
@@ -36,6 +38,14 @@ fn main() -> anyhow::Result<()> {
             vec![
                 "bincode".cell(),
                 bincode_bytes.len().separate_with_commas().cell(),
+            ],
+            vec![
+                "msgpack".cell(),
+                msgpack_bytes.len().separate_with_commas().cell(),
+            ],
+            vec![
+                "msgpack(compact)".cell(),
+                msgpack_compact_bytes.len().separate_with_commas().cell(),
             ],
         ]
         .table()
@@ -164,6 +174,8 @@ fn average_sizes() {
     let mut bincode_varint_sizes = Vec::new();
     let mut cbor_sizes = Vec::new();
     let mut pot_sizes = Vec::new();
+    let mut msgpack_sizes = Vec::new();
+    let mut msgpack_compact_sizes = Vec::new();
 
     const ITERATIONS: usize = 1_000;
     println!("Generating {} LogArchives with 100 entries.", ITERATIONS);
@@ -181,6 +193,8 @@ fn average_sizes() {
         ciborium::ser::into_writer(&log, &mut cbor_bytes).unwrap();
         cbor_sizes.push(cbor_bytes.len());
         pot_sizes.push(pot::to_vec(&log).unwrap().len());
+        msgpack_sizes.push(rmp_serde::to_vec_named(&log).unwrap().len());
+        msgpack_compact_sizes.push(rmp_serde::to_vec(&log).unwrap().len());
     }
 
     let bincode_average = bincode_sizes.iter().copied().sum::<usize>() as f64 / ITERATIONS as f64;
@@ -188,6 +202,9 @@ fn average_sizes() {
         bincode_varint_sizes.iter().copied().sum::<usize>() as f64 / ITERATIONS as f64;
     let cbor_average = cbor_sizes.iter().copied().sum::<usize>() as f64 / ITERATIONS as f64;
     let pot_average = pot_sizes.iter().copied().sum::<usize>() as f64 / ITERATIONS as f64;
+    let msgpack_average = msgpack_sizes.iter().copied().sum::<usize>() as f64 / ITERATIONS as f64;
+    let msgpack_compact_average =
+        msgpack_compact_sizes.iter().copied().sum::<usize>() as f64 / ITERATIONS as f64;
 
     cli_table::print_stdout(
         vec![
@@ -201,6 +218,14 @@ fn average_sizes() {
                 bincode_average.separate_with_commas().cell(),
             ],
             vec!["cbor".cell(), cbor_average.separate_with_commas().cell()],
+            vec![
+                "msgpack".cell(),
+                msgpack_average.separate_with_commas().cell(),
+            ],
+            vec![
+                "msgpack(compact)".cell(),
+                msgpack_compact_average.separate_with_commas().cell(),
+            ],
         ]
         .table()
         .title(vec!["Format", "Avg. Bytes"]),
