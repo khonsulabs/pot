@@ -27,21 +27,21 @@ When serializing arrays of structures, this can make a major difference. The
 example demonstrates this:</p>
 <div class="example-wrap"><pre class="language-sh"><code>$ cargo test --example logs -- average_sizes --nocapture
 Generating 1000 LogArchives with 100 entries.
-+------------------+------------+
-| Format           | Avg. Bytes |
-+------------------+------------+
-| pot              | 26,576.013 |
-+------------------+------------+
-| bincode(varint)  | 25,295.205 |
-+------------------+------------+
-| bincode          | 27,789.043 |
-+------------------+------------+
-| cbor             | 30,959.256 |
-+------------------+------------+
-| msgpack          | 30,835.725 |
-+------------------+------------+
-| msgpack(compact) | 25,827.725 |
-+------------------+------------+</code></pre></div></li>
++-----------------+-----------+-----------------+
+| Format          | Bytes     | Self-Describing |
++-----------------+-----------+-----------------+
+| pot             | 2,627,586 | yes             |
++-----------------+-----------+-----------------+
+| cbor            | 3,072,369 | yes             |
++-----------------+-----------+-----------------+
+| msgpack(named)  | 3,059,915 | yes             |
++-----------------+-----------+-----------------+
+| msgpack         | 2,559,907 | no              |
++-----------------+-----------+-----------------+
+| bincode(varint) | 2,506,844 | no              |
++-----------------+-----------+-----------------+
+| bincode         | 2,755,137 | no              |
++-----------------+-----------+-----------------+</code></pre></div></li>
 </ul>
 <h3 id="example"><a href="#example">Example</a></h3>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
