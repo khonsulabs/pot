@@ -73,11 +73,18 @@ enum Backend {
     Cbor,
     Bincode,
     Msgpack,
+    MsgpackNamed,
 }
 
 impl Backend {
-    fn all() -> [Self; 4] {
-        [Self::Pbor, Self::Cbor, Self::Bincode, Self::Msgpack]
+    fn all() -> [Self; 5] {
+        [
+            Self::Pbor,
+            Self::Cbor,
+            Self::Bincode,
+            Self::Msgpack,
+            Self::MsgpackNamed,
+        ]
     }
 }
 
@@ -87,7 +94,8 @@ impl Display for Backend {
             Self::Pbor => "pot",
             Self::Cbor => "cbor",
             Self::Bincode => "bincode",
-            Self::Msgpack => "msgpack",
+            Self::Msgpack => "MessagePack",
+            Self::MsgpackNamed => "MessagePack(named)",
         })
     }
 }
@@ -113,6 +121,7 @@ fn bench_logs(c: &mut Criterion) {
             },
             Backend::Bincode => |logs| bincode::serialize(logs).unwrap(),
             Backend::Msgpack => |logs| rmp_serde::to_vec(logs).unwrap(),
+            Backend::MsgpackNamed => |logs| rmp_serde::to_vec_named(logs).unwrap(),
         };
         serialize_group.bench_function(backend.to_string(), |b| {
             b.iter(|| {
@@ -130,6 +139,7 @@ fn bench_logs(c: &mut Criterion) {
             Backend::Cbor => cbor_serialize_into,
             Backend::Bincode => bincode_serialize_into,
             Backend::Msgpack => msgpack_serialize_into,
+            Backend::MsgpackNamed => msgpack_serialize_into_named,
         };
 
         serialize_reuse_group.bench_function(backend.to_string(), |b| {
@@ -148,7 +158,7 @@ fn bench_logs(c: &mut Criterion) {
             Backend::Pbor => |logs| pot::from_slice::<LogArchive>(logs).unwrap(),
             Backend::Cbor => |logs| ciborium::de::from_reader(logs).unwrap(),
             Backend::Bincode => |logs| bincode::deserialize(logs).unwrap(),
-            Backend::Msgpack => |logs| rmp_serde::from_slice(logs).unwrap(),
+            Backend::Msgpack | Backend::MsgpackNamed => |logs| rmp_serde::from_slice(logs).unwrap(),
         };
         let bytes = match backend {
             Backend::Pbor => pot::to_vec(&logs).unwrap(),
@@ -159,6 +169,7 @@ fn bench_logs(c: &mut Criterion) {
             }
             Backend::Bincode => bincode::serialize(&logs).unwrap(),
             Backend::Msgpack => rmp_serde::to_vec(&logs).unwrap(),
+            Backend::MsgpackNamed => rmp_serde::to_vec_named(&logs).unwrap(),
         };
         deserialize_group.bench_function(backend.to_string(), |b| {
             b.iter(|| {
@@ -183,6 +194,10 @@ fn bincode_serialize_into(logs: &LogArchive, buffer: &mut Vec<u8>) {
 
 fn msgpack_serialize_into(logs: &LogArchive, buffer: &mut Vec<u8>) {
     rmp_serde::encode::write(buffer, logs).unwrap()
+}
+
+fn msgpack_serialize_into_named(logs: &LogArchive, buffer: &mut Vec<u8>) {
+    rmp_serde::encode::write_named(buffer, logs).unwrap()
 }
 
 fn criterion_benchmark(c: &mut Criterion) {
