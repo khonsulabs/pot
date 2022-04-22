@@ -27,17 +27,21 @@ When serializing arrays of structures, this can make a major difference. The
 example demonstrates this:</p>
 <div class="example-wrap"><pre class="language-sh"><code>$ cargo test --example logs -- average_sizes --nocapture
 Generating 1000 LogArchives with 100 entries.
-+-----------------+------------+
-| Format          | Avg. Bytes |
-+-----------------+------------+
-| pot             | 26,568.829 |
-+-----------------+------------+
-| bincode(varint) | 25,287.882 |
-+-----------------+------------+
-| bincode         | 27,783.24  |
-+-----------------+------------+
-| cbor            | 30,951.973 |
-+-----------------+------------+</code></pre></div></li>
++------------------+------------+
+| Format           | Avg. Bytes |
++------------------+------------+
+| pot              | 26,576.013 |
++------------------+------------+
+| bincode(varint)  | 25,295.205 |
++------------------+------------+
+| bincode          | 27,789.043 |
++------------------+------------+
+| cbor             | 30,959.256 |
++------------------+------------+
+| msgpack          | 30,835.725 |
++------------------+------------+
+| msgpack(compact) | 25,827.725 |
++------------------+------------+</code></pre></div></li>
 </ul>
 <h3 id="example"><a href="#example">Example</a></h3>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
