@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Changed
+
+- The unit type `()` and `Option::None` are more fuzzy when deserializing. If
+  users deserialize a value that was serialized as `None` or `()`, the default
+  value will be returned rather than an error, when possible. For example:
+
+  ```rust
+  let unit = pot::to_vec(&())?;
+  assert_eq!(pot::from_slice(&unit).unwrap(), 0_u32)
+  let none = pot::to_vec(&Option::<bool>::None)?;
+  assert_eq!(pot::from_slice(&unit).unwrap(), 0_u32)
+  ```
+
+  This is not practically useful for most users, but when designing traits that
+  have associated serializable types, sometimes it's useful to use `()` when no
+  data needs to be stored. However, it can be painful to update existing data
+  when switching between `()` and other types, as Serde offers no built-in
+  transmutation. Pot now offers this internally.
+
 ## v1.0.2
 
 ### Fixed

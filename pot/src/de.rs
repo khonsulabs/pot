@@ -245,6 +245,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Special | Kind::UInt | Kind::Int => match atom.nucleus {
                 Some(Nucleus::Integer(integer)) => visitor.visit_bool(!integer.is_zero()),
                 Some(Nucleus::Boolean(b)) => visitor.visit_bool(b),
+                Some(Nucleus::Unit) | None => visitor.visit_bool(false),
                 other => Err(Error::custom(format!(
                     "expected bool nucleus, got {:?}",
                     other
@@ -268,6 +269,9 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                     unreachable!("read_atom should never return anything else")
                 }
             }
+            Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
+                visitor.visit_i8(0)
+            }
             other => Err(Error::custom(format!("expected i8, got {:?}", other))),
         }
     }
@@ -284,6 +288,9 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 } else {
                     unreachable!("read_atom should never return anything else")
                 }
+            }
+            Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
+                visitor.visit_i16(0)
             }
             other => Err(Error::custom(format!("expected i16, got {:?}", other))),
         }
@@ -303,6 +310,9 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                     unreachable!("read_atom should never return anything else")
                 }
             }
+            Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
+                visitor.visit_i32(0)
+            }
             other => Err(Error::custom(format!("expected i32, got {:?}", other))),
         }
     }
@@ -320,6 +330,9 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 } else {
                     unreachable!("read_atom should never return anything else")
                 }
+            }
+            Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
+                visitor.visit_i64(0)
             }
             other => Err(Error::custom(format!("expected i64, got {:?}", other))),
         }
@@ -339,6 +352,9 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                     unreachable!("read_atom should never return anything else")
                 }
             }
+            Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
+                visitor.visit_i128(0)
+            }
             other => Err(Error::custom(format!("expected i128, got {:?}", other))),
         }
     }
@@ -356,6 +372,9 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 } else {
                     unreachable!("read_atom should never return anything else")
                 }
+            }
+            Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
+                visitor.visit_u8(0)
             }
             other => Err(Error::custom(format!("expected u8, got {:?}", other))),
         }
@@ -375,6 +394,9 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                     unreachable!("read_atom should never return anything else")
                 }
             }
+            Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
+                visitor.visit_u16(0)
+            }
             other => Err(Error::custom(format!("expected u16, got {:?}", other))),
         }
     }
@@ -392,6 +414,9 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 } else {
                     unreachable!("read_atom should never return anything else")
                 }
+            }
+            Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
+                visitor.visit_u32(0)
             }
             other => Err(Error::custom(format!("expected u32, got {:?}", other))),
         }
@@ -411,6 +436,9 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                     unreachable!("read_atom should never return anything else")
                 }
             }
+            Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
+                visitor.visit_u64(0)
+            }
             other => Err(Error::custom(format!("expected u64, got {:?}", other))),
         }
     }
@@ -428,6 +456,9 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 } else {
                     unreachable!("read_atom should never return anything else")
                 }
+            }
+            Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
+                visitor.visit_u128(0)
             }
             other => Err(Error::custom(format!("expected i64, got {:?}", other))),
         }
@@ -455,6 +486,9 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                     unreachable!("read_atom should never return anything else")
                 }
             }
+            Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
+                visitor.visit_f32(0.)
+            }
             other => Err(Error::custom(format!("expected f32, got {:?}", other))),
         }
     }
@@ -481,6 +515,9 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                     unreachable!("read_atom should never return anything else")
                 }
             }
+            Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
+                visitor.visit_f64(0.)
+            }
             other => Err(Error::custom(format!("expected f64, got {:?}", other))),
         }
     }
@@ -501,6 +538,9 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 } else {
                     unreachable!("read_atom should never return anything else")
                 }
+            }
+            Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
+                visitor.visit_char('\0')
             }
             other => Err(Error::custom(format!("expected char, got {:?}", other))),
         }
@@ -525,6 +565,8 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 if matches!(atom.nucleus, Some(Nucleus::Named)) {
                     // If we encounter a named entity here, skip it and trust that serde will decode the following information correctly.
                     self.deserialize_str(visitor)
+                } else if matches!(atom.nucleus, Some(Nucleus::Unit) | None) {
+                    visitor.visit_borrowed_str("")
                 } else {
                     self.visit_symbol(&atom, visitor)
                 }
@@ -570,6 +612,9 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                     }
                 }
                 visitor.visit_byte_buf(buffer)
+            }
+            Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
+                visitor.visit_borrowed_bytes(b"")
             }
             other => Err(Error::custom(format!("expected bytes, got {:?}", other))),
         }
@@ -641,6 +686,8 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         let atom = self.read_atom()?;
         if atom.kind == Kind::Sequence {
             visitor.visit_seq(AtomList::new(self, Some(atom.arg as usize)))
+        } else if atom.kind == Kind::Special && matches!(atom.nucleus, Some(Nucleus::Unit) | None) {
+            visitor.visit_seq(EmptyList)
         } else {
             Err(Error::custom(format!(
                 "expected sequence, got {:?}",
@@ -681,6 +728,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             (Kind::Special, Some(Nucleus::DynamicMap)) => {
                 visitor.visit_map(AtomList::new(self, None))
             }
+            (Kind::Special, Some(Nucleus::Unit) | None) => visitor.visit_map(EmptyList),
             (kind, _) => Err(Error::custom(format!("expected map, got {:?}", kind))),
         }
     }
@@ -742,6 +790,37 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         V: Visitor<'de>,
     {
         self.deserialize_any(visitor)
+    }
+}
+
+struct EmptyList;
+
+impl<'de> MapAccess<'de> for EmptyList {
+    type Error = Error;
+
+    fn next_key_seed<K>(&mut self, _seed: K) -> Result<Option<K::Value>>
+    where
+        K: DeserializeSeed<'de>,
+    {
+        Ok(None)
+    }
+
+    fn next_value_seed<V>(&mut self, _seed: V) -> Result<V::Value>
+    where
+        V: DeserializeSeed<'de>,
+    {
+        unreachable!()
+    }
+}
+
+impl<'de> SeqAccess<'de> for EmptyList {
+    type Error = Error;
+
+    fn next_element_seed<T>(&mut self, _seed: T) -> Result<Option<T::Value>>
+    where
+        T: DeserializeSeed<'de>,
+    {
+        Ok(None)
     }
 }
 

@@ -584,6 +584,57 @@ mod tests {
         assert!(matches!(from_slice::<()>(&invalid_bytes), Err(_)));
     }
 
+    /// In `BonsaiDb`, sometimes it's nice to use a `()` as an associated type
+    /// as a default. To allow changing data that was previously serialized as a
+    /// `()` but now has a new type, Pot allows converting between unit types
+    /// and defaults of all major serialized types. The net effect is that if
+    /// you replace
+    #[test]
+    #[allow(clippy::cognitive_complexity)]
+    fn unit_adaptations() {
+        #[derive(Deserialize)]
+        struct Test {
+            #[serde(default)]
+            value: u32,
+        }
+
+        let unit = to_vec(&()).unwrap();
+        assert!(from_slice::<Option<()>>(&unit).unwrap().is_some());
+        assert_eq!(from_slice::<Test>(&unit).unwrap().value, 0);
+        assert_eq!(from_slice::<&[u8]>(&unit).unwrap(), b"");
+        assert_eq!(from_slice::<serde_bytes::ByteBuf>(&unit).unwrap(), b"");
+        assert_eq!(from_slice::<&str>(&unit).unwrap(), "");
+        assert_eq!(from_slice::<u8>(&unit).unwrap(), 0);
+        assert_eq!(from_slice::<u16>(&unit).unwrap(), 0);
+        assert_eq!(from_slice::<u32>(&unit).unwrap(), 0);
+        assert_eq!(from_slice::<u64>(&unit).unwrap(), 0);
+        assert_eq!(from_slice::<u128>(&unit).unwrap(), 0);
+        assert_eq!(from_slice::<i8>(&unit).unwrap(), 0);
+        assert_eq!(from_slice::<i16>(&unit).unwrap(), 0);
+        assert_eq!(from_slice::<i32>(&unit).unwrap(), 0);
+        assert_eq!(from_slice::<i64>(&unit).unwrap(), 0);
+        assert_eq!(from_slice::<i128>(&unit).unwrap(), 0);
+        assert!(!from_slice::<bool>(&unit).unwrap());
+
+        let none = to_vec(&Option::<()>::None).unwrap();
+        assert!(from_slice::<Option<()>>(&none).unwrap().is_none());
+        assert!(from_slice::<Option<Test>>(&none).unwrap().is_none());
+        assert_eq!(from_slice::<&[u8]>(&none).unwrap(), b"");
+        assert_eq!(from_slice::<serde_bytes::ByteBuf>(&none).unwrap(), b"");
+        assert_eq!(from_slice::<&str>(&none).unwrap(), "");
+        assert_eq!(from_slice::<u8>(&none).unwrap(), 0);
+        assert_eq!(from_slice::<u16>(&none).unwrap(), 0);
+        assert_eq!(from_slice::<u32>(&none).unwrap(), 0);
+        assert_eq!(from_slice::<u64>(&none).unwrap(), 0);
+        assert_eq!(from_slice::<u128>(&none).unwrap(), 0);
+        assert_eq!(from_slice::<i8>(&none).unwrap(), 0);
+        assert_eq!(from_slice::<i16>(&none).unwrap(), 0);
+        assert_eq!(from_slice::<i32>(&none).unwrap(), 0);
+        assert_eq!(from_slice::<i64>(&none).unwrap(), 0);
+        assert_eq!(from_slice::<i128>(&none).unwrap(), 0);
+        assert!(!from_slice::<bool>(&none).unwrap());
+    }
+
     #[test]
     fn invalid_numbers() {
         let mut invalid_float_byte_len = Vec::new();
