@@ -2,7 +2,7 @@ A concise storage format, written for [`BonsaiDb`](https://bonsaidb.io/).
 
 ![Pot forbids unsafe code](https://img.shields.io/badge/unsafe-forbid-success)
 [![crate version](https://img.shields.io/crates/v/pot.svg)](https://crates.io/crates/pot)
-[![Live Build Status](https://img.shields.io/github/workflow/status/khonsulabs/pot/Tests/main)](https://github.com/khonsulabs/pot/actions?query=workflow:Tests)
+[![Live Build Status](https://img.shields.io/github/actions/workflow/status/khonsulabs/pot/rust.yml?branch=main)](https://github.com/khonsulabs/pot/actions?query=workflow:Tests)
 [![HTML Coverage Report for `main` branch](https://khonsulabs.github.io/pot/coverage/badge.svg)](https://khonsulabs.github.io/pot/coverage/)
 [![Documentation for `main` branch](https://img.shields.io/badge/docs-main-informational)](https://khonsulabs.github.io/pot/main/pot/)
 
@@ -16,7 +16,7 @@ provide an encoding format for [`serde`](https://serde.rs) that:
   When serializing arrays of structures, this can make a major difference. The
   [logs.rs](https://github.com/khonsulabs/pot/blob/main/pot/examples/logs.rs)
   example demonstrates this:
-  
+
   ```sh
   $ cargo test --example logs -- average_sizes --nocapture
   Generating 1000 LogArchives with 100 entries.
