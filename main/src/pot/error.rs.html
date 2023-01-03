@@ -1,17 +1,12 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `pot/src/error.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>error.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../pot/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a><h2 class="location"></h2>
-    </nav>
-    <nav class="sidebar"><a class="sidebar-logo" href="../../pot/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../pot/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1"> 1</span>
-<span id="2"> 2</span>
-<span id="3"> 3</span>
-<span id="4"> 4</span>
-<span id="5"> 5</span>
-<span id="6"> 6</span>
-<span id="7"> 7</span>
-<span id="8"> 8</span>
-<span id="9"> 9</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `pot/src/error.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>error.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../pot/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
 <span id="10">10</span>
 <span id="11">11</span>
 <span id="12">12</span>
@@ -79,82 +74,81 @@
 <span id="74">74</span>
 <span id="75">75</span>
 <span id="76">76</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">fmt::Display</span>, <span class="ident">str::Utf8Error</span>, <span class="ident">string::FromUtf8Error</span>};
+</pre><pre class="rust"><code><span class="kw">use </span>std::{fmt::Display, str::Utf8Error, string::FromUtf8Error};
 
-<span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">de</span>, <span class="ident">ser</span>};
+<span class="kw">use </span>serde::{de, ser};
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::format::Kind</span>;
+<span class="kw">use </span><span class="kw">crate</span>::format::Kind;
 
-<span class="doccomment">/// All errors that Pot may return.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">thiserror::Error</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Error</span> {
-    <span class="doccomment">/// Payload is not a Pot payload.</span>
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;not a pot: invalid header&quot;</span>)]</span>
-    <span class="ident">NotAPot</span>,
-    <span class="doccomment">/// Data was written with an incompatible version.</span>
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;incompatible version&quot;</span>)]</span>
-    <span class="ident">IncompatibleVersion</span>,
-    <span class="doccomment">/// A generic error occurred.</span>
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;{0}&quot;</span>)]</span>
-    <span class="ident">Message</span>(<span class="ident">String</span>),
-    <span class="doccomment">/// Extra data appeared at the end of the input.</span>
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;extra data at end of input&quot;</span>)]</span>
-    <span class="ident">TrailingBytes</span>,
-    <span class="doccomment">/// Expected more data but encountered the end of the input.</span>
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;unexpected end of file&quot;</span>)]</span>
-    <span class="ident">Eof</span>,
-    <span class="doccomment">/// A numerical value could not be handled without losing precision or truncation.</span>
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;numerical data cannot fit&quot;</span>)]</span>
-    <span class="ident">ImpreciseCastWouldLoseData</span>,
-    <span class="doccomment">/// An error occurred from io.</span>
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;io error: {0}&quot;</span>)]</span>
-    <span class="ident">Io</span>(<span class="attribute">#[<span class="ident">from</span>]</span> <span class="ident">std::io::Error</span>),
-    <span class="doccomment">/// A sequence of unknown size cannot be serialized.</span>
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;serializing sequences of unknown size is unsupported&quot;</span>)]</span>
-    <span class="ident">SequenceSizeMustBeKnown</span>,
-    <span class="doccomment">/// String data contained invalid utf-8 characters.</span>
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;invalid utf8: {0}&quot;</span>)]</span>
-    <span class="ident">InvalidUtf8</span>(<span class="ident">String</span>),
-    <span class="doccomment">/// An unknown kind was encountered. Generally a sign that something else has been parsed incorrectly.</span>
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;invalid kind: {0}&quot;</span>)]</span>
-    <span class="ident">InvalidKind</span>(<span class="ident">u8</span>),
-    <span class="doccomment">/// Encountered an unexpected atom kind.</span>
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;encountered atom kind {0:?}, expected {1:?}&quot;</span>)]</span>
-    <span class="ident">UnexpectedKind</span>(<span class="ident">Kind</span>, <span class="ident">Kind</span>),
-    <span class="doccomment">/// A requested symbol id was not found.</span>
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;unknown symbol {0}&quot;</span>)]</span>
-    <span class="ident">UnknownSymbol</span>(<span class="ident">u64</span>),
-    <span class="doccomment">/// An atom header was incorrectly formatted.</span>
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;an atom header was incorrectly formatted&quot;</span>)]</span>
-    <span class="ident">InvalidAtomHeader</span>,
-    <span class="doccomment">/// The amount of data read exceeds the configured maximum number of bytes.</span>
-    <span class="attribute">#[<span class="ident">error</span>(<span class="string">&quot;the deserialized value is larger than the allowed allocation limit&quot;</span>)]</span>
-    <span class="ident">TooManyBytesRead</span>,
+<span class="doccomment">/// All errors that Pot may return.
+</span><span class="attribute">#[derive(thiserror::Error, Debug)]
+</span><span class="kw">pub enum </span>Error {
+    <span class="doccomment">/// Payload is not a Pot payload.
+    </span><span class="attribute">#[error(<span class="string">&quot;not a pot: invalid header&quot;</span>)]
+    </span>NotAPot,
+    <span class="doccomment">/// Data was written with an incompatible version.
+    </span><span class="attribute">#[error(<span class="string">&quot;incompatible version&quot;</span>)]
+    </span>IncompatibleVersion,
+    <span class="doccomment">/// A generic error occurred.
+    </span><span class="attribute">#[error(<span class="string">&quot;{0}&quot;</span>)]
+    </span>Message(String),
+    <span class="doccomment">/// Extra data appeared at the end of the input.
+    </span><span class="attribute">#[error(<span class="string">&quot;extra data at end of input&quot;</span>)]
+    </span>TrailingBytes,
+    <span class="doccomment">/// Expected more data but encountered the end of the input.
+    </span><span class="attribute">#[error(<span class="string">&quot;unexpected end of file&quot;</span>)]
+    </span>Eof,
+    <span class="doccomment">/// A numerical value could not be handled without losing precision or truncation.
+    </span><span class="attribute">#[error(<span class="string">&quot;numerical data cannot fit&quot;</span>)]
+    </span>ImpreciseCastWouldLoseData,
+    <span class="doccomment">/// An error occurred from io.
+    </span><span class="attribute">#[error(<span class="string">&quot;io error: {0}&quot;</span>)]
+    </span>Io(<span class="attribute">#[from] </span>std::io::Error),
+    <span class="doccomment">/// A sequence of unknown size cannot be serialized.
+    </span><span class="attribute">#[error(<span class="string">&quot;serializing sequences of unknown size is unsupported&quot;</span>)]
+    </span>SequenceSizeMustBeKnown,
+    <span class="doccomment">/// String data contained invalid utf-8 characters.
+    </span><span class="attribute">#[error(<span class="string">&quot;invalid utf8: {0}&quot;</span>)]
+    </span>InvalidUtf8(String),
+    <span class="doccomment">/// An unknown kind was encountered. Generally a sign that something else has been parsed incorrectly.
+    </span><span class="attribute">#[error(<span class="string">&quot;invalid kind: {0}&quot;</span>)]
+    </span>InvalidKind(u8),
+    <span class="doccomment">/// Encountered an unexpected atom kind.
+    </span><span class="attribute">#[error(<span class="string">&quot;encountered atom kind {0:?}, expected {1:?}&quot;</span>)]
+    </span>UnexpectedKind(Kind, Kind),
+    <span class="doccomment">/// A requested symbol id was not found.
+    </span><span class="attribute">#[error(<span class="string">&quot;unknown symbol {0}&quot;</span>)]
+    </span>UnknownSymbol(u64),
+    <span class="doccomment">/// An atom header was incorrectly formatted.
+    </span><span class="attribute">#[error(<span class="string">&quot;an atom header was incorrectly formatted&quot;</span>)]
+    </span>InvalidAtomHeader,
+    <span class="doccomment">/// The amount of data read exceeds the configured maximum number of bytes.
+    </span><span class="attribute">#[error(<span class="string">&quot;the deserialized value is larger than the allowed allocation limit&quot;</span>)]
+    </span>TooManyBytesRead,
 }
 
-<span class="kw">impl</span> <span class="ident">ser::Error</span> <span class="kw">for</span> <span class="ident">Error</span> {
-    <span class="kw">fn</span> <span class="ident">custom</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Display</span><span class="op">&gt;</span>(<span class="ident">msg</span>: <span class="ident">T</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::Message</span>(<span class="ident">msg</span>.<span class="ident">to_string</span>())
+<span class="kw">impl </span>ser::Error <span class="kw">for </span>Error {
+    <span class="kw">fn </span>custom&lt;T: Display&gt;(msg: T) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::Message(msg.to_string())
     }
 }
 
-<span class="kw">impl</span> <span class="ident">de::Error</span> <span class="kw">for</span> <span class="ident">Error</span> {
-    <span class="kw">fn</span> <span class="ident">custom</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Display</span><span class="op">&gt;</span>(<span class="ident">msg</span>: <span class="ident">T</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::Message</span>(<span class="ident">msg</span>.<span class="ident">to_string</span>())
+<span class="kw">impl </span>de::Error <span class="kw">for </span>Error {
+    <span class="kw">fn </span>custom&lt;T: Display&gt;(msg: T) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::Message(msg.to_string())
     }
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Utf8Error</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Error</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">err</span>: <span class="ident">Utf8Error</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::InvalidUtf8</span>(<span class="ident">err</span>.<span class="ident">to_string</span>())
+<span class="kw">impl </span>From&lt;Utf8Error&gt; <span class="kw">for </span>Error {
+    <span class="kw">fn </span>from(err: Utf8Error) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::InvalidUtf8(err.to_string())
     }
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">FromUtf8Error</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Error</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">err</span>: <span class="ident">FromUtf8Error</span>) -&gt; <span class="self">Self</span> {
-        <span class="ident"><span class="self">Self</span>::InvalidUtf8</span>(<span class="ident">err</span>.<span class="ident">to_string</span>())
+<span class="kw">impl </span>From&lt;FromUtf8Error&gt; <span class="kw">for </span>Error {
+    <span class="kw">fn </span>from(err: FromUtf8Error) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::InvalidUtf8(err.to_string())
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pot" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0 (7737e0b5c 2022-04-04)" ></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pot" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0 (69f9c33d7 2022-12-12)" ></div></body></html>

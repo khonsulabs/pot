@@ -1,107 +1,102 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `pot/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../../pot/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a><h2 class="location"></h2>
-    </nav>
-    <nav class="sidebar"><a class="sidebar-logo" href="../../pot/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></div>
-        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../pot/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><nav class="sub"><div class="theme-picker hidden"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="22" height="22" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
-<span id="2">  2</span>
-<span id="3">  3</span>
-<span id="4">  4</span>
-<span id="5">  5</span>
-<span id="6">  6</span>
-<span id="7">  7</span>
-<span id="8">  8</span>
-<span id="9">  9</span>
-<span id="10"> 10</span>
-<span id="11"> 11</span>
-<span id="12"> 12</span>
-<span id="13"> 13</span>
-<span id="14"> 14</span>
-<span id="15"> 15</span>
-<span id="16"> 16</span>
-<span id="17"> 17</span>
-<span id="18"> 18</span>
-<span id="19"> 19</span>
-<span id="20"> 20</span>
-<span id="21"> 21</span>
-<span id="22"> 22</span>
-<span id="23"> 23</span>
-<span id="24"> 24</span>
-<span id="25"> 25</span>
-<span id="26"> 26</span>
-<span id="27"> 27</span>
-<span id="28"> 28</span>
-<span id="29"> 29</span>
-<span id="30"> 30</span>
-<span id="31"> 31</span>
-<span id="32"> 32</span>
-<span id="33"> 33</span>
-<span id="34"> 34</span>
-<span id="35"> 35</span>
-<span id="36"> 36</span>
-<span id="37"> 37</span>
-<span id="38"> 38</span>
-<span id="39"> 39</span>
-<span id="40"> 40</span>
-<span id="41"> 41</span>
-<span id="42"> 42</span>
-<span id="43"> 43</span>
-<span id="44"> 44</span>
-<span id="45"> 45</span>
-<span id="46"> 46</span>
-<span id="47"> 47</span>
-<span id="48"> 48</span>
-<span id="49"> 49</span>
-<span id="50"> 50</span>
-<span id="51"> 51</span>
-<span id="52"> 52</span>
-<span id="53"> 53</span>
-<span id="54"> 54</span>
-<span id="55"> 55</span>
-<span id="56"> 56</span>
-<span id="57"> 57</span>
-<span id="58"> 58</span>
-<span id="59"> 59</span>
-<span id="60"> 60</span>
-<span id="61"> 61</span>
-<span id="62"> 62</span>
-<span id="63"> 63</span>
-<span id="64"> 64</span>
-<span id="65"> 65</span>
-<span id="66"> 66</span>
-<span id="67"> 67</span>
-<span id="68"> 68</span>
-<span id="69"> 69</span>
-<span id="70"> 70</span>
-<span id="71"> 71</span>
-<span id="72"> 72</span>
-<span id="73"> 73</span>
-<span id="74"> 74</span>
-<span id="75"> 75</span>
-<span id="76"> 76</span>
-<span id="77"> 77</span>
-<span id="78"> 78</span>
-<span id="79"> 79</span>
-<span id="80"> 80</span>
-<span id="81"> 81</span>
-<span id="82"> 82</span>
-<span id="83"> 83</span>
-<span id="84"> 84</span>
-<span id="85"> 85</span>
-<span id="86"> 86</span>
-<span id="87"> 87</span>
-<span id="88"> 88</span>
-<span id="89"> 89</span>
-<span id="90"> 90</span>
-<span id="91"> 91</span>
-<span id="92"> 92</span>
-<span id="93"> 93</span>
-<span id="94"> 94</span>
-<span id="95"> 95</span>
-<span id="96"> 96</span>
-<span id="97"> 97</span>
-<span id="98"> 98</span>
-<span id="99"> 99</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `pot/src/lib.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../pot/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
@@ -743,746 +738,745 @@
 <span id="738">738</span>
 <span id="739">739</span>
 <span id="740">740</span>
-</pre><pre class="rust"><code><span class="attribute">#![<span class="ident">doc</span> <span class="op">=</span> <span class="macro">include_str!</span>(<span class="string">&quot;../crate-docs.md&quot;</span>)]</span>
-<span class="attribute">#![<span class="ident">forbid</span>(<span class="ident">unsafe_code</span>)]</span>
-<span class="attribute">#![<span class="ident">warn</span>(
-    <span class="ident">clippy::cargo</span>,
-    <span class="ident">missing_docs</span>,
-    <span class="comment">// clippy::missing_docs_in_private_items,</span>
-    <span class="ident">clippy::nursery</span>,
-    <span class="ident">clippy::pedantic</span>,
-    <span class="ident">future_incompatible</span>,
-    <span class="ident">rust_2018_idioms</span>,
-)]</span>
-<span class="attribute">#![<span class="ident">allow</span>(
-    <span class="ident">clippy::missing_errors_doc</span>, <span class="comment">// TODO clippy::missing_errors_doc</span>
-    <span class="ident">clippy::option_if_let_else</span>,
-    <span class="ident">clippy::used_underscore_binding</span>, <span class="comment">// false positive with tracing</span>
-)]</span>
+</pre><pre class="rust"><code><span class="attribute">#![doc = <span class="macro">include_str!</span>(<span class="string">&quot;../crate-docs.md&quot;</span>)]
+#![forbid(unsafe_code)]
+#![warn(
+    clippy::cargo,
+    missing_docs,
+    <span class="comment">// clippy::missing_docs_in_private_items,
+    </span>clippy::nursery,
+    clippy::pedantic,
+    future_incompatible,
+    rust_2018_idioms,
+)]
+#![allow(
+    clippy::missing_errors_doc, <span class="comment">// TODO clippy::missing_errors_doc
+    </span>clippy::option_if_let_else,
+    clippy::used_underscore_binding, <span class="comment">// false positive with tracing
+</span>)]
 
-<span class="doccomment">/// Types for deserializing pots.</span>
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">de</span>;
-<span class="kw">mod</span> <span class="ident">error</span>;
-<span class="doccomment">/// Low-level interface for reading and writing the pot format.</span>
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">format</span>;
-<span class="doccomment">/// Types for reading data.</span>
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">reader</span>;
-<span class="doccomment">/// Types for serializing pots.</span>
-<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">ser</span>;
-<span class="kw">mod</span> <span class="ident">value</span>;
-<span class="kw">use</span> <span class="ident">std::io::Read</span>;
+</span><span class="doccomment">/// Types for deserializing pots.
+</span><span class="kw">pub mod </span>de;
+<span class="kw">mod </span>error;
+<span class="doccomment">/// Low-level interface for reading and writing the pot format.
+</span><span class="kw">pub mod </span>format;
+<span class="doccomment">/// Types for reading data.
+</span><span class="kw">pub mod </span>reader;
+<span class="doccomment">/// Types for serializing pots.
+</span><span class="kw">pub mod </span>ser;
+<span class="kw">mod </span>value;
+<span class="kw">use </span>std::io::Read;
 
-<span class="kw">use</span> <span class="ident">byteorder::WriteBytesExt</span>;
+<span class="kw">use </span>byteorder::WriteBytesExt;
 
-<span class="kw">pub</span> <span class="kw">use</span> <span class="self">self</span>::{<span class="ident">error::Error</span>, <span class="ident">value::Value</span>};
-<span class="doccomment">/// A result alias that returns [`Error`].</span>
-<span class="kw">pub</span> <span class="kw">type</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Error</span><span class="op">&gt;</span>;
-<span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">de::DeserializeOwned</span>, <span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
+<span class="kw">pub use </span><span class="self">self</span>::{error::Error, value::Value};
+<span class="doccomment">/// A result alias that returns [`Error`].
+</span><span class="kw">pub type </span><span class="prelude-ty">Result</span>&lt;T&gt; = std::result::Result&lt;T, Error&gt;;
+<span class="kw">use </span>serde::{de::DeserializeOwned, Deserialize, Serialize};
 
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::reader::IoReader</span>;
+<span class="kw">use </span><span class="kw">crate</span>::reader::IoReader;
 
-<span class="doccomment">/// Serialize `value` using Pot into a `Vec&lt;u8&gt;`.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// ```rust</span>
-<span class="doccomment">/// let serialized = pot::to_vec(&amp;&quot;hello world&quot;).unwrap();</span>
-<span class="doccomment">/// let deserialized = pot::from_slice::&lt;String&gt;(&amp;serialized).unwrap();</span>
-<span class="doccomment">/// assert_eq!(deserialized, &quot;hello world&quot;);</span>
-<span class="doccomment">/// ```</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">T</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Serialize</span>,
+<span class="doccomment">/// Serialize `value` using Pot into a `Vec&lt;u8&gt;`.
+///
+/// ```rust
+/// let serialized = pot::to_vec(&amp;&quot;hello world&quot;).unwrap();
+/// let deserialized = pot::from_slice::&lt;String&gt;(&amp;serialized).unwrap();
+/// assert_eq!(deserialized, &quot;hello world&quot;);
+/// ```
+</span><span class="kw">pub fn </span>to_vec&lt;T&gt;(value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;u8&gt;&gt;
+<span class="kw">where
+    </span>T: Serialize,
 {
-    <span class="ident">Config::default</span>().<span class="ident">serialize</span>(<span class="ident">value</span>)
+    Config::default().serialize(value)
 }
 
-<span class="doccomment">/// Serialize `value` using Pot into `writer`.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// ```rust</span>
-<span class="doccomment">/// let mut serialized = Vec::new();</span>
-<span class="doccomment">/// pot::to_writer(&amp;&quot;hello world&quot;, &amp;mut serialized).unwrap();</span>
-<span class="doccomment">/// let deserialized = pot::from_reader::&lt;String, _&gt;(&amp;serialized[..]).unwrap();</span>
-<span class="doccomment">/// assert_eq!(deserialized, &quot;hello world&quot;);</span>
-<span class="doccomment">/// ```</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">to_writer</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">W</span><span class="op">&gt;</span>(<span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">T</span>, <span class="ident">writer</span>: <span class="ident">W</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Serialize</span>,
-    <span class="ident">W</span>: <span class="ident">WriteBytesExt</span>,
+<span class="doccomment">/// Serialize `value` using Pot into `writer`.
+///
+/// ```rust
+/// let mut serialized = Vec::new();
+/// pot::to_writer(&amp;&quot;hello world&quot;, &amp;mut serialized).unwrap();
+/// let deserialized = pot::from_reader::&lt;String, _&gt;(&amp;serialized[..]).unwrap();
+/// assert_eq!(deserialized, &quot;hello world&quot;);
+/// ```
+</span><span class="kw">pub fn </span>to_writer&lt;T, W&gt;(value: <span class="kw-2">&amp;</span>T, writer: W) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+<span class="kw">where
+    </span>T: Serialize,
+    W: WriteBytesExt,
 {
-    <span class="ident">Config::default</span>().<span class="ident">serialize_into</span>(<span class="ident">value</span>, <span class="ident">writer</span>)
+    Config::default().serialize_into(value, writer)
 }
 
-<span class="doccomment">/// Restore a previously Pot-serialized value from a slice.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// ```rust</span>
-<span class="doccomment">/// let serialized = pot::to_vec(&amp;&quot;hello world&quot;).unwrap();</span>
-<span class="doccomment">/// let deserialized = pot::from_slice::&lt;String&gt;(&amp;serialized).unwrap();</span>
-<span class="doccomment">/// assert_eq!(deserialized, &quot;hello world&quot;);</span>
-<span class="doccomment">/// ```</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_slice</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="ident">serialized</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Deserialize</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
+<span class="doccomment">/// Restore a previously Pot-serialized value from a slice.
+///
+/// ```rust
+/// let serialized = pot::to_vec(&amp;&quot;hello world&quot;).unwrap();
+/// let deserialized = pot::from_slice::&lt;String&gt;(&amp;serialized).unwrap();
+/// assert_eq!(deserialized, &quot;hello world&quot;);
+/// ```
+</span><span class="kw">pub fn </span>from_slice&lt;<span class="lifetime">&#39;a</span>, T&gt;(serialized: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;T&gt;
+<span class="kw">where
+    </span>T: Deserialize&lt;<span class="lifetime">&#39;a</span>&gt;,
 {
-    <span class="ident">Config::default</span>().<span class="ident">deserialize</span>(<span class="ident">serialized</span>)
+    Config::default().deserialize(serialized)
 }
 
-<span class="doccomment">/// Restore a previously Pot-serialized value from a [`Read`] implementor.</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// ```rust</span>
-<span class="doccomment">/// let mut serialized = Vec::new();</span>
-<span class="doccomment">/// pot::to_writer(&amp;&quot;hello world&quot;, &amp;mut serialized).unwrap();</span>
-<span class="doccomment">/// let deserialized = pot::from_reader::&lt;String, _&gt;(&amp;serialized[..]).unwrap();</span>
-<span class="doccomment">/// assert_eq!(deserialized, &quot;hello world&quot;);</span>
-<span class="doccomment">/// ```</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_reader</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">R</span><span class="op">&gt;</span>(<span class="ident">reader</span>: <span class="ident">R</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">DeserializeOwned</span>,
-    <span class="ident">R</span>: <span class="ident">Read</span>,
+<span class="doccomment">/// Restore a previously Pot-serialized value from a [`Read`] implementor.
+///
+/// ```rust
+/// let mut serialized = Vec::new();
+/// pot::to_writer(&amp;&quot;hello world&quot;, &amp;mut serialized).unwrap();
+/// let deserialized = pot::from_reader::&lt;String, _&gt;(&amp;serialized[..]).unwrap();
+/// assert_eq!(deserialized, &quot;hello world&quot;);
+/// ```
+</span><span class="kw">pub fn </span>from_reader&lt;T, R&gt;(reader: R) -&gt; <span class="prelude-ty">Result</span>&lt;T&gt;
+<span class="kw">where
+    </span>T: DeserializeOwned,
+    R: Read,
 {
-    <span class="ident">Config::default</span>().<span class="ident">deserialize_from</span>(<span class="ident">reader</span>)
+    Config::default().deserialize_from(reader)
 }
 
-<span class="doccomment">/// Serialization and deserialization configuration.</span>
-<span class="attribute">#[<span class="ident">must_use</span>]</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Config</span> {
-    <span class="ident">allocation_budget</span>: <span class="ident">usize</span>,
+<span class="doccomment">/// Serialization and deserialization configuration.
+</span><span class="attribute">#[must_use]
+#[derive(Clone, Debug)]
+</span><span class="kw">pub struct </span>Config {
+    allocation_budget: usize,
 }
 
-<span class="kw">impl</span> <span class="ident">Default</span> <span class="kw">for</span> <span class="ident">Config</span> {
-    <span class="kw">fn</span> <span class="ident">default</span>() -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> {
-            <span class="ident">allocation_budget</span>: <span class="ident">usize::MAX</span>,
+<span class="kw">impl </span>Default <span class="kw">for </span>Config {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            allocation_budget: usize::MAX,
         }
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Config</span> {
-    <span class="doccomment">/// Sets the maximum number of bytes able to be allocated. This is not</span>
-    <span class="doccomment">/// guaranteed to be perfectly accurate, due to the limitations of serde</span>
-    <span class="doccomment">/// deserializers. Pot can keep track of how many bytes it thinks its</span>
-    <span class="doccomment">/// allocating, but a deserializer can always allocate more memory than Pot</span>
-    <span class="doccomment">/// can be aware of.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// The default allocation budget is `usize::MAX`.</span>
-    <span class="kw">pub</span> <span class="kw">const</span> <span class="kw">fn</span> <span class="ident">allocation_budget</span>(<span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">budget</span>: <span class="ident">usize</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">self</span>.<span class="ident">allocation_budget</span> <span class="op">=</span> <span class="ident">budget</span>;
-        <span class="self">self</span>
-    }
+<span class="kw">impl </span>Config {
+    <span class="doccomment">/// Sets the maximum number of bytes able to be allocated. This is not
+    /// guaranteed to be perfectly accurate, due to the limitations of serde
+    /// deserializers. Pot can keep track of how many bytes it thinks its
+    /// allocating, but a deserializer can always allocate more memory than Pot
+    /// can be aware of.
+    ///
+    /// The default allocation budget is `usize::MAX`.
+    </span><span class="kw">pub const fn </span>allocation_budget(<span class="kw-2">mut </span><span class="self">self</span>, budget: usize) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.allocation_budget = budget;
+        <span class="self">self
+    </span>}
 
-    <span class="doccomment">/// Deserializes a value from a slice using the configured options.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">deserialize</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span>, <span class="ident">T</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">serialized</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;de</span> [<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">Deserialize</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// Deserializes a value from a slice using the configured options.
+    </span><span class="kw">pub fn </span>deserialize&lt;<span class="lifetime">&#39;de</span>, T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, serialized: <span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;T&gt;
+    <span class="kw">where
+        </span>T: Deserialize&lt;<span class="lifetime">&#39;de</span>&gt;,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deserializer</span> <span class="op">=</span> <span class="ident">de::Deserializer::from_slice</span>(<span class="ident">serialized</span>, <span class="self">self</span>.<span class="ident">allocation_budget</span>)<span class="question-mark">?</span>;
-        <span class="kw">let</span> <span class="ident">t</span> <span class="op">=</span> <span class="ident">T::deserialize</span>(<span class="kw-2">&amp;mut</span> <span class="ident">deserializer</span>)<span class="question-mark">?</span>;
-        <span class="kw">if</span> <span class="ident">deserializer</span>.<span class="ident">end_of_input</span>() {
-            <span class="prelude-val">Ok</span>(<span class="ident">t</span>)
-        } <span class="kw">else</span> {
-            <span class="prelude-val">Err</span>(<span class="ident">Error::TrailingBytes</span>)
+        <span class="kw">let </span><span class="kw-2">mut </span>deserializer = de::Deserializer::from_slice(serialized, <span class="self">self</span>.allocation_budget)<span class="question-mark">?</span>;
+        <span class="kw">let </span>t = T::deserialize(<span class="kw-2">&amp;mut </span>deserializer)<span class="question-mark">?</span>;
+        <span class="kw">if </span>deserializer.end_of_input() {
+            <span class="prelude-val">Ok</span>(t)
+        } <span class="kw">else </span>{
+            <span class="prelude-val">Err</span>(Error::TrailingBytes)
         }
     }
 
-    <span class="doccomment">/// Deserializes a value from a [`Read`] implementor using the configured</span>
-    <span class="doccomment">/// options.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">deserialize_from</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">R</span>: <span class="ident">Read</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">reader</span>: <span class="ident">R</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">DeserializeOwned</span>,
+    <span class="doccomment">/// Deserializes a value from a [`Read`] implementor using the configured
+    /// options.
+    </span><span class="kw">pub fn </span>deserialize_from&lt;T, R: Read&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, reader: R) -&gt; <span class="prelude-ty">Result</span>&lt;T&gt;
+    <span class="kw">where
+        </span>T: DeserializeOwned,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deserializer</span> <span class="op">=</span>
-            <span class="ident">de::Deserializer::from_read</span>(<span class="ident">IoReader::new</span>(<span class="ident">reader</span>), <span class="self">self</span>.<span class="ident">allocation_budget</span>)<span class="question-mark">?</span>;
-        <span class="ident">T::deserialize</span>(<span class="kw-2">&amp;mut</span> <span class="ident">deserializer</span>)
+        <span class="kw">let </span><span class="kw-2">mut </span>deserializer =
+            de::Deserializer::from_read(IoReader::new(reader), <span class="self">self</span>.allocation_budget)<span class="question-mark">?</span>;
+        T::deserialize(<span class="kw-2">&amp;mut </span>deserializer)
     }
 
-    <span class="doccomment">/// Serializes a value to a `Vec` using the configured options.</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::unused_self</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">serialize</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Serialize</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">T</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident">Vec::default</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">serializer</span> <span class="op">=</span> <span class="ident">ser::Serializer::new</span>(<span class="kw-2">&amp;mut</span> <span class="ident">output</span>)<span class="question-mark">?</span>;
-        <span class="ident">value</span>.<span class="ident">serialize</span>(<span class="kw-2">&amp;mut</span> <span class="ident">serializer</span>)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(<span class="ident">output</span>)
+    <span class="doccomment">/// Serializes a value to a `Vec` using the configured options.
+    </span><span class="attribute">#[allow(clippy::unused_self)]
+    </span><span class="kw">pub fn </span>serialize&lt;T: Serialize&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;u8&gt;&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>output = Vec::default();
+        <span class="kw">let </span><span class="kw-2">mut </span>serializer = ser::Serializer::new(<span class="kw-2">&amp;mut </span>output)<span class="question-mark">?</span>;
+        value.serialize(<span class="kw-2">&amp;mut </span>serializer)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(output)
     }
 
-    <span class="doccomment">/// Serializes a value to a writer using the configured options.</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::unused_self</span>)]</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">serialize_into</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">W</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">T</span>, <span class="ident">writer</span>: <span class="ident">W</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">T</span>: <span class="ident">Serialize</span>,
-        <span class="ident">W</span>: <span class="ident">WriteBytesExt</span>,
+    <span class="doccomment">/// Serializes a value to a writer using the configured options.
+    </span><span class="attribute">#[allow(clippy::unused_self)]
+    </span><span class="kw">pub fn </span>serialize_into&lt;T, W&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, value: <span class="kw-2">&amp;</span>T, writer: W) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    <span class="kw">where
+        </span>T: Serialize,
+        W: WriteBytesExt,
     {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">serializer</span> <span class="op">=</span> <span class="ident">ser::Serializer::new</span>(<span class="ident">writer</span>)<span class="question-mark">?</span>;
-        <span class="ident">value</span>.<span class="ident">serialize</span>(<span class="kw-2">&amp;mut</span> <span class="ident">serializer</span>)
+        <span class="kw">let </span><span class="kw-2">mut </span>serializer = ser::Serializer::new(writer)<span class="question-mark">?</span>;
+        value.serialize(<span class="kw-2">&amp;mut </span>serializer)
     }
 }
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">tests</span> {
-    <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">borrow::Cow</span>, <span class="ident">marker::PhantomData</span>};
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use </span>std::{borrow::Cow, marker::PhantomData};
 
-    <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserializer</span>, <span class="ident">Serializer</span>};
-    <span class="kw">use</span> <span class="ident">serde_json</span>::{<span class="ident">value::Value</span> <span class="kw">as</span> <span class="ident">JsonValue</span>, <span class="ident">Number</span>};
+    <span class="kw">use </span>serde::{Deserializer, Serializer};
+    <span class="kw">use </span>serde_json::{value::Value <span class="kw">as </span>JsonValue, Number};
 
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use</span> <span class="kw">crate</span>::{
-        <span class="ident">format</span>::{<span class="ident">Float</span>, <span class="ident">Integer</span>, <span class="ident">CURRENT_VERSION</span>},
-        <span class="ident">value::Value</span>,
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use crate</span>::{
+        format::{Float, Integer, CURRENT_VERSION},
+        value::Value,
     };
 
-    <span class="kw">fn</span> <span class="ident">init_tracing</span>() {
-        <span class="ident">drop</span>(
-            <span class="ident">tracing_subscriber::fmt</span>()
-                .<span class="ident">pretty</span>()
-                <span class="comment">// enable everything</span>
-                .<span class="ident">with_max_level</span>(<span class="ident">tracing::Level::TRACE</span>)
-                .<span class="ident">with_span_events</span>(<span class="ident">tracing_subscriber::fmt::format::FmtSpan::ENTER</span>)
-                <span class="comment">// sets this to be the default, global collector for this application.</span>
-                .<span class="ident">try_init</span>(),
+    <span class="kw">fn </span>init_tracing() {
+        drop(
+            tracing_subscriber::fmt()
+                .pretty()
+                <span class="comment">// enable everything
+                </span>.with_max_level(tracing::Level::TRACE)
+                .with_span_events(tracing_subscriber::fmt::format::FmtSpan::ENTER)
+                <span class="comment">// sets this to be the default, global collector for this application.
+                </span>.try_init(),
         );
     }
 
-    <span class="kw">fn</span> <span class="ident">test_serialization</span><span class="op">&lt;</span><span class="ident">S</span>: <span class="ident">Serialize</span> <span class="op">+</span> <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span> <span class="ident">Deserialize</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Debug</span><span class="op">&gt;</span>(
-        <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">S</span>,
-        <span class="ident">check_length</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
+    <span class="kw">fn </span>test_serialization&lt;S: Serialize + <span class="kw">for</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; + PartialEq + Debug&gt;(
+        value: <span class="kw-2">&amp;</span>S,
+        check_length: <span class="prelude-ty">Option</span>&lt;usize&gt;,
     ) {
-        <span class="ident">test_serialization_with</span>(<span class="ident">value</span>, <span class="ident">check_length</span>, <span class="op">|</span><span class="ident">value</span>, <span class="ident">deserialized</span><span class="op">|</span> {
-            <span class="macro">assert_eq!</span>(<span class="ident">value</span>, <span class="ident">deserialized</span>);
+        test_serialization_with(value, check_length, |value, deserialized| {
+            <span class="macro">assert_eq!</span>(value, deserialized);
         });
     }
 
-    <span class="kw">fn</span> <span class="ident">test_serialization_with</span><span class="op">&lt;</span>
-        <span class="ident">S</span>: <span class="ident">Serialize</span> <span class="op">+</span> <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span> <span class="ident">Deserialize</span><span class="op">&lt;</span><span class="lifetime">&#39;de</span><span class="op">&gt;</span> <span class="op">+</span> <span class="ident">PartialEq</span> <span class="op">+</span> <span class="ident">Debug</span>,
-        <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="ident">S</span>, <span class="kw-2">&amp;</span><span class="ident">S</span>),
-    <span class="op">&gt;</span>(
-        <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">S</span>,
-        <span class="ident">check_length</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>,
-        <span class="kw-2">mut</span> <span class="ident">callback</span>: <span class="ident">F</span>,
+    <span class="kw">fn </span>test_serialization_with&lt;
+        S: Serialize + <span class="kw">for</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; + PartialEq + Debug,
+        F: FnMut(<span class="kw-2">&amp;</span>S, <span class="kw-2">&amp;</span>S),
+    &gt;(
+        value: <span class="kw-2">&amp;</span>S,
+        check_length: <span class="prelude-ty">Option</span>&lt;usize&gt;,
+        <span class="kw-2">mut </span>callback: F,
     ) {
-        <span class="ident">init_tracing</span>();
-        <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">to_vec</span>(<span class="kw-2">&amp;</span><span class="ident">value</span>).<span class="ident">unwrap</span>();
-        <span class="macro">println!</span>(<span class="string">&quot;{:?}: {:02x?}&quot;</span>, <span class="ident">value</span>, <span class="ident">bytes</span>);
-        <span class="kw">let</span> <span class="ident">deserialized</span> <span class="op">=</span> <span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">S</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>).<span class="ident">unwrap</span>();
-        <span class="ident">callback</span>(<span class="ident">value</span>, <span class="kw-2">&amp;</span><span class="ident">deserialized</span>);
-        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">check_length</span>) <span class="op">=</span> <span class="ident">check_length</span> {
-            <span class="comment">// Subtract 4 bytes from the serialized output to account for the header.</span>
-            <span class="macro">assert_eq!</span>(<span class="ident">bytes</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">4</span>, <span class="ident">check_length</span>);
+        init_tracing();
+        <span class="kw">let </span>bytes = to_vec(<span class="kw-2">&amp;</span>value).unwrap();
+        <span class="macro">println!</span>(<span class="string">&quot;{:?}: {:02x?}&quot;</span>, value, bytes);
+        <span class="kw">let </span>deserialized = from_slice::&lt;S&gt;(<span class="kw-2">&amp;</span>bytes).unwrap();
+        callback(value, <span class="kw-2">&amp;</span>deserialized);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(check_length) = check_length {
+            <span class="comment">// Subtract 4 bytes from the serialized output to account for the header.
+            </span><span class="macro">assert_eq!</span>(bytes.len() - <span class="number">4</span>, check_length);
         }
 
-        <span class="comment">// do the same, but using the reader interface</span>
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
-        <span class="ident">to_writer</span>(<span class="ident">value</span>, <span class="kw-2">&amp;mut</span> <span class="ident">bytes</span>).<span class="ident">unwrap</span>();
-        <span class="macro">println!</span>(<span class="string">&quot;{:?}: {:02x?}&quot;</span>, <span class="ident">value</span>, <span class="ident">bytes</span>);
-        <span class="kw">let</span> <span class="ident">deserialized</span> <span class="op">=</span> <span class="ident">from_reader</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>[..]).<span class="ident">unwrap</span>();
-        <span class="ident">callback</span>(<span class="ident">value</span>, <span class="kw-2">&amp;</span><span class="ident">deserialized</span>);
+        <span class="comment">// do the same, but using the reader interface
+        </span><span class="kw">let </span><span class="kw-2">mut </span>bytes = Vec::new();
+        to_writer(value, <span class="kw-2">&amp;mut </span>bytes).unwrap();
+        <span class="macro">println!</span>(<span class="string">&quot;{:?}: {:02x?}&quot;</span>, value, bytes);
+        <span class="kw">let </span>deserialized = from_reader(<span class="kw-2">&amp;</span>bytes[..]).unwrap();
+        callback(value, <span class="kw-2">&amp;</span>deserialized);
     }
 
-    <span class="kw">use</span> <span class="ident">std::fmt::Debug</span>;
+    <span class="kw">use </span>std::fmt::Debug;
 
-    <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">PartialEq</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
-    <span class="kw">struct</span> <span class="ident">NumbersStruct</span> {
-        <span class="ident">u8</span>: <span class="ident">u8</span>,
-        <span class="ident">u16</span>: <span class="ident">u16</span>,
-        <span class="ident">char</span>: <span class="ident">char</span>,
-        <span class="ident">u32</span>: <span class="ident">u32</span>,
-        <span class="ident">u64</span>: <span class="ident">u64</span>,
-        <span class="ident">u128</span>: <span class="ident">u128</span>,
-        <span class="ident">i8</span>: <span class="ident">i8</span>,
-        <span class="ident">i16</span>: <span class="ident">i16</span>,
-        <span class="ident">i32</span>: <span class="ident">i32</span>,
-        <span class="ident">i64</span>: <span class="ident">i64</span>,
-        <span class="ident">i128</span>: <span class="ident">i128</span>,
-        <span class="ident">f32</span>: <span class="ident">f32</span>,
-        <span class="ident">f64</span>: <span class="ident">f64</span>,
+    <span class="attribute">#[derive(Serialize, PartialEq, Deserialize, Debug, Default)]
+    </span><span class="kw">struct </span>NumbersStruct {
+        u8: u8,
+        u16: u16,
+        char: char,
+        u32: u32,
+        u64: u64,
+        u128: u128,
+        i8: i8,
+        i16: i16,
+        i32: i32,
+        i64: i64,
+        i128: i128,
+        f32: f32,
+        f64: f64,
     }
 
-    <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">PartialEq</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>)]</span>
-    <span class="kw">enum</span> <span class="ident">EnumVariants</span> {
-        <span class="ident">Unit</span>,
-        <span class="ident">Tuple</span>(<span class="ident">u64</span>),
-        <span class="ident">TupleTwoArgs</span>(<span class="ident">u64</span>, <span class="ident">u64</span>),
-        <span class="ident">Struct</span> { <span class="ident">arg</span>: <span class="ident">u64</span> },
+    <span class="attribute">#[derive(Serialize, PartialEq, Deserialize, Debug)]
+    </span><span class="kw">enum </span>EnumVariants {
+        Unit,
+        Tuple(u64),
+        TupleTwoArgs(u64, u64),
+        Struct { arg: u64 },
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">numbers</span>() {
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="ident">NumbersStruct::default</span>(), <span class="prelude-val">None</span>);
-        <span class="ident">test_serialization</span>(
-            <span class="kw-2">&amp;</span><span class="ident">NumbersStruct</span> {
-                <span class="ident">u8</span>: <span class="ident">u8::MAX</span>,
-                <span class="ident">u16</span>: <span class="ident">u16::MAX</span>,
-                <span class="ident">char</span>: <span class="ident">char::MAX</span>,
-                <span class="ident">u32</span>: <span class="ident">u32::MAX</span>,
-                <span class="ident">u64</span>: <span class="ident">u64::MAX</span>,
-                <span class="ident">u128</span>: <span class="ident">u128::MAX</span>,
-                <span class="ident">i8</span>: <span class="ident">i8::MIN</span>,
-                <span class="ident">i16</span>: <span class="ident">i16::MIN</span>,
-                <span class="ident">i32</span>: <span class="ident">i32::MIN</span>,
-                <span class="ident">i64</span>: <span class="ident">i64::MIN</span>,
-                <span class="ident">i128</span>: <span class="ident">i128::MIN</span>,
-                <span class="ident">f32</span>: <span class="number">1.</span>,
-                <span class="ident">f64</span>: <span class="number">1.</span>,
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>numbers() {
+        test_serialization(<span class="kw-2">&amp;</span>NumbersStruct::default(), <span class="prelude-val">None</span>);
+        test_serialization(
+            <span class="kw-2">&amp;</span>NumbersStruct {
+                u8: u8::MAX,
+                u16: u16::MAX,
+                char: char::MAX,
+                u32: u32::MAX,
+                u64: u64::MAX,
+                u128: u128::MAX,
+                i8: i8::MIN,
+                i16: i16::MIN,
+                i32: i32::MIN,
+                i64: i64::MIN,
+                i128: i128::MIN,
+                f32: <span class="number">1.</span>,
+                f64: <span class="number">1.</span>,
             },
             <span class="prelude-val">None</span>,
         );
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">number_packing</span>() {
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="number">0_u128</span>, <span class="prelude-val">Some</span>(<span class="number">2</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span>(<span class="number">2_u128</span>.<span class="ident">pow</span>(<span class="number">8</span>) <span class="op">-</span> <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">2</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="number">2_u128</span>.<span class="ident">pow</span>(<span class="number">8</span>), <span class="prelude-val">Some</span>(<span class="number">3</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span>(<span class="number">2_u128</span>.<span class="ident">pow</span>(<span class="number">16</span>) <span class="op">-</span> <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">3</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="number">2_u128</span>.<span class="ident">pow</span>(<span class="number">16</span>), <span class="prelude-val">Some</span>(<span class="number">4</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span>(<span class="number">2_u128</span>.<span class="ident">pow</span>(<span class="number">24</span>) <span class="op">-</span> <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">4</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="number">2_u128</span>.<span class="ident">pow</span>(<span class="number">24</span>), <span class="prelude-val">Some</span>(<span class="number">5</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span>(<span class="number">2_u128</span>.<span class="ident">pow</span>(<span class="number">32</span>) <span class="op">-</span> <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">5</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="number">2_u128</span>.<span class="ident">pow</span>(<span class="number">32</span>), <span class="prelude-val">Some</span>(<span class="number">7</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span>(<span class="number">2_u128</span>.<span class="ident">pow</span>(<span class="number">48</span>) <span class="op">-</span> <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">7</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="number">2_u128</span>.<span class="ident">pow</span>(<span class="number">48</span>), <span class="prelude-val">Some</span>(<span class="number">9</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span>(<span class="number">2_u128</span>.<span class="ident">pow</span>(<span class="number">64</span>) <span class="op">-</span> <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">9</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="number">2_u128</span>.<span class="ident">pow</span>(<span class="number">64</span>), <span class="prelude-val">Some</span>(<span class="number">17</span>));
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>number_packing() {
+        test_serialization(<span class="kw-2">&amp;</span><span class="number">0_u128</span>, <span class="prelude-val">Some</span>(<span class="number">2</span>));
+        test_serialization(<span class="kw-2">&amp;</span>(<span class="number">2_u128</span>.pow(<span class="number">8</span>) - <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">2</span>));
+        test_serialization(<span class="kw-2">&amp;</span><span class="number">2_u128</span>.pow(<span class="number">8</span>), <span class="prelude-val">Some</span>(<span class="number">3</span>));
+        test_serialization(<span class="kw-2">&amp;</span>(<span class="number">2_u128</span>.pow(<span class="number">16</span>) - <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">3</span>));
+        test_serialization(<span class="kw-2">&amp;</span><span class="number">2_u128</span>.pow(<span class="number">16</span>), <span class="prelude-val">Some</span>(<span class="number">4</span>));
+        test_serialization(<span class="kw-2">&amp;</span>(<span class="number">2_u128</span>.pow(<span class="number">24</span>) - <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">4</span>));
+        test_serialization(<span class="kw-2">&amp;</span><span class="number">2_u128</span>.pow(<span class="number">24</span>), <span class="prelude-val">Some</span>(<span class="number">5</span>));
+        test_serialization(<span class="kw-2">&amp;</span>(<span class="number">2_u128</span>.pow(<span class="number">32</span>) - <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">5</span>));
+        test_serialization(<span class="kw-2">&amp;</span><span class="number">2_u128</span>.pow(<span class="number">32</span>), <span class="prelude-val">Some</span>(<span class="number">7</span>));
+        test_serialization(<span class="kw-2">&amp;</span>(<span class="number">2_u128</span>.pow(<span class="number">48</span>) - <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">7</span>));
+        test_serialization(<span class="kw-2">&amp;</span><span class="number">2_u128</span>.pow(<span class="number">48</span>), <span class="prelude-val">Some</span>(<span class="number">9</span>));
+        test_serialization(<span class="kw-2">&amp;</span>(<span class="number">2_u128</span>.pow(<span class="number">64</span>) - <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">9</span>));
+        test_serialization(<span class="kw-2">&amp;</span><span class="number">2_u128</span>.pow(<span class="number">64</span>), <span class="prelude-val">Some</span>(<span class="number">17</span>));
 
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="number">0_i128</span>, <span class="prelude-val">Some</span>(<span class="number">2</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span>(<span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">7</span>) <span class="op">-</span> <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">2</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">7</span>), <span class="prelude-val">Some</span>(<span class="number">3</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span>(<span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">15</span>) <span class="op">-</span> <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">3</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">15</span>), <span class="prelude-val">Some</span>(<span class="number">4</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span>(<span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">23</span>) <span class="op">-</span> <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">4</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">23</span>), <span class="prelude-val">Some</span>(<span class="number">5</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span>(<span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">31</span>) <span class="op">-</span> <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">5</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">31</span>), <span class="prelude-val">Some</span>(<span class="number">7</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span>(<span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">47</span>) <span class="op">-</span> <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">7</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">47</span>), <span class="prelude-val">Some</span>(<span class="number">9</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="op">-</span>(<span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">7</span>)), <span class="prelude-val">Some</span>(<span class="number">2</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="op">-</span>(<span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">7</span>) <span class="op">+</span> <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">3</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="op">-</span>(<span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">15</span>)), <span class="prelude-val">Some</span>(<span class="number">3</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="op">-</span>(<span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">15</span>) <span class="op">+</span> <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">4</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="op">-</span>(<span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">23</span>)), <span class="prelude-val">Some</span>(<span class="number">4</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="op">-</span>(<span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">23</span>) <span class="op">+</span> <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">5</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="op">-</span>(<span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">31</span>)), <span class="prelude-val">Some</span>(<span class="number">5</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="op">-</span>(<span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">31</span>) <span class="op">+</span> <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">7</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="op">-</span>(<span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">47</span>)), <span class="prelude-val">Some</span>(<span class="number">7</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="op">-</span>(<span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">47</span>) <span class="op">+</span> <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">9</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="op">-</span>(<span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">63</span>)), <span class="prelude-val">Some</span>(<span class="number">9</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="op">-</span>(<span class="number">2_i128</span>.<span class="ident">pow</span>(<span class="number">63</span>) <span class="op">+</span> <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">17</span>));
+        test_serialization(<span class="kw-2">&amp;</span><span class="number">0_i128</span>, <span class="prelude-val">Some</span>(<span class="number">2</span>));
+        test_serialization(<span class="kw-2">&amp;</span>(<span class="number">2_i128</span>.pow(<span class="number">7</span>) - <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">2</span>));
+        test_serialization(<span class="kw-2">&amp;</span><span class="number">2_i128</span>.pow(<span class="number">7</span>), <span class="prelude-val">Some</span>(<span class="number">3</span>));
+        test_serialization(<span class="kw-2">&amp;</span>(<span class="number">2_i128</span>.pow(<span class="number">15</span>) - <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">3</span>));
+        test_serialization(<span class="kw-2">&amp;</span><span class="number">2_i128</span>.pow(<span class="number">15</span>), <span class="prelude-val">Some</span>(<span class="number">4</span>));
+        test_serialization(<span class="kw-2">&amp;</span>(<span class="number">2_i128</span>.pow(<span class="number">23</span>) - <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">4</span>));
+        test_serialization(<span class="kw-2">&amp;</span><span class="number">2_i128</span>.pow(<span class="number">23</span>), <span class="prelude-val">Some</span>(<span class="number">5</span>));
+        test_serialization(<span class="kw-2">&amp;</span>(<span class="number">2_i128</span>.pow(<span class="number">31</span>) - <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">5</span>));
+        test_serialization(<span class="kw-2">&amp;</span><span class="number">2_i128</span>.pow(<span class="number">31</span>), <span class="prelude-val">Some</span>(<span class="number">7</span>));
+        test_serialization(<span class="kw-2">&amp;</span>(<span class="number">2_i128</span>.pow(<span class="number">47</span>) - <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">7</span>));
+        test_serialization(<span class="kw-2">&amp;</span><span class="number">2_i128</span>.pow(<span class="number">47</span>), <span class="prelude-val">Some</span>(<span class="number">9</span>));
+        test_serialization(<span class="kw-2">&amp;</span>-(<span class="number">2_i128</span>.pow(<span class="number">7</span>)), <span class="prelude-val">Some</span>(<span class="number">2</span>));
+        test_serialization(<span class="kw-2">&amp;</span>-(<span class="number">2_i128</span>.pow(<span class="number">7</span>) + <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">3</span>));
+        test_serialization(<span class="kw-2">&amp;</span>-(<span class="number">2_i128</span>.pow(<span class="number">15</span>)), <span class="prelude-val">Some</span>(<span class="number">3</span>));
+        test_serialization(<span class="kw-2">&amp;</span>-(<span class="number">2_i128</span>.pow(<span class="number">15</span>) + <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">4</span>));
+        test_serialization(<span class="kw-2">&amp;</span>-(<span class="number">2_i128</span>.pow(<span class="number">23</span>)), <span class="prelude-val">Some</span>(<span class="number">4</span>));
+        test_serialization(<span class="kw-2">&amp;</span>-(<span class="number">2_i128</span>.pow(<span class="number">23</span>) + <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">5</span>));
+        test_serialization(<span class="kw-2">&amp;</span>-(<span class="number">2_i128</span>.pow(<span class="number">31</span>)), <span class="prelude-val">Some</span>(<span class="number">5</span>));
+        test_serialization(<span class="kw-2">&amp;</span>-(<span class="number">2_i128</span>.pow(<span class="number">31</span>) + <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">7</span>));
+        test_serialization(<span class="kw-2">&amp;</span>-(<span class="number">2_i128</span>.pow(<span class="number">47</span>)), <span class="prelude-val">Some</span>(<span class="number">7</span>));
+        test_serialization(<span class="kw-2">&amp;</span>-(<span class="number">2_i128</span>.pow(<span class="number">47</span>) + <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">9</span>));
+        test_serialization(<span class="kw-2">&amp;</span>-(<span class="number">2_i128</span>.pow(<span class="number">63</span>)), <span class="prelude-val">Some</span>(<span class="number">9</span>));
+        test_serialization(<span class="kw-2">&amp;</span>-(<span class="number">2_i128</span>.pow(<span class="number">63</span>) + <span class="number">1</span>), <span class="prelude-val">Some</span>(<span class="number">17</span>));
 
-        <span class="comment">// Float packing relies on bitwise conversions and are lossless.</span>
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="ident">f64::INFINITY</span>, <span class="prelude-val">Some</span>(<span class="number">3</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="ident">f64::NEG_INFINITY</span>, <span class="prelude-val">Some</span>(<span class="number">3</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="number">0_f64</span>, <span class="prelude-val">Some</span>(<span class="number">3</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="op">-</span><span class="number">0_f64</span>, <span class="prelude-val">Some</span>(<span class="number">3</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="number">0.1_f64</span>, <span class="prelude-val">Some</span>(<span class="number">9</span>));
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="number">0.1_f32</span>, <span class="prelude-val">Some</span>(<span class="number">5</span>));
+        <span class="comment">// Float packing relies on bitwise conversions and are lossless.
+        </span>test_serialization(<span class="kw-2">&amp;</span>f64::INFINITY, <span class="prelude-val">Some</span>(<span class="number">3</span>));
+        test_serialization(<span class="kw-2">&amp;</span>f64::NEG_INFINITY, <span class="prelude-val">Some</span>(<span class="number">3</span>));
+        test_serialization(<span class="kw-2">&amp;</span><span class="number">0_f64</span>, <span class="prelude-val">Some</span>(<span class="number">3</span>));
+        test_serialization(<span class="kw-2">&amp;</span>-<span class="number">0_f64</span>, <span class="prelude-val">Some</span>(<span class="number">3</span>));
+        test_serialization(<span class="kw-2">&amp;</span><span class="number">0.1_f64</span>, <span class="prelude-val">Some</span>(<span class="number">9</span>));
+        test_serialization(<span class="kw-2">&amp;</span><span class="number">0.1_f32</span>, <span class="prelude-val">Some</span>(<span class="number">5</span>));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">enums</span>() {
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="ident">EnumVariants::Unit</span>, <span class="prelude-val">None</span>);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>enums() {
+        test_serialization(<span class="kw-2">&amp;</span>EnumVariants::Unit, <span class="prelude-val">None</span>);
 
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="ident">EnumVariants::Tuple</span>(<span class="number">0</span>), <span class="prelude-val">None</span>);
+        test_serialization(<span class="kw-2">&amp;</span>EnumVariants::Tuple(<span class="number">0</span>), <span class="prelude-val">None</span>);
 
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="ident">EnumVariants::TupleTwoArgs</span>(<span class="number">1</span>, <span class="number">2</span>), <span class="prelude-val">None</span>);
+        test_serialization(<span class="kw-2">&amp;</span>EnumVariants::TupleTwoArgs(<span class="number">1</span>, <span class="number">2</span>), <span class="prelude-val">None</span>);
 
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="ident">EnumVariants::Struct</span> { <span class="ident">arg</span>: <span class="number">3</span> }, <span class="prelude-val">None</span>);
+        test_serialization(<span class="kw-2">&amp;</span>EnumVariants::Struct { arg: <span class="number">3 </span>}, <span class="prelude-val">None</span>);
 
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(<span class="ident">EnumVariants::Unit</span>), <span class="prelude-val">None</span>);
+        test_serialization(<span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(EnumVariants::Unit), <span class="prelude-val">None</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">vectors</span>() {
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="number">0_u64</span>, <span class="number">1</span>], <span class="prelude-val">None</span>);
-        <span class="ident">test_serialization</span>(
-            <span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="ident">NumbersStruct::default</span>(), <span class="ident">NumbersStruct::default</span>()],
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>vectors() {
+        test_serialization(<span class="kw-2">&amp;</span><span class="macro">vec!</span>[<span class="number">0_u64</span>, <span class="number">1</span>], <span class="prelude-val">None</span>);
+        test_serialization(
+            <span class="kw-2">&amp;</span><span class="macro">vec!</span>[NumbersStruct::default(), NumbersStruct::default()],
             <span class="prelude-val">None</span>,
         );
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">option</span>() {
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span><span class="ident">::None</span>, <span class="prelude-val">None</span>);
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(<span class="number">0_u64</span>), <span class="prelude-val">None</span>);
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(<span class="ident">u64::MAX</span>), <span class="prelude-val">None</span>);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>option() {
+        test_serialization(<span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>::&lt;u64&gt;::None, <span class="prelude-val">None</span>);
+        test_serialization(<span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(<span class="number">0_u64</span>), <span class="prelude-val">None</span>);
+        test_serialization(<span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(u64::MAX), <span class="prelude-val">None</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">phantom</span>() {
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="ident">PhantomData</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>, <span class="prelude-val">None</span>);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>phantom() {
+        test_serialization(<span class="kw-2">&amp;</span>PhantomData::&lt;u64&gt;, <span class="prelude-val">None</span>);
     }
 
-    <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">PartialEq</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">Default</span>)]</span>
-    <span class="kw">struct</span> <span class="ident">StringsAndBytes</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
-        <span class="ident">bytes</span>: <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, [<span class="ident">u8</span>]<span class="op">&gt;</span>,
-        <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">with</span> <span class="op">=</span> <span class="string">&quot;serde_bytes&quot;</span>)]</span>
-        <span class="ident">bytes_borrowed</span>: <span class="ident">Cow</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, [<span class="ident">u8</span>]<span class="op">&gt;</span>,
-        <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">with</span> <span class="op">=</span> <span class="string">&quot;serde_bytes&quot;</span>)]</span>
-        <span class="ident">serde_bytes_byte_slice</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">u8</span>],
-        <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">with</span> <span class="op">=</span> <span class="string">&quot;serde_bytes&quot;</span>)]</span>
-        <span class="ident">serde_bytes_byte_vec</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
-        <span class="ident">str_ref</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>,
-        <span class="ident">string</span>: <span class="ident">String</span>,
+    <span class="attribute">#[derive(Serialize, PartialEq, Deserialize, Debug, Default)]
+    </span><span class="kw">struct </span>StringsAndBytes&lt;<span class="lifetime">&#39;a</span>&gt; {
+        bytes: Cow&lt;<span class="lifetime">&#39;a</span>, [u8]&gt;,
+        <span class="attribute">#[serde(with = <span class="string">&quot;serde_bytes&quot;</span>)]
+        </span>bytes_borrowed: Cow&lt;<span class="lifetime">&#39;a</span>, [u8]&gt;,
+        <span class="attribute">#[serde(with = <span class="string">&quot;serde_bytes&quot;</span>)]
+        </span>serde_bytes_byte_slice: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8],
+        <span class="attribute">#[serde(with = <span class="string">&quot;serde_bytes&quot;</span>)]
+        </span>serde_bytes_byte_vec: Vec&lt;u8&gt;,
+        str_ref: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
+        string: String,
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">borrowing_data</span>() {
-        <span class="kw">let</span> <span class="ident">original</span> <span class="op">=</span> <span class="ident">StringsAndBytes</span> {
-            <span class="ident">bytes</span>: <span class="ident">Cow::Borrowed</span>(<span class="string">b&quot;hello&quot;</span>),
-            <span class="ident">bytes_borrowed</span>: <span class="ident">Cow::Borrowed</span>(<span class="string">b&quot;hello&quot;</span>),
-            <span class="ident">serde_bytes_byte_slice</span>: <span class="string">b&quot;hello&quot;</span>,
-            <span class="ident">serde_bytes_byte_vec</span>: <span class="string">b&quot;world&quot;</span>.<span class="ident">to_vec</span>(),
-            <span class="ident">str_ref</span>: <span class="string">&quot;hello&quot;</span>,
-            <span class="ident">string</span>: <span class="ident">String::from</span>(<span class="string">&quot;world&quot;</span>),
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>borrowing_data() {
+        <span class="kw">let </span>original = StringsAndBytes {
+            bytes: Cow::Borrowed(<span class="string">b&quot;hello&quot;</span>),
+            bytes_borrowed: Cow::Borrowed(<span class="string">b&quot;hello&quot;</span>),
+            serde_bytes_byte_slice: <span class="string">b&quot;hello&quot;</span>,
+            serde_bytes_byte_vec: <span class="string">b&quot;world&quot;</span>.to_vec(),
+            str_ref: <span class="string">&quot;hello&quot;</span>,
+            string: String::from(<span class="string">&quot;world&quot;</span>),
         };
-        <span class="kw">let</span> <span class="ident">serialized</span> <span class="op">=</span> <span class="ident">to_vec</span>(<span class="kw-2">&amp;</span><span class="ident">original</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">deserialized</span> <span class="op">=</span> <span class="ident">from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">serialized</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq!</span>(<span class="ident">original</span>, <span class="ident">deserialized</span>);
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(<span class="ident">deserialized</span>.<span class="ident">bytes_borrowed</span>, <span class="ident">Cow::Borrowed</span>(<span class="kw">_</span>)));
+        <span class="kw">let </span>serialized = to_vec(<span class="kw-2">&amp;</span>original).unwrap();
+        <span class="kw">let </span>deserialized = from_slice(<span class="kw-2">&amp;</span>serialized).unwrap();
+        <span class="macro">assert_eq!</span>(original, deserialized);
+        <span class="macro">assert!</span>(<span class="macro">matches!</span>(deserialized.bytes_borrowed, Cow::Borrowed(<span class="kw">_</span>)));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">limiting_input</span>() {
-        <span class="kw">let</span> <span class="ident">original</span> <span class="op">=</span> <span class="ident">StringsAndBytes</span> {
-            <span class="ident">bytes</span>: <span class="ident">Cow::Borrowed</span>(<span class="string">b&quot;hello&quot;</span>),
-            <span class="ident">bytes_borrowed</span>: <span class="ident">Cow::Borrowed</span>(<span class="string">b&quot;hello&quot;</span>),
-            <span class="ident">serde_bytes_byte_slice</span>: <span class="string">b&quot;hello&quot;</span>,
-            <span class="ident">serde_bytes_byte_vec</span>: <span class="string">b&quot;world&quot;</span>.<span class="ident">to_vec</span>(),
-            <span class="ident">str_ref</span>: <span class="string">&quot;hello&quot;</span>,
-            <span class="ident">string</span>: <span class="ident">String::from</span>(<span class="string">&quot;world&quot;</span>),
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>limiting_input() {
+        <span class="kw">let </span>original = StringsAndBytes {
+            bytes: Cow::Borrowed(<span class="string">b&quot;hello&quot;</span>),
+            bytes_borrowed: Cow::Borrowed(<span class="string">b&quot;hello&quot;</span>),
+            serde_bytes_byte_slice: <span class="string">b&quot;hello&quot;</span>,
+            serde_bytes_byte_vec: <span class="string">b&quot;world&quot;</span>.to_vec(),
+            str_ref: <span class="string">&quot;hello&quot;</span>,
+            string: String::from(<span class="string">&quot;world&quot;</span>),
         };
-        <span class="kw">let</span> <span class="ident">serialized</span> <span class="op">=</span> <span class="ident">to_vec</span>(<span class="kw-2">&amp;</span><span class="ident">original</span>).<span class="ident">unwrap</span>();
-        <span class="comment">// There are 6 values that contain 5 bytes each. A limit of 30 should be perfect.</span>
-        <span class="macro">assert!</span>(<span class="ident">Config::default</span>()
-            .<span class="ident">allocation_budget</span>(<span class="number">30</span>)
-            .<span class="ident">deserialize</span>::<span class="op">&lt;</span><span class="ident">StringsAndBytes</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">serialized</span>)
-            .<span class="ident">is_ok</span>());
-        <span class="macro">assert!</span>(<span class="ident">Config::default</span>()
-            .<span class="ident">allocation_budget</span>(<span class="number">29</span>)
-            .<span class="ident">deserialize</span>::<span class="op">&lt;</span><span class="ident">StringsAndBytes</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">serialized</span>)
-            .<span class="ident">is_err</span>());
+        <span class="kw">let </span>serialized = to_vec(<span class="kw-2">&amp;</span>original).unwrap();
+        <span class="comment">// There are 6 values that contain 5 bytes each. A limit of 30 should be perfect.
+        </span><span class="macro">assert!</span>(Config::default()
+            .allocation_budget(<span class="number">30</span>)
+            .deserialize::&lt;StringsAndBytes&lt;<span class="lifetime">&#39;_</span>&gt;&gt;(<span class="kw-2">&amp;</span>serialized)
+            .is_ok());
+        <span class="macro">assert!</span>(Config::default()
+            .allocation_budget(<span class="number">29</span>)
+            .deserialize::&lt;StringsAndBytes&lt;<span class="lifetime">&#39;_</span>&gt;&gt;(<span class="kw-2">&amp;</span>serialized)
+            .is_err());
 
-        <span class="comment">// Test number limits</span>
-        <span class="kw">let</span> <span class="ident">serialized</span> <span class="op">=</span> <span class="ident">to_vec</span>(<span class="kw-2">&amp;</span><span class="ident">NumbersStruct</span> {
-            <span class="ident">u8</span>: <span class="ident">u8::MAX</span>,
-            <span class="ident">u16</span>: <span class="ident">u16::MAX</span>,
-            <span class="ident">char</span>: <span class="ident">char::MAX</span>,
-            <span class="ident">u32</span>: <span class="ident">u32::MAX</span>,
-            <span class="ident">u64</span>: <span class="ident">u64::MAX</span>,
-            <span class="ident">u128</span>: <span class="ident">u128::MAX</span>,
-            <span class="ident">i8</span>: <span class="ident">i8::MIN</span>,
-            <span class="ident">i16</span>: <span class="ident">i16::MIN</span>,
-            <span class="ident">i32</span>: <span class="ident">i32::MIN</span>,
-            <span class="ident">i64</span>: <span class="ident">i64::MIN</span>,
-            <span class="ident">i128</span>: <span class="ident">i128::MIN</span>,
-            <span class="ident">f32</span>: <span class="ident">f32::MAX</span>,
-            <span class="ident">f64</span>: <span class="ident">f64::MIN</span>,
+        <span class="comment">// Test number limits
+        </span><span class="kw">let </span>serialized = to_vec(<span class="kw-2">&amp;</span>NumbersStruct {
+            u8: u8::MAX,
+            u16: u16::MAX,
+            char: char::MAX,
+            u32: u32::MAX,
+            u64: u64::MAX,
+            u128: u128::MAX,
+            i8: i8::MIN,
+            i16: i16::MIN,
+            i32: i32::MIN,
+            i64: i64::MIN,
+            i128: i128::MIN,
+            f32: f32::MAX,
+            f64: f64::MIN,
         })
-        .<span class="ident">unwrap</span>();
-        <span class="macro">assert!</span>(<span class="ident">Config::default</span>()
-            .<span class="ident">allocation_budget</span>(<span class="number">78</span>)
-            .<span class="ident">deserialize</span>::<span class="op">&lt;</span><span class="ident">NumbersStruct</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">serialized</span>)
-            .<span class="ident">is_ok</span>());
-        <span class="macro">assert!</span>(<span class="ident">Config::default</span>()
-            .<span class="ident">allocation_budget</span>(<span class="number">77</span>)
-            .<span class="ident">deserialize</span>::<span class="op">&lt;</span><span class="ident">NumbersStruct</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">serialized</span>)
-            .<span class="ident">is_err</span>());
+        .unwrap();
+        <span class="macro">assert!</span>(Config::default()
+            .allocation_budget(<span class="number">78</span>)
+            .deserialize::&lt;NumbersStruct&gt;(<span class="kw-2">&amp;</span>serialized)
+            .is_ok());
+        <span class="macro">assert!</span>(Config::default()
+            .allocation_budget(<span class="number">77</span>)
+            .deserialize::&lt;NumbersStruct&gt;(<span class="kw-2">&amp;</span>serialized)
+            .is_err());
     }
 
-    <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">Eq</span>, <span class="ident">PartialEq</span>)]</span>
-    <span class="kw">struct</span> <span class="ident">TupleStruct</span>(<span class="ident">u32</span>, <span class="ident">u8</span>);
+    <span class="attribute">#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
+    </span><span class="kw">struct </span>TupleStruct(u32, u8);
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">tuple_struct</span>() {
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="ident">TupleStruct</span>(<span class="number">1</span>, <span class="number">2</span>), <span class="prelude-val">None</span>);
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>tuple_struct() {
+        test_serialization(<span class="kw-2">&amp;</span>TupleStruct(<span class="number">1</span>, <span class="number">2</span>), <span class="prelude-val">None</span>);
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">json_value</span>() {
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="ident">JsonValue::Null</span>, <span class="prelude-val">None</span>);
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="ident">JsonValue::Bool</span>(<span class="bool-val">false</span>), <span class="prelude-val">None</span>);
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="ident">JsonValue::Bool</span>(<span class="bool-val">true</span>), <span class="prelude-val">None</span>);
-        <span class="ident">test_serialization</span>(
-            <span class="kw-2">&amp;</span><span class="ident">JsonValue::Array</span>(<span class="macro">vec!</span>[<span class="ident">serde_json::value::Value::Null</span>]),
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>json_value() {
+        test_serialization(<span class="kw-2">&amp;</span>JsonValue::Null, <span class="prelude-val">None</span>);
+        test_serialization(<span class="kw-2">&amp;</span>JsonValue::Bool(<span class="bool-val">false</span>), <span class="prelude-val">None</span>);
+        test_serialization(<span class="kw-2">&amp;</span>JsonValue::Bool(<span class="bool-val">true</span>), <span class="prelude-val">None</span>);
+        test_serialization(
+            <span class="kw-2">&amp;</span>JsonValue::Array(<span class="macro">vec!</span>[serde_json::value::Value::Null]),
             <span class="prelude-val">None</span>,
         );
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="ident">JsonValue::Number</span>(<span class="ident">Number::from_f64</span>(<span class="number">1.</span>).<span class="ident">unwrap</span>()), <span class="prelude-val">None</span>);
-        <span class="ident">test_serialization</span>(<span class="kw-2">&amp;</span><span class="ident">JsonValue::String</span>(<span class="ident">String::from</span>(<span class="string">&quot;Hello world&quot;</span>)), <span class="prelude-val">None</span>);
-        <span class="ident">test_serialization</span>(
-            <span class="kw-2">&amp;</span><span class="ident">JsonValue::Object</span>(
-                [(<span class="ident">String::from</span>(<span class="string">&quot;key&quot;</span>), <span class="ident">JsonValue::Bool</span>(<span class="bool-val">true</span>))]
-                    .<span class="ident">into_iter</span>()
-                    .<span class="ident">collect</span>(),
+        test_serialization(<span class="kw-2">&amp;</span>JsonValue::Number(Number::from_f64(<span class="number">1.</span>).unwrap()), <span class="prelude-val">None</span>);
+        test_serialization(<span class="kw-2">&amp;</span>JsonValue::String(String::from(<span class="string">&quot;Hello world&quot;</span>)), <span class="prelude-val">None</span>);
+        test_serialization(
+            <span class="kw-2">&amp;</span>JsonValue::Object(
+                [(String::from(<span class="string">&quot;key&quot;</span>), JsonValue::Bool(<span class="bool-val">true</span>))]
+                    .into_iter()
+                    .collect(),
             ),
             <span class="prelude-val">None</span>,
         );
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">value</span>() {
-        <span class="macro">macro_rules!</span> <span class="ident">roundtrip</span> {
-            (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>:<span class="ident">expr</span>) =&gt; {{
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>value() {
+        <span class="macro">macro_rules! </span>roundtrip {
+            (<span class="macro-nonterminal">$value</span>:expr) =&gt; {{
                 <span class="macro">assert_eq!</span>(
-                    <span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">Value</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">to_vec</span>(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>).<span class="ident">unwrap</span>()).<span class="ident">unwrap</span>(),
-                    <span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span>
-                );
+                    from_slice::&lt;Value&lt;<span class="lifetime">&#39;_</span>&gt;&gt;(<span class="kw-2">&amp;</span>to_vec(<span class="kw-2">&amp;</span><span class="macro-nonterminal">$value</span>).unwrap()).unwrap(),
+                    <span class="macro-nonterminal">$value
+                </span>);
             }};
         }
 
-        <span class="macro">roundtrip!</span>(<span class="ident">Value::None</span>);
-        <span class="macro">roundtrip!</span>(<span class="ident">Value::Unit</span>);
-        <span class="macro">roundtrip!</span>(<span class="ident">Value::Bool</span>(<span class="bool-val">true</span>));
-        <span class="macro">roundtrip!</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">i8::MAX</span>)));
-        <span class="macro">roundtrip!</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">i16::MAX</span>)));
-        <span class="macro">roundtrip!</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">i32::MAX</span>)));
-        <span class="macro">roundtrip!</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">i64::MAX</span>)));
-        <span class="macro">roundtrip!</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">i128::MAX</span>)));
-        <span class="macro">roundtrip!</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">u8::MAX</span>)));
-        <span class="macro">roundtrip!</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">u16::MAX</span>)));
-        <span class="macro">roundtrip!</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">u32::MAX</span>)));
-        <span class="macro">roundtrip!</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">u64::MAX</span>)));
-        <span class="macro">roundtrip!</span>(<span class="ident">Value::Integer</span>(<span class="ident">Integer::from</span>(<span class="ident">u128::MAX</span>)));
-        <span class="macro">roundtrip!</span>(<span class="ident">Value::Float</span>(<span class="ident">Float::from</span>(<span class="ident">std::f64::consts::PI</span>)));
-        <span class="macro">roundtrip!</span>(<span class="ident">Value::Float</span>(<span class="ident">Float::from</span>(<span class="ident">std::f32::consts::PI</span>)));
-        <span class="macro">roundtrip!</span>(<span class="ident">Value::Sequence</span>(<span class="macro">vec!</span>[<span class="ident">Value::None</span>]));
-        <span class="macro">roundtrip!</span>(<span class="ident">Value::Mappings</span>(<span class="macro">vec!</span>[(<span class="ident">Value::None</span>, <span class="ident">Value::Unit</span>)]));
+        <span class="macro">roundtrip!</span>(Value::None);
+        <span class="macro">roundtrip!</span>(Value::Unit);
+        <span class="macro">roundtrip!</span>(Value::Bool(<span class="bool-val">true</span>));
+        <span class="macro">roundtrip!</span>(Value::Integer(Integer::from(i8::MAX)));
+        <span class="macro">roundtrip!</span>(Value::Integer(Integer::from(i16::MAX)));
+        <span class="macro">roundtrip!</span>(Value::Integer(Integer::from(i32::MAX)));
+        <span class="macro">roundtrip!</span>(Value::Integer(Integer::from(i64::MAX)));
+        <span class="macro">roundtrip!</span>(Value::Integer(Integer::from(i128::MAX)));
+        <span class="macro">roundtrip!</span>(Value::Integer(Integer::from(u8::MAX)));
+        <span class="macro">roundtrip!</span>(Value::Integer(Integer::from(u16::MAX)));
+        <span class="macro">roundtrip!</span>(Value::Integer(Integer::from(u32::MAX)));
+        <span class="macro">roundtrip!</span>(Value::Integer(Integer::from(u64::MAX)));
+        <span class="macro">roundtrip!</span>(Value::Integer(Integer::from(u128::MAX)));
+        <span class="macro">roundtrip!</span>(Value::Float(Float::from(std::f64::consts::PI)));
+        <span class="macro">roundtrip!</span>(Value::Float(Float::from(std::f32::consts::PI)));
+        <span class="macro">roundtrip!</span>(Value::Sequence(<span class="macro">vec!</span>[Value::None]));
+        <span class="macro">roundtrip!</span>(Value::Mappings(<span class="macro">vec!</span>[(Value::None, Value::Unit)]));
 
-        <span class="kw">let</span> <span class="ident">original_value</span> <span class="op">=</span> <span class="ident">Value::Bytes</span>(<span class="ident">Cow::Borrowed</span>(<span class="string">b&quot;hello&quot;</span>));
-        <span class="kw">let</span> <span class="ident">encoded_bytes</span> <span class="op">=</span> <span class="ident">to_vec</span>(<span class="kw-2">&amp;</span><span class="ident">original_value</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">borrowed_decoded</span>: <span class="ident">Value</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">encoded_bytes</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert_eq!</span>(<span class="ident">Value::String</span>(<span class="ident">Cow::Borrowed</span>(<span class="string">&quot;hello&quot;</span>)), <span class="ident">borrowed_decoded</span>);
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(<span class="ident">borrowed_decoded</span>, <span class="ident">Value::String</span>(<span class="ident">Cow::Borrowed</span>(<span class="kw">_</span>))));
+        <span class="kw">let </span>original_value = Value::Bytes(Cow::Borrowed(<span class="string">b&quot;hello&quot;</span>));
+        <span class="kw">let </span>encoded_bytes = to_vec(<span class="kw-2">&amp;</span>original_value).unwrap();
+        <span class="kw">let </span>borrowed_decoded: Value&lt;<span class="lifetime">&#39;_</span>&gt; = from_slice(<span class="kw-2">&amp;</span>encoded_bytes).unwrap();
+        <span class="macro">assert_eq!</span>(Value::String(Cow::Borrowed(<span class="string">&quot;hello&quot;</span>)), borrowed_decoded);
+        <span class="macro">assert!</span>(<span class="macro">matches!</span>(borrowed_decoded, Value::String(Cow::Borrowed(<span class="kw">_</span>))));
 
-        <span class="kw">let</span> <span class="ident">original_value</span> <span class="op">=</span> <span class="ident">Value::Bytes</span>(<span class="ident">Cow::Borrowed</span>(<span class="string">b&quot;\xFE\xED\xD0\xD0&quot;</span>));
-        <span class="kw">let</span> <span class="ident">encoded_bytes</span> <span class="op">=</span> <span class="ident">to_vec</span>(<span class="kw-2">&amp;</span><span class="ident">original_value</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">borrowed_decoded</span>: <span class="ident">Value</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">encoded_bytes</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let </span>original_value = Value::Bytes(Cow::Borrowed(<span class="string">b&quot;\xFE\xED\xD0\xD0&quot;</span>));
+        <span class="kw">let </span>encoded_bytes = to_vec(<span class="kw-2">&amp;</span>original_value).unwrap();
+        <span class="kw">let </span>borrowed_decoded: Value&lt;<span class="lifetime">&#39;_</span>&gt; = from_slice(<span class="kw-2">&amp;</span>encoded_bytes).unwrap();
         <span class="macro">assert_eq!</span>(
-            <span class="ident">Value::Bytes</span>(<span class="ident">Cow::Borrowed</span>(<span class="string">b&quot;\xFE\xED\xD0\xD0&quot;</span>)),
-            <span class="ident">borrowed_decoded</span>
+            Value::Bytes(Cow::Borrowed(<span class="string">b&quot;\xFE\xED\xD0\xD0&quot;</span>)),
+            borrowed_decoded
         );
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(<span class="ident">borrowed_decoded</span>, <span class="ident">Value::Bytes</span>(<span class="ident">Cow::Borrowed</span>(<span class="kw">_</span>))));
+        <span class="macro">assert!</span>(<span class="macro">matches!</span>(borrowed_decoded, Value::Bytes(Cow::Borrowed(<span class="kw">_</span>))));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">incompatible_version</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">incompatible_header</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
-        <span class="ident">format::write_header</span>(<span class="kw-2">&amp;mut</span> <span class="ident">incompatible_header</span>, <span class="ident">CURRENT_VERSION</span> <span class="op">+</span> <span class="number">1</span>).<span class="ident">unwrap</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>incompatible_version() {
+        <span class="kw">let </span><span class="kw-2">mut </span>incompatible_header = Vec::new();
+        format::write_header(<span class="kw-2">&amp;mut </span>incompatible_header, CURRENT_VERSION + <span class="number">1</span>).unwrap();
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            <span class="ident">from_slice</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">incompatible_header</span>),
-            <span class="prelude-val">Err</span>(<span class="ident">Error::IncompatibleVersion</span>)
+            from_slice::&lt;()&gt;(<span class="kw-2">&amp;</span>incompatible_header),
+            <span class="prelude-val">Err</span>(Error::IncompatibleVersion)
         ));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">invalid_char_cast</span>() {
-        <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">to_vec</span>(<span class="kw-2">&amp;</span><span class="number">0x11_0000_u32</span>).<span class="ident">unwrap</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>invalid_char_cast() {
+        <span class="kw">let </span>bytes = to_vec(<span class="kw-2">&amp;</span><span class="number">0x11_0000_u32</span>).unwrap();
 
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            <span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">char</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>),
-            <span class="prelude-val">Err</span>(<span class="ident">Error::InvalidUtf8</span>(<span class="kw">_</span>))
+            from_slice::&lt;char&gt;(<span class="kw-2">&amp;</span>bytes),
+            <span class="prelude-val">Err</span>(Error::InvalidUtf8(<span class="kw">_</span>))
         ));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">bytes_to_identifier</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">valid_bytes</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
-        <span class="ident">format::write_header</span>(<span class="kw-2">&amp;mut</span> <span class="ident">valid_bytes</span>, <span class="ident">CURRENT_VERSION</span>).<span class="ident">unwrap</span>();
-        <span class="ident">format::write_named</span>(<span class="kw-2">&amp;mut</span> <span class="ident">valid_bytes</span>).<span class="ident">unwrap</span>();
-        <span class="ident">format::write_bytes</span>(<span class="kw-2">&amp;mut</span> <span class="ident">valid_bytes</span>, <span class="string">b&quot;Unit&quot;</span>).<span class="ident">unwrap</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>bytes_to_identifier() {
+        <span class="kw">let </span><span class="kw-2">mut </span>valid_bytes = Vec::new();
+        format::write_header(<span class="kw-2">&amp;mut </span>valid_bytes, CURRENT_VERSION).unwrap();
+        format::write_named(<span class="kw-2">&amp;mut </span>valid_bytes).unwrap();
+        format::write_bytes(<span class="kw-2">&amp;mut </span>valid_bytes, <span class="string">b&quot;Unit&quot;</span>).unwrap();
 
         <span class="macro">assert_eq!</span>(
-            <span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">EnumVariants</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">valid_bytes</span>).<span class="ident">unwrap</span>(),
-            <span class="ident">EnumVariants::Unit</span>
+            from_slice::&lt;EnumVariants&gt;(<span class="kw-2">&amp;</span>valid_bytes).unwrap(),
+            EnumVariants::Unit
         );
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">invalid_bytes</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
-        <span class="ident">format::write_header</span>(<span class="kw-2">&amp;mut</span> <span class="ident">invalid_bytes</span>, <span class="ident">CURRENT_VERSION</span>).<span class="ident">unwrap</span>();
-        <span class="ident">format::write_named</span>(<span class="kw-2">&amp;mut</span> <span class="ident">invalid_bytes</span>).<span class="ident">unwrap</span>();
-        <span class="ident">format::write_bytes</span>(<span class="kw-2">&amp;mut</span> <span class="ident">invalid_bytes</span>, <span class="kw-2">&amp;</span><span class="number">0xFFFF_FFFF_u32</span>.<span class="ident">to_be_bytes</span>()).<span class="ident">unwrap</span>();
+        <span class="kw">let </span><span class="kw-2">mut </span>invalid_bytes = Vec::new();
+        format::write_header(<span class="kw-2">&amp;mut </span>invalid_bytes, CURRENT_VERSION).unwrap();
+        format::write_named(<span class="kw-2">&amp;mut </span>invalid_bytes).unwrap();
+        format::write_bytes(<span class="kw-2">&amp;mut </span>invalid_bytes, <span class="kw-2">&amp;</span><span class="number">0xFFFF_FFFF_u32</span>.to_be_bytes()).unwrap();
 
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            <span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">EnumVariants</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">invalid_bytes</span>),
-            <span class="prelude-val">Err</span>(<span class="ident">Error::InvalidUtf8</span>(<span class="kw">_</span>))
+            from_slice::&lt;EnumVariants&gt;(<span class="kw-2">&amp;</span>invalid_bytes),
+            <span class="prelude-val">Err</span>(Error::InvalidUtf8(<span class="kw">_</span>))
         ));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">invalid_symbol</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">valid_bytes</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
-        <span class="ident">format::write_header</span>(<span class="kw-2">&amp;mut</span> <span class="ident">valid_bytes</span>, <span class="ident">CURRENT_VERSION</span>).<span class="ident">unwrap</span>();
-        <span class="ident">format::write_atom_header</span>(<span class="kw-2">&amp;mut</span> <span class="ident">valid_bytes</span>, <span class="ident">format::Kind::Symbol</span>, <span class="prelude-val">Some</span>(<span class="number">4</span>)).<span class="ident">unwrap</span>();
-        <span class="ident">format::write_bytes</span>(<span class="kw-2">&amp;mut</span> <span class="ident">valid_bytes</span>, <span class="kw-2">&amp;</span><span class="number">0xFFFF_FFFF_u32</span>.<span class="ident">to_be_bytes</span>()).<span class="ident">unwrap</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>invalid_symbol() {
+        <span class="kw">let </span><span class="kw-2">mut </span>valid_bytes = Vec::new();
+        format::write_header(<span class="kw-2">&amp;mut </span>valid_bytes, CURRENT_VERSION).unwrap();
+        format::write_atom_header(<span class="kw-2">&amp;mut </span>valid_bytes, format::Kind::Symbol, <span class="prelude-val">Some</span>(<span class="number">4</span>)).unwrap();
+        format::write_bytes(<span class="kw-2">&amp;mut </span>valid_bytes, <span class="kw-2">&amp;</span><span class="number">0xFFFF_FFFF_u32</span>.to_be_bytes()).unwrap();
 
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            <span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">Value</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">valid_bytes</span>),
-            <span class="prelude-val">Err</span>(<span class="ident">Error::InvalidUtf8</span>(<span class="kw">_</span>))
+            from_slice::&lt;Value&lt;<span class="lifetime">&#39;_</span>&gt;&gt;(<span class="kw-2">&amp;</span>valid_bytes),
+            <span class="prelude-val">Err</span>(Error::InvalidUtf8(<span class="kw">_</span>))
         ));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">unknown_special</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">invalid_bytes</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
-        <span class="ident">format::write_header</span>(<span class="kw-2">&amp;mut</span> <span class="ident">invalid_bytes</span>, <span class="ident">CURRENT_VERSION</span>).<span class="ident">unwrap</span>();
-        <span class="ident">format::write_atom_header</span>(
-            <span class="kw-2">&amp;mut</span> <span class="ident">invalid_bytes</span>,
-            <span class="ident">format::Kind::Special</span>,
-            <span class="prelude-val">Some</span>(<span class="ident">format::SPECIAL_COUNT</span>),
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>unknown_special() {
+        <span class="kw">let </span><span class="kw-2">mut </span>invalid_bytes = Vec::new();
+        format::write_header(<span class="kw-2">&amp;mut </span>invalid_bytes, CURRENT_VERSION).unwrap();
+        format::write_atom_header(
+            <span class="kw-2">&amp;mut </span>invalid_bytes,
+            format::Kind::Special,
+            <span class="prelude-val">Some</span>(format::SPECIAL_COUNT),
         )
-        .<span class="ident">unwrap</span>();
+        .unwrap();
 
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">invalid_bytes</span>), <span class="prelude-val">Err</span>(<span class="kw">_</span>)));
+        <span class="macro">assert!</span>(<span class="macro">matches!</span>(from_slice::&lt;()&gt;(<span class="kw-2">&amp;</span>invalid_bytes), <span class="prelude-val">Err</span>(<span class="kw">_</span>)));
     }
 
-    <span class="doccomment">/// In `BonsaiDb`, sometimes it&#39;s nice to use a `()` as an associated type</span>
-    <span class="doccomment">/// as a default. To allow changing data that was previously serialized as a</span>
-    <span class="doccomment">/// `()` but now has a new type, Pot allows converting between unit types</span>
-    <span class="doccomment">/// and defaults of all major serialized types. The net effect is that if</span>
-    <span class="doccomment">/// you replace</span>
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::cognitive_complexity</span>)]</span>
-    <span class="kw">fn</span> <span class="ident">unit_adaptations</span>() {
-        <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Deserialize</span>)]</span>
-        <span class="kw">struct</span> <span class="ident">Test</span> {
-            <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">default</span>)]</span>
-            <span class="ident">value</span>: <span class="ident">u32</span>,
+    <span class="doccomment">/// In `BonsaiDb`, sometimes it&#39;s nice to use a `()` as an associated type
+    /// as a default. To allow changing data that was previously serialized as a
+    /// `()` but now has a new type, Pot allows converting between unit types
+    /// and defaults of all major serialized types. The net effect is that if
+    /// you replace
+    </span><span class="attribute">#[test]
+    #[allow(clippy::cognitive_complexity)]
+    </span><span class="kw">fn </span>unit_adaptations() {
+        <span class="attribute">#[derive(Deserialize)]
+        </span><span class="kw">struct </span>Test {
+            <span class="attribute">#[serde(default)]
+            </span>value: u32,
         }
 
-        <span class="kw">let</span> <span class="ident">unit</span> <span class="op">=</span> <span class="ident">to_vec</span>(<span class="kw-2">&amp;</span>()).<span class="ident">unwrap</span>();
-        <span class="macro">assert!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">unit</span>).<span class="ident">unwrap</span>().<span class="ident">is_some</span>());
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">unit</span>).<span class="ident">unwrap</span>().<span class="ident">value</span>, <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">unit</span>).<span class="ident">unwrap</span>(), <span class="string">b&quot;&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">serde_bytes::ByteBuf</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">unit</span>).<span class="ident">unwrap</span>(), <span class="string">b&quot;&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">unit</span>).<span class="ident">unwrap</span>(), <span class="string">&quot;&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">unit</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">unit</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">unit</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">unit</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">u128</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">unit</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">i8</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">unit</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">i16</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">unit</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">unit</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">unit</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">i128</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">unit</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">unit</span>).<span class="ident">unwrap</span>());
+        <span class="kw">let </span>unit = to_vec(<span class="kw-2">&amp;</span>()).unwrap();
+        <span class="macro">assert!</span>(from_slice::&lt;<span class="prelude-ty">Option</span>&lt;()&gt;&gt;(<span class="kw-2">&amp;</span>unit).unwrap().is_some());
+        <span class="macro">assert_eq!</span>(from_slice::&lt;Test&gt;(<span class="kw-2">&amp;</span>unit).unwrap().value, <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;<span class="kw-2">&amp;</span>[u8]&gt;(<span class="kw-2">&amp;</span>unit).unwrap(), <span class="string">b&quot;&quot;</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;serde_bytes::ByteBuf&gt;(<span class="kw-2">&amp;</span>unit).unwrap(), <span class="string">b&quot;&quot;</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;<span class="kw-2">&amp;</span>str&gt;(<span class="kw-2">&amp;</span>unit).unwrap(), <span class="string">&quot;&quot;</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;u8&gt;(<span class="kw-2">&amp;</span>unit).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;u16&gt;(<span class="kw-2">&amp;</span>unit).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;u32&gt;(<span class="kw-2">&amp;</span>unit).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;u64&gt;(<span class="kw-2">&amp;</span>unit).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;u128&gt;(<span class="kw-2">&amp;</span>unit).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;i8&gt;(<span class="kw-2">&amp;</span>unit).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;i16&gt;(<span class="kw-2">&amp;</span>unit).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;i32&gt;(<span class="kw-2">&amp;</span>unit).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;i64&gt;(<span class="kw-2">&amp;</span>unit).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;i128&gt;(<span class="kw-2">&amp;</span>unit).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert!</span>(!from_slice::&lt;bool&gt;(<span class="kw-2">&amp;</span>unit).unwrap());
 
-        <span class="kw">let</span> <span class="ident">none</span> <span class="op">=</span> <span class="ident">to_vec</span>(<span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>::<span class="op">&lt;</span>()<span class="op">&gt;</span><span class="ident">::None</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span>()<span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">none</span>).<span class="ident">unwrap</span>().<span class="ident">is_none</span>());
-        <span class="macro">assert!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Test</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">none</span>).<span class="ident">unwrap</span>().<span class="ident">is_none</span>());
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">none</span>).<span class="ident">unwrap</span>(), <span class="string">b&quot;&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">serde_bytes::ByteBuf</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">none</span>).<span class="ident">unwrap</span>(), <span class="string">b&quot;&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">none</span>).<span class="ident">unwrap</span>(), <span class="string">&quot;&quot;</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">none</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">u16</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">none</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">none</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">u64</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">none</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">u128</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">none</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">i8</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">none</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">i16</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">none</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">none</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">i64</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">none</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">i128</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">none</span>).<span class="ident">unwrap</span>(), <span class="number">0</span>);
-        <span class="macro">assert!</span>(<span class="op">!</span><span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">bool</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">none</span>).<span class="ident">unwrap</span>());
+        <span class="kw">let </span>none = to_vec(<span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>::&lt;()&gt;::None).unwrap();
+        <span class="macro">assert!</span>(from_slice::&lt;<span class="prelude-ty">Option</span>&lt;()&gt;&gt;(<span class="kw-2">&amp;</span>none).unwrap().is_none());
+        <span class="macro">assert!</span>(from_slice::&lt;<span class="prelude-ty">Option</span>&lt;Test&gt;&gt;(<span class="kw-2">&amp;</span>none).unwrap().is_none());
+        <span class="macro">assert_eq!</span>(from_slice::&lt;<span class="kw-2">&amp;</span>[u8]&gt;(<span class="kw-2">&amp;</span>none).unwrap(), <span class="string">b&quot;&quot;</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;serde_bytes::ByteBuf&gt;(<span class="kw-2">&amp;</span>none).unwrap(), <span class="string">b&quot;&quot;</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;<span class="kw-2">&amp;</span>str&gt;(<span class="kw-2">&amp;</span>none).unwrap(), <span class="string">&quot;&quot;</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;u8&gt;(<span class="kw-2">&amp;</span>none).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;u16&gt;(<span class="kw-2">&amp;</span>none).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;u32&gt;(<span class="kw-2">&amp;</span>none).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;u64&gt;(<span class="kw-2">&amp;</span>none).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;u128&gt;(<span class="kw-2">&amp;</span>none).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;i8&gt;(<span class="kw-2">&amp;</span>none).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;i16&gt;(<span class="kw-2">&amp;</span>none).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;i32&gt;(<span class="kw-2">&amp;</span>none).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;i64&gt;(<span class="kw-2">&amp;</span>none).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(from_slice::&lt;i128&gt;(<span class="kw-2">&amp;</span>none).unwrap(), <span class="number">0</span>);
+        <span class="macro">assert!</span>(!from_slice::&lt;bool&gt;(<span class="kw-2">&amp;</span>none).unwrap());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">invalid_numbers</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">invalid_float_byte_len</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
-        <span class="ident">format::write_header</span>(<span class="kw-2">&amp;mut</span> <span class="ident">invalid_float_byte_len</span>, <span class="ident">CURRENT_VERSION</span>).<span class="ident">unwrap</span>();
-        <span class="ident">format::write_atom_header</span>(<span class="kw-2">&amp;mut</span> <span class="ident">invalid_float_byte_len</span>, <span class="ident">format::Kind::Float</span>, <span class="prelude-val">Some</span>(<span class="number">0</span>))
-            .<span class="ident">unwrap</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>invalid_numbers() {
+        <span class="kw">let </span><span class="kw-2">mut </span>invalid_float_byte_len = Vec::new();
+        format::write_header(<span class="kw-2">&amp;mut </span>invalid_float_byte_len, CURRENT_VERSION).unwrap();
+        format::write_atom_header(<span class="kw-2">&amp;mut </span>invalid_float_byte_len, format::Kind::Float, <span class="prelude-val">Some</span>(<span class="number">0</span>))
+            .unwrap();
 
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(<span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">f32</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">invalid_float_byte_len</span>), <span class="prelude-val">Err</span>(<span class="kw">_</span>)));
+        <span class="macro">assert!</span>(<span class="macro">matches!</span>(from_slice::&lt;f32&gt;(<span class="kw-2">&amp;</span>invalid_float_byte_len), <span class="prelude-val">Err</span>(<span class="kw">_</span>)));
 
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            <span class="ident">format::Float::read_from</span>(<span class="ident">format::Kind::Symbol</span>, <span class="number">0</span>, <span class="kw-2">&amp;mut</span> <span class="kw-2">&amp;</span><span class="ident">invalid_float_byte_len</span>[..]),
+            format::Float::read_from(format::Kind::Symbol, <span class="number">0</span>, <span class="kw-2">&amp;mut &amp;</span>invalid_float_byte_len[..]),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>)
         ));
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">invalid_signed_byte_len</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
-        <span class="ident">format::write_header</span>(<span class="kw-2">&amp;mut</span> <span class="ident">invalid_signed_byte_len</span>, <span class="ident">CURRENT_VERSION</span>).<span class="ident">unwrap</span>();
-        <span class="ident">format::write_atom_header</span>(<span class="kw-2">&amp;mut</span> <span class="ident">invalid_signed_byte_len</span>, <span class="ident">format::Kind::Int</span>, <span class="prelude-val">Some</span>(<span class="number">10</span>))
-            .<span class="ident">unwrap</span>();
+        <span class="kw">let </span><span class="kw-2">mut </span>invalid_signed_byte_len = Vec::new();
+        format::write_header(<span class="kw-2">&amp;mut </span>invalid_signed_byte_len, CURRENT_VERSION).unwrap();
+        format::write_atom_header(<span class="kw-2">&amp;mut </span>invalid_signed_byte_len, format::Kind::Int, <span class="prelude-val">Some</span>(<span class="number">10</span>))
+            .unwrap();
 
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            <span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">invalid_signed_byte_len</span>),
+            from_slice::&lt;i32&gt;(<span class="kw-2">&amp;</span>invalid_signed_byte_len),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>)
         ));
 
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            <span class="ident">format::Integer::read_from</span>(<span class="ident">format::Kind::Symbol</span>, <span class="number">0</span>, <span class="kw-2">&amp;mut</span> <span class="kw-2">&amp;</span><span class="ident">invalid_signed_byte_len</span>[..]),
+            format::Integer::read_from(format::Kind::Symbol, <span class="number">0</span>, <span class="kw-2">&amp;mut &amp;</span>invalid_signed_byte_len[..]),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>)
         ));
 
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">invalid_unsigned_byte_len</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
-        <span class="ident">format::write_header</span>(<span class="kw-2">&amp;mut</span> <span class="ident">invalid_unsigned_byte_len</span>, <span class="ident">CURRENT_VERSION</span>).<span class="ident">unwrap</span>();
-        <span class="ident">format::write_atom_header</span>(<span class="kw-2">&amp;mut</span> <span class="ident">invalid_unsigned_byte_len</span>, <span class="ident">format::Kind::UInt</span>, <span class="prelude-val">Some</span>(<span class="number">10</span>))
-            .<span class="ident">unwrap</span>();
+        <span class="kw">let </span><span class="kw-2">mut </span>invalid_unsigned_byte_len = Vec::new();
+        format::write_header(<span class="kw-2">&amp;mut </span>invalid_unsigned_byte_len, CURRENT_VERSION).unwrap();
+        format::write_atom_header(<span class="kw-2">&amp;mut </span>invalid_unsigned_byte_len, format::Kind::UInt, <span class="prelude-val">Some</span>(<span class="number">10</span>))
+            .unwrap();
 
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            <span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">invalid_unsigned_byte_len</span>),
+            from_slice::&lt;u32&gt;(<span class="kw-2">&amp;</span>invalid_unsigned_byte_len),
             <span class="prelude-val">Err</span>(<span class="kw">_</span>)
         ));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::unnecessary_mut_passed</span>)]</span> <span class="comment">// It&#39;s necessary.</span>
-    <span class="kw">fn</span> <span class="ident">not_human_readable</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">serializer</span> <span class="op">=</span> <span class="ident">ser::Serializer::new</span>(<span class="kw-2">&amp;mut</span> <span class="ident">bytes</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert!</span>(<span class="op">!</span>(<span class="kw-2">&amp;mut</span> <span class="ident">serializer</span>).<span class="ident">is_human_readable</span>());
-        ().<span class="ident">serialize</span>(<span class="kw-2">&amp;mut</span> <span class="ident">serializer</span>).<span class="ident">unwrap</span>();
+    <span class="attribute">#[test]
+    #[allow(clippy::unnecessary_mut_passed)] </span><span class="comment">// It&#39;s necessary.
+    </span><span class="kw">fn </span>not_human_readable() {
+        <span class="kw">let </span><span class="kw-2">mut </span>bytes = Vec::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>serializer = ser::Serializer::new(<span class="kw-2">&amp;mut </span>bytes).unwrap();
+        <span class="macro">assert!</span>(!(<span class="kw-2">&amp;mut </span>serializer).is_human_readable());
+        ().serialize(<span class="kw-2">&amp;mut </span>serializer).unwrap();
 
-        <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">to_vec</span>(<span class="kw-2">&amp;</span>()).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">deserializer</span> <span class="op">=</span> <span class="ident">de::Deserializer::from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">bytes</span>, <span class="ident">usize::MAX</span>).<span class="ident">unwrap</span>();
-        <span class="macro">assert!</span>(<span class="op">!</span>(<span class="kw-2">&amp;mut</span> <span class="ident">deserializer</span>).<span class="ident">is_human_readable</span>());
+        <span class="kw">let </span>bytes = to_vec(<span class="kw-2">&amp;</span>()).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>deserializer = de::Deserializer::from_slice(<span class="kw-2">&amp;</span>bytes, usize::MAX).unwrap();
+        <span class="macro">assert!</span>(!(<span class="kw-2">&amp;mut </span>deserializer).is_human_readable());
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">unexpected_eof</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">invalid_bytes</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
-        <span class="ident">format::write_header</span>(<span class="kw-2">&amp;mut</span> <span class="ident">invalid_bytes</span>, <span class="ident">CURRENT_VERSION</span>).<span class="ident">unwrap</span>();
-        <span class="ident">format::write_atom_header</span>(<span class="kw-2">&amp;mut</span> <span class="ident">invalid_bytes</span>, <span class="ident">format::Kind::Bytes</span>, <span class="prelude-val">Some</span>(<span class="number">10</span>)).<span class="ident">unwrap</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>unexpected_eof() {
+        <span class="kw">let </span><span class="kw-2">mut </span>invalid_bytes = Vec::new();
+        format::write_header(<span class="kw-2">&amp;mut </span>invalid_bytes, CURRENT_VERSION).unwrap();
+        format::write_atom_header(<span class="kw-2">&amp;mut </span>invalid_bytes, format::Kind::Bytes, <span class="prelude-val">Some</span>(<span class="number">10</span>)).unwrap();
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            <span class="ident">from_slice</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">invalid_bytes</span>),
-            <span class="prelude-val">Err</span>(<span class="ident">Error::Eof</span>)
+            from_slice::&lt;Vec&lt;u8&gt;&gt;(<span class="kw-2">&amp;</span>invalid_bytes),
+            <span class="prelude-val">Err</span>(Error::Eof)
         ));
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">too_big_read</span>() {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">invalid_bytes</span> <span class="op">=</span> <span class="ident">Vec::new</span>();
-        <span class="ident">format::write_header</span>(<span class="kw-2">&amp;mut</span> <span class="ident">invalid_bytes</span>, <span class="ident">CURRENT_VERSION</span>).<span class="ident">unwrap</span>();
-        <span class="ident">format::write_atom_header</span>(<span class="kw-2">&amp;mut</span> <span class="ident">invalid_bytes</span>, <span class="ident">format::Kind::Bytes</span>, <span class="prelude-val">Some</span>(<span class="number">10</span>)).<span class="ident">unwrap</span>();
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>too_big_read() {
+        <span class="kw">let </span><span class="kw-2">mut </span>invalid_bytes = Vec::new();
+        format::write_header(<span class="kw-2">&amp;mut </span>invalid_bytes, CURRENT_VERSION).unwrap();
+        format::write_atom_header(<span class="kw-2">&amp;mut </span>invalid_bytes, format::Kind::Bytes, <span class="prelude-val">Some</span>(<span class="number">10</span>)).unwrap();
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            <span class="ident">Config::default</span>()
-                .<span class="ident">allocation_budget</span>(<span class="number">9</span>)
-                .<span class="ident">deserialize</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">invalid_bytes</span>),
-            <span class="prelude-val">Err</span>(<span class="ident">Error::TooManyBytesRead</span>)
+            Config::default()
+                .allocation_budget(<span class="number">9</span>)
+                .deserialize::&lt;Vec&lt;u8&gt;&gt;(<span class="kw-2">&amp;</span>invalid_bytes),
+            <span class="prelude-val">Err</span>(Error::TooManyBytesRead)
         ));
     }
 
-    <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
-    <span class="kw">struct</span> <span class="ident">Flatten</span> {
-        <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">flatten</span>)]</span>
-        <span class="ident">structure</span>: <span class="ident">Flattened</span>,
-        <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">flatten</span>)]</span>
-        <span class="ident">enumeration</span>: <span class="ident">EnumVariants</span>,
+    <span class="attribute">#[derive(Serialize, Deserialize, Debug, PartialEq)]
+    </span><span class="kw">struct </span>Flatten {
+        <span class="attribute">#[serde(flatten)]
+        </span>structure: Flattened,
+        <span class="attribute">#[serde(flatten)]
+        </span>enumeration: EnumVariants,
     }
 
-    <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Serialize</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
-    <span class="kw">struct</span> <span class="ident">Flattened</span> {
-        <span class="ident">field</span>: <span class="ident">String</span>,
+    <span class="attribute">#[derive(Serialize, Deserialize, Debug, PartialEq)]
+    </span><span class="kw">struct </span>Flattened {
+        field: String,
     }
 
-    <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">test_flatten</span>() {
-        <span class="ident">test_serialization</span>(
-            <span class="kw-2">&amp;</span><span class="ident">Flatten</span> {
-                <span class="ident">structure</span>: <span class="ident">Flattened</span> {
-                    <span class="ident">field</span>: <span class="ident">String::from</span>(<span class="string">&quot;flat&quot;</span>),
+    <span class="attribute">#[test]
+    </span><span class="kw">fn </span>test_flatten() {
+        test_serialization(
+            <span class="kw-2">&amp;</span>Flatten {
+                structure: Flattened {
+                    field: String::from(<span class="string">&quot;flat&quot;</span>),
                 },
-                <span class="ident">enumeration</span>: <span class="ident">EnumVariants::Struct</span> { <span class="ident">arg</span>: <span class="number">1</span> },
+                enumeration: EnumVariants::Struct { arg: <span class="number">1 </span>},
             },
             <span class="prelude-val">None</span>,
         );
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pot" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.60.0 (7737e0b5c 2022-04-04)" ></div>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="pot" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0 (69f9c33d7 2022-12-12)" ></div></body></html>
