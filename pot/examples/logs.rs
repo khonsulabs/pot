@@ -87,12 +87,11 @@ fn main() -> anyhow::Result<()> {
     );
 
     println!(
-        "Using a persistent encoding session, the first payload was {} bytes long.",
-        first_transmission_length
+        "Using a persistent encoding session, the first payload was {first_transmission_length} bytes long.",
+
     );
     println!(
-        "The same payload sent a second time was {} bytes long.",
-        subsequent_transmission_length
+        "The same payload sent a second time was {subsequent_transmission_length} bytes long.",
     );
 
     Ok(())

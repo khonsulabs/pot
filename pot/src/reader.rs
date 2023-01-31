@@ -64,8 +64,8 @@ impl<'a> Read for SliceReader<'a> {
 pub struct IoReader<R: ReadBytesExt> {
     pub(crate) reader: R,
 }
-impl<'de, R: ReadBytesExt> IoReader<R> {
-    pub(crate) fn new(reader: R) -> Self {
+impl<R: ReadBytesExt> IoReader<R> {
+    pub(crate) const fn new(reader: R) -> Self {
         Self { reader }
     }
 }
@@ -78,7 +78,7 @@ impl<'de, R: ReadBytesExt> Reader<'de> for IoReader<R> {
     }
 }
 
-impl<'de, R: ReadBytesExt> Read for IoReader<R> {
+impl<R: ReadBytesExt> Read for IoReader<R> {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         self.reader.read(buf)
     }

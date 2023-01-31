@@ -48,8 +48,7 @@ impl<'a, W: WriteBytesExt> Serializer<'a, W> {
             self.bytes_written +=
                 format::write_atom_header(&mut self.output, Kind::Symbol, Some(arg))?;
             self.output.write_all(symbol.as_bytes())?;
-            self.bytes_written += symbol.len() as usize;
-            Ok(())
+            self.bytes_written += symbol.len();
         } else {
             // When a symbol was already emitted, just emit the id followed by a 1 bit.
             self.bytes_written += format::write_atom_header(
@@ -57,8 +56,8 @@ impl<'a, W: WriteBytesExt> Serializer<'a, W> {
                 Kind::Symbol,
                 Some(u64::from((registered_symbol.id << 1) | 1)),
             )?;
-            Ok(())
         }
+        Ok(())
     }
 }
 

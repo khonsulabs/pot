@@ -4,7 +4,6 @@
     clippy::cargo,
     missing_docs,
     // clippy::missing_docs_in_private_items,
-    clippy::nursery,
     clippy::pedantic,
     future_incompatible,
     rust_2018_idioms,
@@ -13,6 +12,7 @@
     clippy::missing_errors_doc, // TODO clippy::missing_errors_doc
     clippy::option_if_let_else,
     clippy::used_underscore_binding, // false positive with tracing
+    clippy::module_name_repetitions,
 )]
 
 /// Types for deserializing pots.
@@ -29,7 +29,10 @@ use std::io::Read;
 
 use byteorder::WriteBytesExt;
 
-pub use self::{error::Error, value::Value};
+pub use self::{
+    error::Error,
+    value::{OwnedValue, Value, ValueError},
+};
 /// A result alias that returns [`Error`].
 pub type Result<T> = std::result::Result<T, Error>;
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
@@ -214,7 +217,7 @@ mod tests {
     ) {
         init_tracing();
         let bytes = to_vec(&value).unwrap();
-        println!("{:?}: {:02x?}", value, bytes);
+        println!("{value:?}: {bytes:02x?}");
         let deserialized = from_slice::<S>(&bytes).unwrap();
         callback(value, &deserialized);
         if let Some(check_length) = check_length {
@@ -225,7 +228,7 @@ mod tests {
         // do the same, but using the reader interface
         let mut bytes = Vec::new();
         to_writer(value, &mut bytes).unwrap();
-        println!("{:?}: {:02x?}", value, bytes);
+        println!("{value:?}: {bytes:02x?}");
         let deserialized = from_reader(&bytes[..]).unwrap();
         callback(value, &deserialized);
     }
@@ -461,9 +464,7 @@ mod tests {
         test_serialization(&JsonValue::String(String::from("Hello world")), None);
         test_serialization(
             &JsonValue::Object(
-                [(String::from("key"), JsonValue::Bool(true))]
-                    .into_iter()
-                    .collect(),
+                std::iter::once((String::from("key"), JsonValue::Bool(true))).collect(),
             ),
             None,
         );
@@ -736,5 +737,35 @@ mod tests {
             },
             None,
         );
+    }
+
+    #[test]
+    fn direct_value_serialization() {
+        fn roundtrip<T: Serialize + for<'de> Deserialize<'de> + PartialEq + Debug>(value: &T) {
+            let as_value = Value::from_serialize(value);
+            let deserialized = as_value.deserialize_as::<T>().unwrap();
+            assert_eq!(&deserialized, value);
+        }
+
+        roundtrip(&NumbersStruct {
+            u8: u8::MAX,
+            u16: u16::MAX,
+            char: char::MAX,
+            u32: u32::MAX,
+            u64: u64::MAX,
+            u128: u128::MAX,
+            i8: i8::MIN,
+            i16: i16::MIN,
+            i32: i32::MIN,
+            i64: i64::MIN,
+            i128: i128::MIN,
+            f32: f32::MAX,
+            f64: f64::MIN,
+        });
+
+        roundtrip(&EnumVariants::Struct { arg: 1 });
+        roundtrip(&EnumVariants::Tuple(1));
+        roundtrip(&EnumVariants::TupleTwoArgs(1, 2));
+        roundtrip(&EnumVariants::Unit);
     }
 }

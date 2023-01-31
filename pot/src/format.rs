@@ -827,10 +827,7 @@ impl Integer {
                 16 => Ok(InnerInteger::U128(reader.read_u128::<LittleEndian>()?)),
                 _ => Err(Error::custom("unsupported uint byte count")),
             },
-            other => Err(Error::custom(format!(
-                "expected integer, found {:?}",
-                other
-            ))),
+            other => Err(Error::custom(format!("expected integer, found {other:?}"))),
         }
         .map(Integer)
     }
@@ -1110,7 +1107,7 @@ impl Float {
                 _ => Err(Error::custom("unsupported float byte count")),
             }
         } else {
-            Err(Error::custom(format!("expected float, got {:?}", kind)))
+            Err(Error::custom(format!("expected float, got {kind:?}")))
         }
     }
 }
@@ -1177,7 +1174,7 @@ mod tests {
         out.clear();
 
         write_atom_header(&mut out, Kind::Map, Some(u64::MAX)).unwrap();
-        println!("header: {:?}", out);
+        println!("header: {out:?}");
         let (kind, arg) = read_atom_header(&mut out.as_slice()).unwrap();
         assert_eq!(kind, Kind::Map);
         assert_eq!(arg, u64::MAX);

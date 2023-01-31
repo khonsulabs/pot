@@ -26,6 +26,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   when switching between `()` and other types, as Serde offers no built-in
   transmutation. Pot now offers this internally.
 
+### Added
+
+- `Value::from_serialize` and `Value::deserialize_as` have been added, allowing
+  `Value` to be transmuted directly from types that implement `Serialize` and
+  `Deserialize`.
+- `OwnedValue` is a new-type wrapper around `Value<'static>` that can be used in
+  situations where `DeserializeOwned` is a requirement. This type is needed
+  because `Value<'a>` can borrow from the source of the deserialization, and
+  this flexibility causes lifetime errors when trying to deserialize a
+  `Value<'static>` as `DeserializeOwned`.
+
 ## v1.0.2
 
 ### Fixed

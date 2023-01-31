@@ -2,11 +2,15 @@ use std::{
     borrow::Cow,
     fmt::{Display, Write},
     marker::PhantomData,
+    ops::{Deref, DerefMut},
 };
 
 use serde::{
-    de::Visitor,
-    ser::{SerializeMap, SerializeSeq},
+    de::{EnumAccess, MapAccess, SeqAccess, VariantAccess, Visitor},
+    ser::{
+        SerializeMap, SerializeSeq, SerializeStruct, SerializeStructVariant, SerializeTuple,
+        SerializeTupleStruct, SerializeTupleVariant,
+    },
     Deserialize, Serialize,
 };
 
@@ -15,7 +19,6 @@ use crate::format::{Float, InnerFloat, InnerInteger, Integer};
 /// A Pot encoded value. This type can be used to deserialize to and from Pot
 /// without knowing the original data structure.
 #[derive(Debug, Clone, PartialEq)]
-#[must_use]
 pub enum Value<'a> {
     /// A value representing None.
     None,
@@ -52,7 +55,7 @@ impl<'a> Display for Value<'a> {
                     if index > 0 && index % 4 == 0 {
                         f.write_char('_')?;
                     }
-                    write!(f, "{:02x}", byte)?;
+                    write!(f, "{byte:02x}")?;
                 }
                 Ok(())
             }
@@ -84,6 +87,54 @@ impl<'a> Display for Value<'a> {
 }
 
 impl<'a> Value<'a> {
+    /// Creates a `Value` from the given serde-compatible type.
+    ///
+    /// ```rust
+    /// use pot::Value;
+    /// use serde::Serialize;
+    ///
+    /// #[derive(Serialize, Debug)]
+    /// enum Example {
+    ///     Hello,
+    ///     World
+    /// }
+    ///
+    ///
+    /// let original = vec![Example::Hello, Example::World];
+    /// let serialized = Value::from_serialize(&original);
+    /// assert_eq!(
+    ///     serialized,
+    ///     Value::Sequence(vec![
+    ///         Value::from(String::from("Hello")), Value::from(String::from("World"))
+    ///     ])
+    /// );
+    /// ```
+    pub fn from_serialize<T: Serialize>(value: T) -> Self {
+        let Ok(value) = value.serialize(Serializer) else { unreachable!() };
+        value
+    }
+
+    /// Attempts to create an instance of `T` from this value.
+    ///
+    /// ```rust
+    /// use pot::Value;
+    /// use serde::{Serialize, Deserialize};
+    ///
+    /// #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
+    /// enum Example {
+    ///     Hello,
+    ///     World
+    /// }
+    ///
+    /// let original = vec![Example::Hello, Example::World];
+    /// let serialized = Value::from_serialize(&original);
+    /// let deserialized: Vec<Example> = serialized.deserialize_as().unwrap();
+    /// assert_eq!(deserialized, original);
+    /// ```
+    pub fn deserialize_as<'de, T: Deserialize<'de>>(&'de self) -> Result<T, ValueError> {
+        T::deserialize(Deserializer(self))
+    }
+
     /// Returns a new value from an interator of items that can be converted into a value.
     ///
     /// ```rust
@@ -141,7 +192,10 @@ impl<'a> Value<'a> {
     /// assert_eq!(Value::from(vec![Value::None]).is_empty(), false);
     ///
     /// assert_eq!(Value::Mappings(Vec::new()).is_empty(), true);
-    /// assert_eq!(Value::from(vec![(Value::None, Value::None)]).is_empty(), false);
+    /// assert_eq!(
+    ///     Value::from(vec![(Value::None, Value::None)]).is_empty(),
+    ///     false
+    /// );
     /// ```
     #[must_use]
     pub fn is_empty(&self) -> bool {
@@ -187,7 +241,10 @@ impl<'a> Value<'a> {
     /// assert_eq!(Value::from(vec![Value::None]).as_bool(), true);
     ///
     /// assert_eq!(Value::Mappings(Vec::new()).as_bool(), false);
-    /// assert_eq!(Value::from(vec![(Value::None, Value::None)]).as_bool(), true);
+    /// assert_eq!(
+    ///     Value::from(vec![(Value::None, Value::None)]).as_bool(),
+    ///     true
+    /// );
     /// ```
     #[must_use]
     pub fn as_bool(&self) -> bool {
@@ -262,6 +319,7 @@ impl<'a> Value<'a> {
         match self {
             Self::Sequence(sequence) => SequenceIter::Sequence(sequence.iter()),
             Self::Mappings(mappings) => SequenceIter::Mappings(mappings.iter()),
+
             _ => SequenceIter::Sequence([].iter()),
         }
     }
@@ -270,7 +328,6 @@ impl<'a> Value<'a> {
     /// this value. Returns an empty iterator if not a [`Self::Sequence`] or
     /// [`Self::Mappings`]. If a [`Self::Sequence`], the key will always be
     /// `Self::None`.
-    #[must_use]
     pub fn mappings(&self) -> std::slice::Iter<'_, (Self, Self)> {
         match self {
             Self::Mappings(mappings) => mappings.iter(),
@@ -297,6 +354,28 @@ impl<'a> Value<'a> {
                 value
                     .into_iter()
                     .map(|(k, v)| (k.into_static(), v.into_static()))
+                    .collect(),
+            ),
+        }
+    }
+
+    /// Converts `self` to a static lifetime by cloning all data.
+    pub fn to_static(&self) -> Value<'static> {
+        match self {
+            Self::None => Value::None,
+            Self::Unit => Value::Unit,
+            Self::Bool(value) => Value::Bool(*value),
+            Self::Integer(value) => Value::Integer(*value),
+            Self::Float(value) => Value::Float(*value),
+            Self::Bytes(Cow::Owned(value)) => Value::Bytes(Cow::Owned(value.clone())),
+            Self::Bytes(Cow::Borrowed(value)) => Value::Bytes(Cow::Owned(value.to_vec())),
+            Self::String(Cow::Owned(value)) => Value::String(Cow::Owned(value.clone())),
+            Self::String(Cow::Borrowed(value)) => Value::String(Cow::Owned((*value).to_string())),
+            Self::Sequence(value) => Value::Sequence(value.iter().map(Value::to_static).collect()),
+            Self::Mappings(value) => Value::Mappings(
+                value
+                    .iter()
+                    .map(|(k, v)| (k.to_static(), v.to_static()))
                     .collect(),
             ),
         }
@@ -354,6 +433,51 @@ impl<'de: 'a, 'a> Deserialize<'de> for Value<'a> {
         D: serde::Deserializer<'de>,
     {
         deserializer.deserialize_any(ValueVisitor::default())
+    }
+}
+
+/// A [`Value<'static>`] wrapper that supports
+/// [`DeserializeOwned`](serde::DeserializeOwned).
+///
+/// Because `Value<'a>` can borrow strings and bytes during deserialization,
+/// `Value<'static>` can't be used when `DeserializeOwned` is needed.
+/// [`OwnedValue`] implements [`Deserialize`] by first deserializing a
+/// `Value<'a>` and then using [`Value::into_static`] to convert borrowed data
+/// to owned data.
+#[derive(Debug, Clone, PartialEq)]
+pub struct OwnedValue(pub Value<'static>);
+
+impl Deref for OwnedValue {
+    type Target = Value<'static>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for OwnedValue {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+
+impl Serialize for OwnedValue {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.0.serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for OwnedValue {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        deserializer
+            .deserialize_any(ValueVisitor::default())
+            .map(|value| Self(value.into_static()))
     }
 }
 
@@ -810,4 +934,1008 @@ fn value_as_integer_tests() {
     test_unsigned!(u8, as_u8, i8, as_i8, f32);
     test_unsigned!(u16, as_u16, i16, as_i16, f32);
     test_unsigned!(u32, as_u32, i32, as_i32, f64);
+}
+
+struct Serializer;
+
+impl serde::Serializer for Serializer {
+    type Ok = Value<'static>;
+
+    type Error = Infallible;
+    type SerializeSeq = SequenceSerializer;
+    type SerializeTuple = SequenceSerializer;
+    type SerializeTupleStruct = SequenceSerializer;
+    type SerializeTupleVariant = TupleVariantSerializer;
+    type SerializeMap = MappingsSerializer;
+    type SerializeStruct = MappingsSerializer;
+    type SerializeStructVariant = StructVariantSerializer;
+
+    fn serialize_bool(self, v: bool) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Bool(v))
+    }
+
+    fn serialize_i8(self, v: i8) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Integer(Integer::from(v)))
+    }
+
+    fn serialize_i16(self, v: i16) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Integer(Integer::from(v)))
+    }
+
+    fn serialize_i32(self, v: i32) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Integer(Integer::from(v)))
+    }
+
+    fn serialize_i64(self, v: i64) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Integer(Integer::from(v)))
+    }
+
+    fn serialize_i128(self, v: i128) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Integer(Integer::from(v)))
+    }
+
+    fn serialize_u8(self, v: u8) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Integer(Integer::from(v)))
+    }
+
+    fn serialize_u16(self, v: u16) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Integer(Integer::from(v)))
+    }
+
+    fn serialize_u32(self, v: u32) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Integer(Integer::from(v)))
+    }
+
+    fn serialize_u64(self, v: u64) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Integer(Integer::from(v)))
+    }
+
+    fn serialize_u128(self, v: u128) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Integer(Integer::from(v)))
+    }
+
+    fn serialize_f32(self, v: f32) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Float(Float::from(v)))
+    }
+
+    fn serialize_f64(self, v: f64) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Float(Float::from(v)))
+    }
+
+    fn serialize_char(self, v: char) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Integer(Integer::from(u32::from(v))))
+    }
+
+    fn serialize_str(self, v: &str) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::String(Cow::Owned(v.to_string())))
+    }
+
+    fn serialize_bytes(self, v: &[u8]) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Bytes(Cow::Owned(v.to_vec())))
+    }
+
+    fn serialize_none(self) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::None)
+    }
+
+    fn serialize_some<T>(self, value: &T) -> Result<Self::Ok, Self::Error>
+    where
+        T: Serialize + ?Sized,
+    {
+        value.serialize(Self)
+    }
+
+    fn serialize_unit(self) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Unit)
+    }
+
+    fn serialize_unit_struct(self, _name: &'static str) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Unit)
+    }
+
+    fn serialize_unit_variant(
+        self,
+        _name: &'static str,
+        _variant_index: u32,
+        variant: &'static str,
+    ) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::String(Cow::Borrowed(variant)))
+    }
+
+    fn serialize_newtype_struct<T>(
+        self,
+        _name: &'static str,
+        value: &T,
+    ) -> Result<Self::Ok, Self::Error>
+    where
+        T: Serialize + ?Sized,
+    {
+        value.serialize(Self)
+    }
+
+    fn serialize_newtype_variant<T>(
+        self,
+        _name: &'static str,
+        _variant_index: u32,
+        variant: &'static str,
+        value: &T,
+    ) -> Result<Self::Ok, Self::Error>
+    where
+        T: Serialize + ?Sized,
+    {
+        Ok(Value::Mappings(vec![(
+            Value::String(Cow::Borrowed(variant)),
+            value.serialize(Self)?,
+        )]))
+    }
+
+    fn serialize_seq(self, len: Option<usize>) -> Result<Self::SerializeSeq, Self::Error> {
+        Ok(SequenceSerializer(
+            len.map_or_else(Vec::new, Vec::with_capacity),
+        ))
+    }
+
+    fn serialize_tuple(self, len: usize) -> Result<Self::SerializeTuple, Self::Error> {
+        Ok(SequenceSerializer(Vec::with_capacity(len)))
+    }
+
+    fn serialize_tuple_struct(
+        self,
+        _name: &'static str,
+        len: usize,
+    ) -> Result<Self::SerializeTupleStruct, Self::Error> {
+        Ok(SequenceSerializer(Vec::with_capacity(len)))
+    }
+
+    fn serialize_tuple_variant(
+        self,
+        _name: &'static str,
+        _variant_index: u32,
+        variant: &'static str,
+        len: usize,
+    ) -> Result<Self::SerializeTupleVariant, Self::Error> {
+        Ok(TupleVariantSerializer {
+            variant,
+            sequence: Vec::with_capacity(len),
+        })
+    }
+
+    fn serialize_map(self, len: Option<usize>) -> Result<Self::SerializeMap, Self::Error> {
+        Ok(MappingsSerializer(
+            len.map_or_else(Vec::new, Vec::with_capacity),
+        ))
+    }
+
+    fn serialize_struct(
+        self,
+        _name: &'static str,
+        len: usize,
+    ) -> Result<Self::SerializeStruct, Self::Error> {
+        Ok(MappingsSerializer(Vec::with_capacity(len)))
+    }
+
+    fn serialize_struct_variant(
+        self,
+        _name: &'static str,
+        _variant_index: u32,
+        variant: &'static str,
+        len: usize,
+    ) -> Result<Self::SerializeStructVariant, Self::Error> {
+        Ok(StructVariantSerializer {
+            variant,
+            mappings: Vec::with_capacity(len),
+        })
+    }
+}
+
+struct SequenceSerializer(Vec<Value<'static>>);
+
+impl SerializeSeq for SequenceSerializer {
+    type Ok = Value<'static>;
+    type Error = Infallible;
+
+    fn serialize_element<T>(&mut self, value: &T) -> Result<(), Self::Error>
+    where
+        T: Serialize + ?Sized,
+    {
+        self.0.push(value.serialize(Serializer)?);
+        Ok(())
+    }
+
+    fn end(self) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Sequence(self.0))
+    }
+}
+
+impl SerializeTuple for SequenceSerializer {
+    type Ok = Value<'static>;
+    type Error = Infallible;
+
+    fn serialize_element<T>(&mut self, value: &T) -> Result<(), Self::Error>
+    where
+        T: Serialize + ?Sized,
+    {
+        self.0.push(value.serialize(Serializer)?);
+        Ok(())
+    }
+
+    fn end(self) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Sequence(self.0))
+    }
+}
+
+impl SerializeTupleStruct for SequenceSerializer {
+    type Ok = Value<'static>;
+    type Error = Infallible;
+
+    fn serialize_field<T>(&mut self, value: &T) -> Result<(), Self::Error>
+    where
+        T: Serialize + ?Sized,
+    {
+        self.0.push(value.serialize(Serializer)?);
+        Ok(())
+    }
+
+    fn end(self) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Sequence(self.0))
+    }
+}
+
+struct TupleVariantSerializer {
+    variant: &'static str,
+    sequence: Vec<Value<'static>>,
+}
+
+impl SerializeTupleVariant for TupleVariantSerializer {
+    type Ok = Value<'static>;
+    type Error = Infallible;
+
+    fn serialize_field<T>(&mut self, value: &T) -> Result<(), Self::Error>
+    where
+        T: Serialize + ?Sized,
+    {
+        self.sequence.push(value.serialize(Serializer)?);
+        Ok(())
+    }
+
+    fn end(self) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Mappings(vec![(
+            Value::String(Cow::Borrowed(self.variant)),
+            Value::Sequence(self.sequence),
+        )]))
+    }
+}
+
+struct MappingsSerializer(Vec<(Value<'static>, Value<'static>)>);
+
+impl SerializeMap for MappingsSerializer {
+    type Ok = Value<'static>;
+    type Error = Infallible;
+
+    fn serialize_key<T>(&mut self, key: &T) -> Result<(), Self::Error>
+    where
+        T: Serialize + ?Sized,
+    {
+        self.0.push((key.serialize(Serializer)?, Value::None));
+        Ok(())
+    }
+
+    fn serialize_value<T>(&mut self, value: &T) -> Result<(), Self::Error>
+    where
+        T: Serialize + ?Sized,
+    {
+        self.0
+            .last_mut()
+            .expect("serialize_value called without serialize_key")
+            .1 = value.serialize(Serializer)?;
+        Ok(())
+    }
+
+    fn end(self) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Mappings(self.0))
+    }
+}
+
+impl SerializeStruct for MappingsSerializer {
+    type Ok = Value<'static>;
+    type Error = Infallible;
+    fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<(), Self::Error>
+    where
+        T: Serialize + ?Sized,
+    {
+        self.0.push((
+            Value::String(Cow::Borrowed(key)),
+            value.serialize(Serializer)?,
+        ));
+        Ok(())
+    }
+
+    fn end(self) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Mappings(self.0))
+    }
+}
+
+struct StructVariantSerializer {
+    variant: &'static str,
+    mappings: Vec<(Value<'static>, Value<'static>)>,
+}
+
+impl SerializeStructVariant for StructVariantSerializer {
+    type Ok = Value<'static>;
+    type Error = Infallible;
+
+    fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<(), Self::Error>
+    where
+        T: Serialize + ?Sized,
+    {
+        self.mappings.push((
+            Value::String(Cow::Borrowed(key)),
+            value.serialize(Serializer)?,
+        ));
+        Ok(())
+    }
+
+    fn end(self) -> Result<Self::Ok, Self::Error> {
+        Ok(Value::Mappings(vec![(
+            Value::String(Cow::Borrowed(self.variant)),
+            Value::Mappings(self.mappings),
+        )]))
+    }
+}
+
+struct Deserializer<'de>(&'de Value<'de>);
+
+impl<'de> serde::Deserializer<'de> for Deserializer<'de> {
+    type Error = ValueError;
+
+    fn deserialize_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        match &self.0 {
+            Value::None => visitor.visit_none(),
+            Value::Unit => visitor.visit_unit(),
+            Value::Bool(value) => visitor.visit_bool(*value),
+            Value::Integer(integer) => match integer.0 {
+                InnerInteger::I8(value) => visitor.visit_i8(value),
+                InnerInteger::I16(value) => visitor.visit_i16(value),
+                InnerInteger::I32(value) => visitor.visit_i32(value),
+                InnerInteger::I64(value) => visitor.visit_i64(value),
+                InnerInteger::I128(value) => visitor.visit_i128(value),
+                InnerInteger::U8(value) => visitor.visit_u8(value),
+                InnerInteger::U16(value) => visitor.visit_u16(value),
+                InnerInteger::U32(value) => visitor.visit_u32(value),
+                InnerInteger::U64(value) => visitor.visit_u64(value),
+                InnerInteger::U128(value) => visitor.visit_u128(value),
+            },
+            Value::Float(float) => match float.0 {
+                InnerFloat::F64(value) => visitor.visit_f64(value),
+                InnerFloat::F32(value) => visitor.visit_f32(value),
+            },
+            Value::Bytes(bytes) => visitor.visit_bytes(bytes),
+            Value::String(str) => visitor.visit_str(str),
+            Value::Sequence(seq) => visitor.visit_seq(SequenceDeserializer(seq)),
+            Value::Mappings(mappings) => visitor.visit_map(MappingsDeserializer(mappings)),
+        }
+    }
+
+    fn deserialize_bool<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Bool(value) = &self.0 {
+            visitor.visit_bool(*value)
+        } else {
+            Err(ValueError::Expected {
+                kind: "bool",
+                value: self.0.to_static(),
+            })
+        }
+    }
+
+    fn deserialize_i8<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Integer(value) = &self.0 {
+            if let Ok(value) = value.as_i8() {
+                return visitor.visit_i8(value);
+            }
+        }
+
+        Err(ValueError::Expected {
+            kind: "i8",
+            value: self.0.to_static(),
+        })
+    }
+
+    fn deserialize_i16<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Integer(value) = &self.0 {
+            if let Ok(value) = value.as_i16() {
+                return visitor.visit_i16(value);
+            }
+        }
+
+        Err(ValueError::Expected {
+            kind: "i16",
+            value: self.0.to_static(),
+        })
+    }
+
+    fn deserialize_i32<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Integer(value) = &self.0 {
+            if let Ok(value) = value.as_i32() {
+                return visitor.visit_i32(value);
+            }
+        }
+
+        Err(ValueError::Expected {
+            kind: "i32",
+            value: self.0.to_static(),
+        })
+    }
+
+    fn deserialize_i64<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Integer(value) = &self.0 {
+            if let Ok(value) = value.as_i64() {
+                return visitor.visit_i64(value);
+            }
+        }
+
+        Err(ValueError::Expected {
+            kind: "i64",
+            value: self.0.to_static(),
+        })
+    }
+    fn deserialize_i128<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Integer(value) = &self.0 {
+            if let Ok(value) = value.as_i128() {
+                return visitor.visit_i128(value);
+            }
+        }
+
+        Err(ValueError::Expected {
+            kind: "i128",
+            value: self.0.to_static(),
+        })
+    }
+
+    fn deserialize_u8<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Integer(value) = &self.0 {
+            if let Ok(value) = value.as_u8() {
+                return visitor.visit_u8(value);
+            }
+        }
+
+        Err(ValueError::Expected {
+            kind: "u8",
+            value: self.0.to_static(),
+        })
+    }
+
+    fn deserialize_u16<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Integer(value) = &self.0 {
+            if let Ok(value) = value.as_u16() {
+                return visitor.visit_u16(value);
+            }
+        }
+
+        Err(ValueError::Expected {
+            kind: "u16",
+            value: self.0.to_static(),
+        })
+    }
+
+    fn deserialize_u32<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Integer(value) = &self.0 {
+            if let Ok(value) = value.as_u32() {
+                return visitor.visit_u32(value);
+            }
+        }
+
+        Err(ValueError::Expected {
+            kind: "u32",
+            value: self.0.to_static(),
+        })
+    }
+
+    fn deserialize_u64<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Integer(value) = &self.0 {
+            if let Ok(value) = value.as_u64() {
+                return visitor.visit_u64(value);
+            }
+        }
+
+        Err(ValueError::Expected {
+            kind: "u64",
+            value: self.0.to_static(),
+        })
+    }
+
+    fn deserialize_u128<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Integer(value) = &self.0 {
+            if let Ok(value) = value.as_u128() {
+                return visitor.visit_u128(value);
+            }
+        }
+
+        Err(ValueError::Expected {
+            kind: "u128",
+            value: self.0.to_static(),
+        })
+    }
+
+    fn deserialize_f32<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Float(value) = &self.0 {
+            if let Ok(value) = value.as_f32() {
+                return visitor.visit_f32(value);
+            }
+        }
+
+        Err(ValueError::Expected {
+            kind: "f32",
+            value: self.0.to_static(),
+        })
+    }
+
+    fn deserialize_f64<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Float(value) = &self.0 {
+            visitor.visit_f64(value.as_f64())
+        } else {
+            Err(ValueError::Expected {
+                kind: "f64",
+                value: self.0.to_static(),
+            })
+        }
+    }
+
+    fn deserialize_char<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Integer(value) = &self.0 {
+            if let Ok(value) = value.as_u32() {
+                if let Ok(char) = char::try_from(value) {
+                    return visitor.visit_char(char);
+                }
+            }
+        }
+
+        Err(ValueError::Expected {
+            kind: "char",
+            value: self.0.to_static(),
+        })
+    }
+
+    fn deserialize_str<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::String(value) = &self.0 {
+            visitor.visit_borrowed_str(value)
+        } else {
+            Err(ValueError::Expected {
+                kind: "str",
+                value: self.0.to_static(),
+            })
+        }
+    }
+
+    fn deserialize_string<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::String(value) = &self.0 {
+            visitor.visit_borrowed_str(value)
+        } else {
+            Err(ValueError::Expected {
+                kind: "String",
+                value: self.0.to_static(),
+            })
+        }
+    }
+
+    fn deserialize_bytes<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Bytes(value) = &self.0 {
+            visitor.visit_borrowed_bytes(value)
+        } else {
+            Err(ValueError::Expected {
+                kind: "bytes",
+                value: self.0.to_static(),
+            })
+        }
+    }
+
+    fn deserialize_byte_buf<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Bytes(value) = &self.0 {
+            visitor.visit_borrowed_bytes(value)
+        } else {
+            Err(ValueError::Expected {
+                kind: "byte buf",
+                value: self.0.to_static(),
+            })
+        }
+    }
+
+    fn deserialize_option<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if matches!(&self.0, Value::None) {
+            visitor.visit_none()
+        } else {
+            visitor.visit_some(self)
+        }
+    }
+
+    fn deserialize_unit<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Unit = &self.0 {
+            visitor.visit_unit()
+        } else {
+            Err(ValueError::Expected {
+                kind: "()",
+                value: self.0.to_static(),
+            })
+        }
+    }
+
+    fn deserialize_unit_struct<V>(
+        self,
+        _name: &'static str,
+        visitor: V,
+    ) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Unit = &self.0 {
+            visitor.visit_unit()
+        } else {
+            Err(ValueError::Expected {
+                kind: "()",
+                value: self.0.to_static(),
+            })
+        }
+    }
+
+    fn deserialize_newtype_struct<V>(
+        self,
+        _name: &'static str,
+        visitor: V,
+    ) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        visitor.visit_newtype_struct(self)
+    }
+
+    fn deserialize_seq<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Sequence(sequence) = &self.0 {
+            visitor.visit_seq(SequenceDeserializer(sequence))
+        } else {
+            Err(ValueError::Expected {
+                kind: "sequence",
+                value: self.0.to_static(),
+            })
+        }
+    }
+
+    fn deserialize_tuple<V>(self, _len: usize, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Sequence(sequence) = &self.0 {
+            visitor.visit_seq(SequenceDeserializer(sequence))
+        } else {
+            Err(ValueError::Expected {
+                kind: "tuple",
+                value: self.0.to_static(),
+            })
+        }
+    }
+
+    fn deserialize_tuple_struct<V>(
+        self,
+        _name: &'static str,
+        _len: usize,
+        visitor: V,
+    ) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Sequence(sequence) = &self.0 {
+            visitor.visit_seq(SequenceDeserializer(sequence))
+        } else {
+            Err(ValueError::Expected {
+                kind: "tuple struct",
+                value: self.0.to_static(),
+            })
+        }
+    }
+
+    fn deserialize_map<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Mappings(sequence) = &self.0 {
+            visitor.visit_map(MappingsDeserializer(sequence))
+        } else {
+            Err(ValueError::Expected {
+                kind: "map",
+                value: self.0.to_static(),
+            })
+        }
+    }
+
+    fn deserialize_struct<V>(
+        self,
+        _name: &'static str,
+        _fields: &'static [&'static str],
+        visitor: V,
+    ) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Mappings(sequence) = &self.0 {
+            visitor.visit_map(MappingsDeserializer(sequence))
+        } else {
+            Err(ValueError::Expected {
+                kind: "map",
+                value: self.0.to_static(),
+            })
+        }
+    }
+
+    fn deserialize_enum<V>(
+        self,
+        _name: &'static str,
+        _variants: &'static [&'static str],
+        visitor: V,
+    ) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        visitor.visit_enum(self)
+    }
+
+    fn deserialize_identifier<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        self.deserialize_str(visitor)
+    }
+
+    fn deserialize_ignored_any<V>(self, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        self.deserialize_any(visitor)
+    }
+}
+
+impl<'de> EnumAccess<'de> for Deserializer<'de> {
+    type Error = ValueError;
+    type Variant = Self;
+
+    fn variant_seed<V>(self, seed: V) -> Result<(V::Value, Self::Variant), Self::Error>
+    where
+        V: serde::de::DeserializeSeed<'de>,
+    {
+        match &self.0 {
+            Value::Mappings(mapping) => {
+                if !mapping.is_empty() {
+                    let variant = seed.deserialize(Deserializer(&mapping[0].0))?;
+                    return Ok((variant, Deserializer(&mapping[0].1)));
+                }
+            }
+            Value::String(_) => {
+                let variant = seed.deserialize(Deserializer(self.0))?;
+                return Ok((variant, Deserializer(&Value::Unit)));
+            }
+            _ => {}
+        }
+
+        Err(ValueError::Expected {
+            kind: "enum variant",
+            value: self.0.to_static(),
+        })
+    }
+}
+
+impl<'de> VariantAccess<'de> for Deserializer<'de> {
+    type Error = ValueError;
+
+    fn unit_variant(self) -> Result<(), Self::Error> {
+        if matches!(self.0, Value::Unit) {
+            Ok(())
+        } else {
+            Err(ValueError::Expected {
+                kind: "unit",
+                value: self.0.to_static(),
+            })
+        }
+    }
+
+    fn newtype_variant_seed<T>(self, seed: T) -> Result<T::Value, Self::Error>
+    where
+        T: serde::de::DeserializeSeed<'de>,
+    {
+        seed.deserialize(self)
+    }
+
+    fn tuple_variant<V>(self, _len: usize, visitor: V) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Sequence(sequence) = &self.0 {
+            visitor.visit_seq(SequenceDeserializer(sequence))
+        } else {
+            Err(ValueError::Expected {
+                kind: "tuple variant",
+                value: self.0.to_static(),
+            })
+        }
+    }
+
+    fn struct_variant<V>(
+        self,
+        _fields: &'static [&'static str],
+        visitor: V,
+    ) -> Result<V::Value, Self::Error>
+    where
+        V: Visitor<'de>,
+    {
+        if let Value::Mappings(mappings) = &self.0 {
+            visitor.visit_map(MappingsDeserializer(mappings))
+        } else {
+            Err(ValueError::Expected {
+                kind: "struct variant",
+                value: self.0.to_static(),
+            })
+        }
+    }
+}
+
+struct SequenceDeserializer<'de>(&'de [Value<'de>]);
+
+impl<'de> SeqAccess<'de> for SequenceDeserializer<'de> {
+    type Error = ValueError;
+
+    fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>, Self::Error>
+    where
+        T: serde::de::DeserializeSeed<'de>,
+    {
+        if self.0.is_empty() {
+            Ok(None)
+        } else {
+            let value = seed.deserialize(Deserializer(&self.0[0]))?;
+            self.0 = &self.0[1..];
+            Ok(Some(value))
+        }
+    }
+
+    fn size_hint(&self) -> Option<usize> {
+        Some(self.0.len())
+    }
+}
+
+struct MappingsDeserializer<'de>(&'de [(Value<'de>, Value<'de>)]);
+
+impl<'de> MapAccess<'de> for MappingsDeserializer<'de> {
+    type Error = ValueError;
+
+    fn next_key_seed<K>(&mut self, seed: K) -> Result<Option<K::Value>, Self::Error>
+    where
+        K: serde::de::DeserializeSeed<'de>,
+    {
+        if self.0.is_empty() {
+            Ok(None)
+        } else {
+            let key = seed.deserialize(Deserializer(&self.0[0].0))?;
+            Ok(Some(key))
+        }
+    }
+
+    fn next_value_seed<V>(&mut self, seed: V) -> Result<V::Value, Self::Error>
+    where
+        V: serde::de::DeserializeSeed<'de>,
+    {
+        let value = seed.deserialize(Deserializer(&self.0[0].1))?;
+        self.0 = &self.0[1..];
+        Ok(value)
+    }
+
+    fn size_hint(&self) -> Option<usize> {
+        Some(self.0.len())
+    }
+}
+
+#[derive(Debug)]
+pub enum Infallible {}
+
+impl serde::ser::Error for Infallible {
+    fn custom<T>(_msg: T) -> Self
+    where
+        T: Display,
+    {
+        unreachable!()
+    }
+}
+
+impl std::error::Error for Infallible {}
+
+impl Display for Infallible {
+    fn fmt(&self, _f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        unreachable!()
+    }
+}
+
+/// An error from deserializing a type using [`Value::deserialize_as`].
+#[derive(thiserror::Error, Debug)]
+pub enum ValueError {
+    /// A kind of data was expected, but the [`Value`] cannot be interpreted as
+    /// that kind.
+    #[error("expected {kind} but got {value}")]
+    Expected {
+        /// The kind of data expected.
+        kind: &'static str,
+        /// The value that was encountered.
+        value: Value<'static>,
+    },
+    /// A custom deserialization error. These errors originate outside of `pot`,
+    #[error("{0}")]
+    Custom(String),
+}
+
+impl serde::de::Error for ValueError {
+    fn custom<T>(msg: T) -> Self
+    where
+        T: Display,
+    {
+        Self::Custom(msg.to_string())
+    }
 }

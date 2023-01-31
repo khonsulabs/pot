@@ -247,11 +247,10 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 Some(Nucleus::Boolean(b)) => visitor.visit_bool(b),
                 Some(Nucleus::Unit) | None => visitor.visit_bool(false),
                 other => Err(Error::custom(format!(
-                    "expected bool nucleus, got {:?}",
-                    other
+                    "expected bool nucleus, got {other:?}"
                 ))),
             },
-            other => Err(Error::custom(format!("expected bool, got {:?}", other))),
+            other => Err(Error::custom(format!("expected bool, got {other:?}"))),
         }
     }
 
@@ -272,7 +271,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
                 visitor.visit_i8(0)
             }
-            other => Err(Error::custom(format!("expected i8, got {:?}", other))),
+            other => Err(Error::custom(format!("expected i8, got {other:?}"))),
         }
     }
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
@@ -292,7 +291,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
                 visitor.visit_i16(0)
             }
-            other => Err(Error::custom(format!("expected i16, got {:?}", other))),
+            other => Err(Error::custom(format!("expected i16, got {other:?}"))),
         }
     }
 
@@ -313,7 +312,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
                 visitor.visit_i32(0)
             }
-            other => Err(Error::custom(format!("expected i32, got {:?}", other))),
+            other => Err(Error::custom(format!("expected i32, got {other:?}"))),
         }
     }
 
@@ -334,7 +333,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
                 visitor.visit_i64(0)
             }
-            other => Err(Error::custom(format!("expected i64, got {:?}", other))),
+            other => Err(Error::custom(format!("expected i64, got {other:?}"))),
         }
     }
 
@@ -355,7 +354,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
                 visitor.visit_i128(0)
             }
-            other => Err(Error::custom(format!("expected i128, got {:?}", other))),
+            other => Err(Error::custom(format!("expected i128, got {other:?}"))),
         }
     }
 
@@ -376,7 +375,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
                 visitor.visit_u8(0)
             }
-            other => Err(Error::custom(format!("expected u8, got {:?}", other))),
+            other => Err(Error::custom(format!("expected u8, got {other:?}"))),
         }
     }
 
@@ -397,7 +396,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
                 visitor.visit_u16(0)
             }
-            other => Err(Error::custom(format!("expected u16, got {:?}", other))),
+            other => Err(Error::custom(format!("expected u16, got {other:?}"))),
         }
     }
 
@@ -418,7 +417,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
                 visitor.visit_u32(0)
             }
-            other => Err(Error::custom(format!("expected u32, got {:?}", other))),
+            other => Err(Error::custom(format!("expected u32, got {other:?}"))),
         }
     }
 
@@ -439,7 +438,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
                 visitor.visit_u64(0)
             }
-            other => Err(Error::custom(format!("expected u64, got {:?}", other))),
+            other => Err(Error::custom(format!("expected u64, got {other:?}"))),
         }
     }
 
@@ -460,7 +459,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
                 visitor.visit_u128(0)
             }
-            other => Err(Error::custom(format!("expected i64, got {:?}", other))),
+            other => Err(Error::custom(format!("expected i64, got {other:?}"))),
         }
     }
 
@@ -489,7 +488,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
                 visitor.visit_f32(0.)
             }
-            other => Err(Error::custom(format!("expected f32, got {:?}", other))),
+            other => Err(Error::custom(format!("expected f32, got {other:?}"))),
         }
     }
 
@@ -518,7 +517,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
                 visitor.visit_f64(0.)
             }
-            other => Err(Error::custom(format!("expected f64, got {:?}", other))),
+            other => Err(Error::custom(format!("expected f64, got {other:?}"))),
         }
     }
 
@@ -542,7 +541,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
                 visitor.visit_char('\0')
             }
-            other => Err(Error::custom(format!("expected char, got {:?}", other))),
+            other => Err(Error::custom(format!("expected char, got {other:?}"))),
         }
     }
 
@@ -571,7 +570,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                     self.visit_symbol(&atom, visitor)
                 }
             }
-            other => Err(Error::custom(format!("expected str, got {:?}", other))),
+            other => Err(Error::custom(format!("expected str, got {other:?}"))),
         }
     }
 
@@ -616,7 +615,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Special if matches!(atom.nucleus, Some(Nucleus::Unit) | None) => {
                 visitor.visit_borrowed_bytes(b"")
             }
-            other => Err(Error::custom(format!("expected bytes, got {:?}", other))),
+            other => Err(Error::custom(format!("expected bytes, got {other:?}"))),
         }
     }
 
@@ -729,7 +728,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                 visitor.visit_map(AtomList::new(self, None))
             }
             (Kind::Special, Some(Nucleus::Unit) | None) => visitor.visit_map(EmptyList),
-            (kind, _) => Err(Error::custom(format!("expected map, got {:?}", kind))),
+            (kind, _) => Err(Error::custom(format!("expected map, got {kind:?}"))),
         }
     }
 
@@ -777,10 +776,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
                     unreachable!("read_atom shouldn't return anything else")
                 }
             }
-            other => Err(Error::custom(format!(
-                "expected identifier, got {:?}",
-                other
-            ))),
+            other => Err(Error::custom(format!("expected identifier, got {other:?}"))),
         }
     }
 
@@ -1032,7 +1028,7 @@ impl<'a, 'de> SymbolMap<'a, 'de> {
                     .get(symbol_id as usize)
                     .ok_or(Error::UnknownSymbol(symbol_id))?;
                 match symbol {
-                    Cow::Borrowed(symbol) => visitor.visit_borrowed_str(*symbol),
+                    Cow::Borrowed(symbol) => visitor.visit_borrowed_str(symbol),
                     Cow::Owned(symbol) => visitor.visit_str(symbol),
                 }
             }
