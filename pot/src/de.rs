@@ -1,4 +1,6 @@
-use std::{borrow::Cow, collections::VecDeque, fmt::Debug};
+use std::borrow::Cow;
+use std::collections::VecDeque;
+use std::fmt::Debug;
 
 use byteorder::ReadBytesExt;
 use derive_where::derive_where;
@@ -9,11 +11,11 @@ use serde::de::{
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
-use crate::{
-    format::{self, Atom, Float, InnerFloat, InnerInteger, Integer, Nucleus, CURRENT_VERSION},
-    reader::{IoReader, Reader, SliceReader},
-    Error, Result,
+use crate::format::{
+    self, Atom, Float, InnerFloat, InnerInteger, Integer, Nucleus, CURRENT_VERSION,
 };
+use crate::reader::{IoReader, Reader, SliceReader};
+use crate::{Error, Result};
 
 /// Deserializer for the Pot format.
 #[derive_where(Debug)]
@@ -274,6 +276,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             other => Err(Error::custom(format!("expected i8, got {other:?}"))),
         }
     }
+
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
     fn deserialize_i16<V>(self, visitor: V) -> Result<V::Value>
     where

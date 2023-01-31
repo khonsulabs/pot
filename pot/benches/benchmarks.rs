@@ -5,10 +5,10 @@ use std::fmt::Display;
 
 use chrono::{DateTime, Utc};
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use fake::{
-    faker::{filesystem::en::FilePath, internet::en::Username, lorem::en::Sentence},
-    Fake,
-};
+use fake::faker::filesystem::en::FilePath;
+use fake::faker::internet::en::Username;
+use fake::faker::lorem::en::Sentence;
+use fake::Fake;
 use rand::{thread_rng, Rng};
 use serde::{Deserialize, Serialize};
 

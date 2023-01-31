@@ -1,12 +1,15 @@
-use std::{borrow::Cow, fmt::Display};
+use std::borrow::Cow;
+use std::fmt::Display;
 
 use byteorder::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
 use half::f16;
-use serde::{de::Error as _, Deserialize, Serialize};
+use serde::de::Error as _;
+use serde::{Deserialize, Serialize};
 
 pub(crate) const CURRENT_VERSION: u8 = 0;
 
-use crate::{reader::Reader, Error};
+use crate::reader::Reader;
+use crate::Error;
 
 /// Writes an atom header into `writer`.
 #[allow(clippy::cast_possible_truncation)]
@@ -504,6 +507,7 @@ impl Integer {
             InnerInteger::U128(value) => *value == 0,
         }
     }
+
     /// Returns the contained value as an i8, or an error if the value is unable to fit.
     // clippy::checked_conversions: try_from isn't const, and it would demote this from a const fn.
     #[allow(clippy::cast_possible_wrap)]

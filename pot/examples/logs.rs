@@ -1,10 +1,10 @@
 use bincode::Options;
 use chrono::{DateTime, Utc};
 use cli_table::{Cell, Table};
-use fake::{
-    faker::{filesystem::en::FilePath, internet::en::Username, lorem::en::Sentence},
-    Fake,
-};
+use fake::faker::filesystem::en::FilePath;
+use fake::faker::internet::en::Username;
+use fake::faker::lorem::en::Sentence;
+use fake::Fake;
 use rand::{thread_rng, Rng};
 use serde::{Deserialize, Serialize};
 use thousands::Separable;

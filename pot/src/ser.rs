@@ -1,8 +1,6 @@
-use std::{
-    fmt::Debug,
-    ops::{Deref, DerefMut},
-    usize,
-};
+use std::fmt::Debug;
+use std::ops::{Deref, DerefMut};
+use std::usize;
 
 use byteorder::WriteBytesExt;
 use derive_where::derive_where;
@@ -10,10 +8,8 @@ use serde::{ser, Serialize};
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
-use crate::{
-    format::{self, Kind, Special, CURRENT_VERSION},
-    Error, Result,
-};
+use crate::format::{self, Kind, Special, CURRENT_VERSION};
+use crate::{Error, Result};
 
 /// A Pot serializer.
 #[derive_where(Debug)]
@@ -62,16 +58,15 @@ impl<'a, W: WriteBytesExt> Serializer<'a, W> {
 }
 
 impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::Serializer for &'de mut Serializer<'a, W> {
-    type Ok = ();
     type Error = Error;
-
+    type Ok = ();
+    type SerializeMap = MapSerializer<'de, 'a, W>;
     type SerializeSeq = Self;
+    type SerializeStruct = MapSerializer<'de, 'a, W>;
+    type SerializeStructVariant = MapSerializer<'de, 'a, W>;
     type SerializeTuple = Self;
     type SerializeTupleStruct = Self;
     type SerializeTupleVariant = Self;
-    type SerializeMap = MapSerializer<'de, 'a, W>;
-    type SerializeStruct = MapSerializer<'de, 'a, W>;
-    type SerializeStructVariant = MapSerializer<'de, 'a, W>;
 
     fn is_human_readable(&self) -> bool {
         false
@@ -308,8 +303,8 @@ impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::Serializer for &'de mut Serialize
 }
 
 impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeSeq for &'de mut Serializer<'a, W> {
-    type Ok = ();
     type Error = Error;
+    type Ok = ();
 
     fn serialize_element<T>(&mut self, value: &T) -> Result<()>
     where
@@ -324,8 +319,8 @@ impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeSeq for &'de mut Seriali
 }
 
 impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeTuple for &'de mut Serializer<'a, W> {
-    type Ok = ();
     type Error = Error;
+    type Ok = ();
 
     fn serialize_element<T>(&mut self, value: &T) -> Result<()>
     where
@@ -340,8 +335,8 @@ impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeTuple for &'de mut Seria
 }
 
 impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeTupleStruct for &'de mut Serializer<'a, W> {
-    type Ok = ();
     type Error = Error;
+    type Ok = ();
 
     fn serialize_field<T>(&mut self, value: &T) -> Result<()>
     where
@@ -358,8 +353,8 @@ impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeTupleStruct for &'de mut
 impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeTupleVariant
     for &'de mut Serializer<'a, W>
 {
-    type Ok = ();
     type Error = Error;
+    type Ok = ();
 
     fn serialize_field<T>(&mut self, value: &T) -> Result<()>
     where
@@ -380,8 +375,8 @@ pub struct MapSerializer<'de, 'a, W: WriteBytesExt> {
 }
 
 impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeMap for MapSerializer<'de, 'a, W> {
-    type Ok = ();
     type Error = Error;
+    type Ok = ();
 
     fn serialize_key<T>(&mut self, key: &T) -> Result<()>
     where
@@ -406,8 +401,8 @@ impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeMap for MapSerializer<'d
 }
 
 impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeStruct for MapSerializer<'de, 'a, W> {
-    type Ok = ();
     type Error = Error;
+    type Ok = ();
 
     fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<()>
     where
@@ -428,8 +423,8 @@ impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeStruct for MapSerializer
 impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeStructVariant
     for MapSerializer<'de, 'a, W>
 {
-    type Ok = ();
     type Error = Error;
+    type Ok = ();
 
     fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<()>
     where

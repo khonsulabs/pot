@@ -29,13 +29,12 @@ use std::io::Read;
 
 use byteorder::WriteBytesExt;
 
-pub use self::{
-    error::Error,
-    value::{OwnedValue, Value, ValueError},
-};
+pub use self::error::Error;
+pub use self::value::{OwnedValue, Value, ValueError};
 /// A result alias that returns [`Error`].
 pub type Result<T> = std::result::Result<T, Error>;
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::de::DeserializeOwned;
+use serde::{Deserialize, Serialize};
 
 use crate::reader::IoReader;
 
@@ -175,16 +174,16 @@ impl Config {
 
 #[cfg(test)]
 mod tests {
-    use std::{borrow::Cow, marker::PhantomData};
+    use std::borrow::Cow;
+    use std::marker::PhantomData;
 
     use serde::{Deserializer, Serializer};
-    use serde_json::{value::Value as JsonValue, Number};
+    use serde_json::value::Value as JsonValue;
+    use serde_json::Number;
 
     use super::*;
-    use crate::{
-        format::{Float, Integer, CURRENT_VERSION},
-        value::Value,
-    };
+    use crate::format::{Float, Integer, CURRENT_VERSION};
+    use crate::value::Value;
 
     fn init_tracing() {
         drop(

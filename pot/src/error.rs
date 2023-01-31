@@ -1,4 +1,6 @@
-use std::{fmt::Display, str::Utf8Error, string::FromUtf8Error};
+use std::fmt::Display;
+use std::str::Utf8Error;
+use std::string::FromUtf8Error;
 
 use serde::{de, ser};
 

@@ -1,18 +1,14 @@
-use std::{
-    borrow::Cow,
-    fmt::{Display, Write},
-    marker::PhantomData,
-    ops::{Deref, DerefMut},
-};
+use std::borrow::Cow;
+use std::fmt::{Display, Write};
+use std::marker::PhantomData;
+use std::ops::{Deref, DerefMut};
 
-use serde::{
-    de::{EnumAccess, MapAccess, SeqAccess, VariantAccess, Visitor},
-    ser::{
-        SerializeMap, SerializeSeq, SerializeStruct, SerializeStructVariant, SerializeTuple,
-        SerializeTupleStruct, SerializeTupleVariant,
-    },
-    Deserialize, Serialize,
+use serde::de::{EnumAccess, MapAccess, SeqAccess, VariantAccess, Visitor};
+use serde::ser::{
+    SerializeMap, SerializeSeq, SerializeStruct, SerializeStructVariant, SerializeTuple,
+    SerializeTupleStruct, SerializeTupleVariant,
 };
+use serde::{Deserialize, Serialize};
 
 use crate::format::{Float, InnerFloat, InnerInteger, Integer};
 
@@ -96,16 +92,16 @@ impl<'a> Value<'a> {
     /// #[derive(Serialize, Debug)]
     /// enum Example {
     ///     Hello,
-    ///     World
+    ///     World,
     /// }
-    ///
     ///
     /// let original = vec![Example::Hello, Example::World];
     /// let serialized = Value::from_serialize(&original);
     /// assert_eq!(
     ///     serialized,
     ///     Value::Sequence(vec![
-    ///         Value::from(String::from("Hello")), Value::from(String::from("World"))
+    ///         Value::from(String::from("Hello")),
+    ///         Value::from(String::from("World"))
     ///     ])
     /// );
     /// ```
@@ -118,12 +114,12 @@ impl<'a> Value<'a> {
     ///
     /// ```rust
     /// use pot::Value;
-    /// use serde::{Serialize, Deserialize};
+    /// use serde::{Deserialize, Serialize};
     ///
     /// #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
     /// enum Example {
     ///     Hello,
-    ///     World
+    ///     World,
     /// }
     ///
     /// let original = vec![Example::Hello, Example::World];
@@ -939,16 +935,15 @@ fn value_as_integer_tests() {
 struct Serializer;
 
 impl serde::Serializer for Serializer {
-    type Ok = Value<'static>;
-
     type Error = Infallible;
+    type Ok = Value<'static>;
+    type SerializeMap = MappingsSerializer;
     type SerializeSeq = SequenceSerializer;
+    type SerializeStruct = MappingsSerializer;
+    type SerializeStructVariant = StructVariantSerializer;
     type SerializeTuple = SequenceSerializer;
     type SerializeTupleStruct = SequenceSerializer;
     type SerializeTupleVariant = TupleVariantSerializer;
-    type SerializeMap = MappingsSerializer;
-    type SerializeStruct = MappingsSerializer;
-    type SerializeStructVariant = StructVariantSerializer;
 
     fn serialize_bool(self, v: bool) -> Result<Self::Ok, Self::Error> {
         Ok(Value::Bool(v))
@@ -1131,8 +1126,8 @@ impl serde::Serializer for Serializer {
 struct SequenceSerializer(Vec<Value<'static>>);
 
 impl SerializeSeq for SequenceSerializer {
-    type Ok = Value<'static>;
     type Error = Infallible;
+    type Ok = Value<'static>;
 
     fn serialize_element<T>(&mut self, value: &T) -> Result<(), Self::Error>
     where
@@ -1148,8 +1143,8 @@ impl SerializeSeq for SequenceSerializer {
 }
 
 impl SerializeTuple for SequenceSerializer {
-    type Ok = Value<'static>;
     type Error = Infallible;
+    type Ok = Value<'static>;
 
     fn serialize_element<T>(&mut self, value: &T) -> Result<(), Self::Error>
     where
@@ -1165,8 +1160,8 @@ impl SerializeTuple for SequenceSerializer {
 }
 
 impl SerializeTupleStruct for SequenceSerializer {
-    type Ok = Value<'static>;
     type Error = Infallible;
+    type Ok = Value<'static>;
 
     fn serialize_field<T>(&mut self, value: &T) -> Result<(), Self::Error>
     where
@@ -1187,8 +1182,8 @@ struct TupleVariantSerializer {
 }
 
 impl SerializeTupleVariant for TupleVariantSerializer {
-    type Ok = Value<'static>;
     type Error = Infallible;
+    type Ok = Value<'static>;
 
     fn serialize_field<T>(&mut self, value: &T) -> Result<(), Self::Error>
     where
@@ -1209,8 +1204,8 @@ impl SerializeTupleVariant for TupleVariantSerializer {
 struct MappingsSerializer(Vec<(Value<'static>, Value<'static>)>);
 
 impl SerializeMap for MappingsSerializer {
-    type Ok = Value<'static>;
     type Error = Infallible;
+    type Ok = Value<'static>;
 
     fn serialize_key<T>(&mut self, key: &T) -> Result<(), Self::Error>
     where
@@ -1237,8 +1232,9 @@ impl SerializeMap for MappingsSerializer {
 }
 
 impl SerializeStruct for MappingsSerializer {
-    type Ok = Value<'static>;
     type Error = Infallible;
+    type Ok = Value<'static>;
+
     fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<(), Self::Error>
     where
         T: Serialize + ?Sized,
@@ -1261,8 +1257,8 @@ struct StructVariantSerializer {
 }
 
 impl SerializeStructVariant for StructVariantSerializer {
-    type Ok = Value<'static>;
     type Error = Infallible;
+    type Ok = Value<'static>;
 
     fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<(), Self::Error>
     where
@@ -1396,6 +1392,7 @@ impl<'de> serde::Deserializer<'de> for Deserializer<'de> {
             value: self.0.to_static(),
         })
     }
+
     fn deserialize_i128<V>(self, visitor: V) -> Result<V::Value, Self::Error>
     where
         V: Visitor<'de>,

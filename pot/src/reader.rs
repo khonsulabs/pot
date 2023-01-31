@@ -1,4 +1,6 @@
-use std::{borrow::Cow, fmt::Debug, io::Read};
+use std::borrow::Cow;
+use std::fmt::Debug;
+use std::io::Read;
 
 use byteorder::ReadBytesExt;
 
@@ -54,6 +56,7 @@ impl<'a> Read for SliceReader<'a> {
         self.data = remaining;
         Ok(to_copy.len())
     }
+
     fn read_exact(&mut self, buf: &mut [u8]) -> std::io::Result<()> {
         self.read(buf).map(|_| ())
     }
