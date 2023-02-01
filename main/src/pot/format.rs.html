@@ -1668,6 +1668,41 @@
 <a href="#1668" id="1668">1668</a>
 <a href="#1669" id="1669">1669</a>
 <a href="#1670" id="1670">1670</a>
+<a href="#1671" id="1671">1671</a>
+<a href="#1672" id="1672">1672</a>
+<a href="#1673" id="1673">1673</a>
+<a href="#1674" id="1674">1674</a>
+<a href="#1675" id="1675">1675</a>
+<a href="#1676" id="1676">1676</a>
+<a href="#1677" id="1677">1677</a>
+<a href="#1678" id="1678">1678</a>
+<a href="#1679" id="1679">1679</a>
+<a href="#1680" id="1680">1680</a>
+<a href="#1681" id="1681">1681</a>
+<a href="#1682" id="1682">1682</a>
+<a href="#1683" id="1683">1683</a>
+<a href="#1684" id="1684">1684</a>
+<a href="#1685" id="1685">1685</a>
+<a href="#1686" id="1686">1686</a>
+<a href="#1687" id="1687">1687</a>
+<a href="#1688" id="1688">1688</a>
+<a href="#1689" id="1689">1689</a>
+<a href="#1690" id="1690">1690</a>
+<a href="#1691" id="1691">1691</a>
+<a href="#1692" id="1692">1692</a>
+<a href="#1693" id="1693">1693</a>
+<a href="#1694" id="1694">1694</a>
+<a href="#1695" id="1695">1695</a>
+<a href="#1696" id="1696">1696</a>
+<a href="#1697" id="1697">1697</a>
+<a href="#1698" id="1698">1698</a>
+<a href="#1699" id="1699">1699</a>
+<a href="#1700" id="1700">1700</a>
+<a href="#1701" id="1701">1701</a>
+<a href="#1702" id="1702">1702</a>
+<a href="#1703" id="1703">1703</a>
+<a href="#1704" id="1704">1704</a>
+<a href="#1705" id="1705">1705</a>
 </pre><pre class="rust"><code><span class="kw">use </span>std::borrow::Cow;
 <span class="kw">use </span>std::fmt::Display;
 
@@ -1684,7 +1719,7 @@
 <span class="doccomment">/// Writes an atom header into `writer`.
 </span><span class="attr">#[allow(clippy::cast_possible_truncation)]
 </span><span class="kw">pub fn </span>write_atom_header&lt;W: WriteBytesExt&gt;(
-    writer: <span class="kw-2">&amp;mut </span>W,
+    <span class="kw-2">mut </span>writer: W,
     kind: Kind,
     arg: <span class="prelude-ty">Option</span>&lt;u64&gt;,
 ) -&gt; std::io::Result&lt;usize&gt; {
@@ -1834,7 +1869,7 @@
 <span class="doccomment">/// Writes the Pot header. A u32 written in big endian. The first three bytes
 /// are &#39;Pot&#39; (`0x506F74`), and the fourth byte is the version. The first
 /// version of Pot is 0.
-</span><span class="kw">pub fn </span>write_header&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, version: u8) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_header&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, version: u8) -&gt; std::io::Result&lt;usize&gt; {
     writer.write_u32::&lt;BigEndian&gt;(<span class="number">0x506F_7400 </span>| u32::from(version))<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(<span class="number">4</span>)
 }
@@ -1851,27 +1886,27 @@
     }
 }
 <span class="doccomment">/// Writes a [`Kind::Special`] atom.
-</span><span class="kw">pub fn </span>write_special&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, special: Special) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_special&lt;W: WriteBytesExt&gt;(writer: W, special: Special) -&gt; std::io::Result&lt;usize&gt; {
     write_atom_header(writer, Kind::Special, <span class="prelude-val">Some</span>(special <span class="kw">as </span>u64))
 }
 
 <span class="doccomment">/// Writes a [`Kind::Special`] atom with [`Special::None`].
-</span><span class="kw">pub fn </span>write_none&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_none&lt;W: WriteBytesExt&gt;(writer: W) -&gt; std::io::Result&lt;usize&gt; {
     write_special(writer, Special::None)
 }
 
 <span class="doccomment">/// Writes a [`Kind::Special`] atom with [`Special::Unit`].
-</span><span class="kw">pub fn </span>write_unit&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_unit&lt;W: WriteBytesExt&gt;(writer: W) -&gt; std::io::Result&lt;usize&gt; {
     write_special(writer, Special::Unit)
 }
 
 <span class="doccomment">/// Writes a [`Kind::Special`] atom with [`Special::Named`].
-</span><span class="kw">pub fn </span>write_named&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_named&lt;W: WriteBytesExt&gt;(writer: W) -&gt; std::io::Result&lt;usize&gt; {
     write_special(writer, Special::Named)
 }
 
 <span class="doccomment">/// Writes a [`Kind::Special`] atom with either [`Special::True`] or [`Special::False`].
-</span><span class="kw">pub fn </span>write_bool&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, boolean: bool) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_bool&lt;W: WriteBytesExt&gt;(writer: W, boolean: bool) -&gt; std::io::Result&lt;usize&gt; {
     write_special(
         writer,
         <span class="kw">if </span>boolean {
@@ -1883,9 +1918,9 @@
 }
 
 <span class="doccomment">/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-</span><span class="kw">pub fn </span>write_i8&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, value: i8) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_i8&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, value: i8) -&gt; std::io::Result&lt;usize&gt; {
     <span class="kw">let </span>header_len = write_atom_header(
-        writer,
+        <span class="kw-2">&amp;mut </span>writer,
         Kind::Int,
         <span class="prelude-val">Some</span>(std::mem::size_of::&lt;i8&gt;() <span class="kw">as </span>u64 - <span class="number">1</span>),
     )<span class="question-mark">?</span>;
@@ -1895,11 +1930,11 @@
 }
 
 <span class="doccomment">/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-</span><span class="kw">pub fn </span>write_i16&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, value: i16) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_i16&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, value: i16) -&gt; std::io::Result&lt;usize&gt; {
     <span class="kw">if let </span><span class="prelude-val">Ok</span>(value) = i8::try_from(value) {
         write_i8(writer, value)
     } <span class="kw">else </span>{
-        <span class="kw">let </span>header_len = write_atom_header(writer, Kind::Int, <span class="prelude-val">Some</span>(<span class="number">2 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
+        <span class="kw">let </span>header_len = write_atom_header(<span class="kw-2">&amp;mut </span>writer, Kind::Int, <span class="prelude-val">Some</span>(<span class="number">2 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
         writer
             .write_i16::&lt;LittleEndian&gt;(value)
             .map(|<span class="kw">_</span>| <span class="number">2 </span>+ header_len)
@@ -1907,11 +1942,11 @@
 }
 
 <span class="doccomment">/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-</span><span class="kw">pub fn </span>write_i24&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, value: i32) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_i24&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, value: i32) -&gt; std::io::Result&lt;usize&gt; {
     <span class="kw">if let </span><span class="prelude-val">Ok</span>(value) = i16::try_from(value) {
         write_i16(writer, value)
     } <span class="kw">else </span>{
-        <span class="kw">let </span>header_len = write_atom_header(writer, Kind::Int, <span class="prelude-val">Some</span>(<span class="number">3 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
+        <span class="kw">let </span>header_len = write_atom_header(<span class="kw-2">&amp;mut </span>writer, Kind::Int, <span class="prelude-val">Some</span>(<span class="number">3 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
         writer
             .write_i24::&lt;LittleEndian&gt;(value)
             .map(|<span class="kw">_</span>| <span class="number">3 </span>+ header_len)
@@ -1919,11 +1954,11 @@
 }
 
 <span class="doccomment">/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-</span><span class="kw">pub fn </span>write_i32&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, value: i32) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_i32&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, value: i32) -&gt; std::io::Result&lt;usize&gt; {
     <span class="kw">if </span>value &gt;= -(<span class="number">2_i32</span>.pow(<span class="number">23</span>)) &amp;&amp; value &lt; <span class="number">2_i32</span>.pow(<span class="number">23</span>) {
         write_i24(writer, value)
     } <span class="kw">else </span>{
-        <span class="kw">let </span>header_len = write_atom_header(writer, Kind::Int, <span class="prelude-val">Some</span>(<span class="number">4 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
+        <span class="kw">let </span>header_len = write_atom_header(<span class="kw-2">&amp;mut </span>writer, Kind::Int, <span class="prelude-val">Some</span>(<span class="number">4 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
         writer
             .write_i32::&lt;LittleEndian&gt;(value)
             .map(|<span class="kw">_</span>| <span class="number">4 </span>+ header_len)
@@ -1931,11 +1966,11 @@
 }
 
 <span class="doccomment">/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-</span><span class="kw">pub fn </span>write_i48&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, value: i64) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_i48&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, value: i64) -&gt; std::io::Result&lt;usize&gt; {
     <span class="kw">if let </span><span class="prelude-val">Ok</span>(value) = i32::try_from(value) {
         write_i32(writer, value)
     } <span class="kw">else </span>{
-        <span class="kw">let </span>header_len = write_atom_header(writer, Kind::Int, <span class="prelude-val">Some</span>(<span class="number">6 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
+        <span class="kw">let </span>header_len = write_atom_header(<span class="kw-2">&amp;mut </span>writer, Kind::Int, <span class="prelude-val">Some</span>(<span class="number">6 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
         writer
             .write_i48::&lt;LittleEndian&gt;(value)
             .map(|<span class="kw">_</span>| <span class="number">6 </span>+ header_len)
@@ -1943,11 +1978,11 @@
 }
 
 <span class="doccomment">/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-</span><span class="kw">pub fn </span>write_i64&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, value: i64) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_i64&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, value: i64) -&gt; std::io::Result&lt;usize&gt; {
     <span class="kw">if </span>value &gt;= -(<span class="number">2_i64</span>.pow(<span class="number">47</span>)) &amp;&amp; value &lt; <span class="number">2_i64</span>.pow(<span class="number">47</span>) {
         write_i48(writer, value)
     } <span class="kw">else </span>{
-        <span class="kw">let </span>header_len = write_atom_header(writer, Kind::Int, <span class="prelude-val">Some</span>(<span class="number">8 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
+        <span class="kw">let </span>header_len = write_atom_header(<span class="kw-2">&amp;mut </span>writer, Kind::Int, <span class="prelude-val">Some</span>(<span class="number">8 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
         writer
             .write_i64::&lt;LittleEndian&gt;(value)
             .map(|<span class="kw">_</span>| <span class="number">8 </span>+ header_len)
@@ -1955,11 +1990,11 @@
 }
 
 <span class="doccomment">/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-</span><span class="kw">pub fn </span>write_i128&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, value: i128) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_i128&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, value: i128) -&gt; std::io::Result&lt;usize&gt; {
     <span class="kw">if let </span><span class="prelude-val">Ok</span>(value) = i64::try_from(value) {
         write_i64(writer, value)
     } <span class="kw">else </span>{
-        <span class="kw">let </span>header_len = write_atom_header(writer, Kind::Int, <span class="prelude-val">Some</span>(<span class="number">16 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
+        <span class="kw">let </span>header_len = write_atom_header(<span class="kw-2">&amp;mut </span>writer, Kind::Int, <span class="prelude-val">Some</span>(<span class="number">16 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
         writer
             .write_i128::&lt;LittleEndian&gt;(value)
             .map(|<span class="kw">_</span>| <span class="number">16 </span>+ header_len)
@@ -1967,9 +2002,9 @@
 }
 
 <span class="doccomment">/// Writes an [`Kind::UInt`] atom with the given value.
-</span><span class="kw">pub fn </span>write_u8&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, value: u8) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_u8&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, value: u8) -&gt; std::io::Result&lt;usize&gt; {
     <span class="kw">let </span>header_len = write_atom_header(
-        writer,
+        <span class="kw-2">&amp;mut </span>writer,
         Kind::UInt,
         <span class="prelude-val">Some</span>(std::mem::size_of::&lt;u8&gt;() <span class="kw">as </span>u64 - <span class="number">1</span>),
     )<span class="question-mark">?</span>;
@@ -1979,12 +2014,12 @@
 }
 
 <span class="doccomment">/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-</span><span class="kw">pub fn </span>write_u16&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, value: u16) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_u16&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, value: u16) -&gt; std::io::Result&lt;usize&gt; {
     <span class="kw">if let </span><span class="prelude-val">Ok</span>(value) = u8::try_from(value) {
         write_u8(writer, value)
     } <span class="kw">else </span>{
         <span class="kw">let </span>header_len = write_atom_header(
-            writer,
+            <span class="kw-2">&amp;mut </span>writer,
             Kind::UInt,
             <span class="prelude-val">Some</span>(std::mem::size_of::&lt;u16&gt;() <span class="kw">as </span>u64 - <span class="number">1</span>),
         )<span class="question-mark">?</span>;
@@ -1995,11 +2030,11 @@
 }
 
 <span class="doccomment">/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-</span><span class="kw">pub fn </span>write_u24&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, value: u32) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_u24&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, value: u32) -&gt; std::io::Result&lt;usize&gt; {
     <span class="kw">if let </span><span class="prelude-val">Ok</span>(value) = u16::try_from(value) {
         write_u16(writer, value)
     } <span class="kw">else </span>{
-        <span class="kw">let </span>header_len = write_atom_header(writer, Kind::UInt, <span class="prelude-val">Some</span>(<span class="number">3 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
+        <span class="kw">let </span>header_len = write_atom_header(<span class="kw-2">&amp;mut </span>writer, Kind::UInt, <span class="prelude-val">Some</span>(<span class="number">3 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
         writer
             .write_u24::&lt;LittleEndian&gt;(value)
             .map(|<span class="kw">_</span>| <span class="number">3 </span>+ header_len)
@@ -2007,11 +2042,11 @@
 }
 
 <span class="doccomment">/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-</span><span class="kw">pub fn </span>write_u32&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, value: u32) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_u32&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, value: u32) -&gt; std::io::Result&lt;usize&gt; {
     <span class="kw">if </span>value &lt; <span class="number">2_u32</span>.pow(<span class="number">24</span>) {
         write_u24(writer, value)
     } <span class="kw">else </span>{
-        <span class="kw">let </span>header_len = write_atom_header(writer, Kind::UInt, <span class="prelude-val">Some</span>(<span class="number">4 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
+        <span class="kw">let </span>header_len = write_atom_header(<span class="kw-2">&amp;mut </span>writer, Kind::UInt, <span class="prelude-val">Some</span>(<span class="number">4 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
         writer
             .write_u32::&lt;LittleEndian&gt;(value)
             .map(|<span class="kw">_</span>| std::mem::size_of::&lt;u32&gt;() + header_len)
@@ -2019,11 +2054,11 @@
 }
 
 <span class="doccomment">/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-</span><span class="kw">pub fn </span>write_u48&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, value: u64) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_u48&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, value: u64) -&gt; std::io::Result&lt;usize&gt; {
     <span class="kw">if let </span><span class="prelude-val">Ok</span>(value) = u32::try_from(value) {
         write_u32(writer, value)
     } <span class="kw">else </span>{
-        <span class="kw">let </span>header_len = write_atom_header(writer, Kind::UInt, <span class="prelude-val">Some</span>(<span class="number">6 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
+        <span class="kw">let </span>header_len = write_atom_header(<span class="kw-2">&amp;mut </span>writer, Kind::UInt, <span class="prelude-val">Some</span>(<span class="number">6 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
         writer
             .write_u48::&lt;LittleEndian&gt;(value)
             .map(|<span class="kw">_</span>| <span class="number">6 </span>+ header_len)
@@ -2031,11 +2066,11 @@
 }
 
 <span class="doccomment">/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-</span><span class="kw">pub fn </span>write_u64&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, value: u64) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_u64&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, value: u64) -&gt; std::io::Result&lt;usize&gt; {
     <span class="kw">if </span>value &lt; <span class="number">2_u64</span>.pow(<span class="number">48</span>) {
         write_u48(writer, value)
     } <span class="kw">else </span>{
-        <span class="kw">let </span>header_len = write_atom_header(writer, Kind::UInt, <span class="prelude-val">Some</span>(<span class="number">8 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
+        <span class="kw">let </span>header_len = write_atom_header(<span class="kw-2">&amp;mut </span>writer, Kind::UInt, <span class="prelude-val">Some</span>(<span class="number">8 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
         writer
             .write_u64::&lt;LittleEndian&gt;(value)
             .map(|<span class="kw">_</span>| std::mem::size_of::&lt;u64&gt;() + header_len)
@@ -2043,11 +2078,11 @@
 }
 
 <span class="doccomment">/// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-</span><span class="kw">pub fn </span>write_u128&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, value: u128) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_u128&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, value: u128) -&gt; std::io::Result&lt;usize&gt; {
     <span class="kw">if let </span><span class="prelude-val">Ok</span>(value) = u64::try_from(value) {
         write_u64(writer, value)
     } <span class="kw">else </span>{
-        <span class="kw">let </span>header_len = write_atom_header(writer, Kind::UInt, <span class="prelude-val">Some</span>(<span class="number">16 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
+        <span class="kw">let </span>header_len = write_atom_header(<span class="kw-2">&amp;mut </span>writer, Kind::UInt, <span class="prelude-val">Some</span>(<span class="number">16 </span>- <span class="number">1</span>))<span class="question-mark">?</span>;
         writer
             .write_u128::&lt;LittleEndian&gt;(value)
             .map(|<span class="kw">_</span>| std::mem::size_of::&lt;u128&gt;() + header_len)
@@ -2056,11 +2091,11 @@
 
 <span class="doccomment">/// Writes an [`Kind::Float`] atom with the given value.
 </span><span class="attr">#[allow(clippy::cast_possible_truncation, clippy::float_cmp)]
-</span><span class="kw">pub fn </span>write_f32&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, value: f32) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_f32&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, value: f32) -&gt; std::io::Result&lt;usize&gt; {
     <span class="kw">let </span>as_f16 = f16::from_f32(value);
     <span class="kw">if </span>as_f16.to_f32() == value {
         <span class="kw">let </span>header_len = write_atom_header(
-            writer,
+            <span class="kw-2">&amp;mut </span>writer,
             Kind::Float,
             <span class="prelude-val">Some</span>(std::mem::size_of::&lt;u16&gt;() <span class="kw">as </span>u64 - <span class="number">1</span>),
         )<span class="question-mark">?</span>;
@@ -2069,7 +2104,7 @@
             .map(|<span class="kw">_</span>| std::mem::size_of::&lt;u16&gt;() + header_len)
     } <span class="kw">else </span>{
         <span class="kw">let </span>header_len = write_atom_header(
-            writer,
+            <span class="kw-2">&amp;mut </span>writer,
             Kind::Float,
             <span class="prelude-val">Some</span>(std::mem::size_of::&lt;f32&gt;() <span class="kw">as </span>u64 - <span class="number">1</span>),
         )<span class="question-mark">?</span>;
@@ -2086,13 +2121,13 @@
 
 <span class="doccomment">/// Writes an [`Kind::Float`] atom with the given value.
 </span><span class="attr">#[allow(clippy::cast_possible_truncation, clippy::float_cmp)]
-</span><span class="kw">pub fn </span>write_f64&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, value: f64) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_f64&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, value: f64) -&gt; std::io::Result&lt;usize&gt; {
     <span class="kw">let </span>as_f32 = value <span class="kw">as </span>f32;
     <span class="kw">if </span>f64::from(as_f32) == value {
         write_f32(writer, as_f32)
     } <span class="kw">else </span>{
         <span class="kw">let </span>header_len = write_atom_header(
-            writer,
+            <span class="kw-2">&amp;mut </span>writer,
             Kind::Float,
             <span class="prelude-val">Some</span>(std::mem::size_of::&lt;f64&gt;() <span class="kw">as </span>u64 - <span class="number">1</span>),
         )<span class="question-mark">?</span>;
@@ -2103,13 +2138,13 @@
 }
 
 <span class="doccomment">/// Writes an [`Kind::Bytes`] atom with the bytes of the string.
-</span><span class="kw">pub fn </span>write_str&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, value: <span class="kw-2">&amp;</span>str) -&gt; std::io::Result&lt;usize&gt; {
+</span><span class="kw">pub fn </span>write_str&lt;W: WriteBytesExt&gt;(writer: W, value: <span class="kw-2">&amp;</span>str) -&gt; std::io::Result&lt;usize&gt; {
     write_bytes(writer, value.as_bytes())
 }
 
 <span class="doccomment">/// Writes an [`Kind::Bytes`] atom with the given value.
-</span><span class="kw">pub fn </span>write_bytes&lt;W: WriteBytesExt&gt;(writer: <span class="kw-2">&amp;mut </span>W, value: <span class="kw-2">&amp;</span>[u8]) -&gt; std::io::Result&lt;usize&gt; {
-    <span class="kw">let </span>header_len = write_atom_header(writer, Kind::Bytes, <span class="prelude-val">Some</span>(value.len() <span class="kw">as </span>u64))<span class="question-mark">?</span>;
+</span><span class="kw">pub fn </span>write_bytes&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, value: <span class="kw-2">&amp;</span>[u8]) -&gt; std::io::Result&lt;usize&gt; {
+    <span class="kw">let </span>header_len = write_atom_header(<span class="kw-2">&amp;mut </span>writer, Kind::Bytes, <span class="prelude-val">Some</span>(value.len() <span class="kw">as </span>u64))<span class="question-mark">?</span>;
     writer.write_all(value)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(value.len() + header_len)
 }
@@ -2457,8 +2492,8 @@
         }
     }
 
-    <span class="attr">#[cfg(test)]
-    </span><span class="kw">fn </span>write_to&lt;W: WriteBytesExt&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, writer: <span class="kw-2">&amp;mut </span>W) -&gt; std::io::Result&lt;usize&gt; {
+    <span class="doccomment">/// Writes this value using the smallest form possible.
+    </span><span class="kw">pub fn </span>write_to&lt;W: WriteBytesExt&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, writer: W) -&gt; std::io::Result&lt;usize&gt; {
         <span class="kw">match </span><span class="self">self</span>.<span class="number">0 </span>{
             InnerInteger::I8(value) =&gt; write_i8(writer, value),
             InnerInteger::I16(value) =&gt; write_i16(writer, value),
@@ -2680,7 +2715,7 @@
 #[serde(transparent)]
 </span><span class="kw">pub struct </span>Float(<span class="kw">pub</span>(<span class="kw">crate</span>) InnerFloat);
 
-<span class="attr">#[derive(Debug, Serialize, Deserialize, Copy, Clone, PartialEq)]
+<span class="attr">#[derive(Debug, Serialize, Deserialize, Copy, Clone)]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum </span>InnerFloat {
     <span class="doccomment">/// An f64 value.
     </span>F64(f64),
@@ -2697,6 +2732,17 @@
 <span class="kw">impl </span>From&lt;f64&gt; <span class="kw">for </span>Float {
     <span class="kw">fn </span>from(value: f64) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>(InnerFloat::F64(value))
+    }
+}
+
+<span class="kw">impl </span>PartialEq <span class="kw">for </span>InnerFloat {
+    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        <span class="kw">match </span>(<span class="self">self</span>, other) {
+            (InnerFloat::F64(left), InnerFloat::F64(right)) =&gt; left == right,
+            (InnerFloat::F32(left), InnerFloat::F32(right)) =&gt; left == right,
+            (InnerFloat::F64(left), InnerFloat::F32(right)) =&gt; <span class="kw-2">*</span>left == f64::from(<span class="kw-2">*</span>right),
+            (InnerFloat::F32(left), InnerFloat::F64(right)) =&gt; f64::from(<span class="kw-2">*</span>left) == <span class="kw-2">*</span>right,
+        }
     }
 }
 
@@ -2766,6 +2812,14 @@
         }
     }
 
+    <span class="doccomment">/// Writes this value using the smallest form possible.
+    </span><span class="kw">pub fn </span>write_to&lt;W: WriteBytesExt&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, writer: W) -&gt; std::io::Result&lt;usize&gt; {
+        <span class="kw">match </span><span class="self">self</span>.<span class="number">0 </span>{
+            InnerFloat::F64(float) =&gt; write_f64(writer, float),
+            InnerFloat::F32(float) =&gt; write_f32(writer, float),
+        }
+    }
+
     <span class="doccomment">/// Reads a floating point number given the atom `kind` and `byte_len`.
     /// `byte_len` should be the exact argument from the atom header.
     </span><span class="kw">pub fn </span>read_from&lt;R: ReadBytesExt&gt;(
@@ -2825,6 +2879,20 @@
         }
     }
 
+    <span class="attr">#[allow(clippy::cast_possible_truncation)]
+    </span><span class="kw">fn </span>test_roundtrip_float(input: Float, expected: Float, expected_size: usize) {
+        <span class="kw">let </span><span class="kw-2">mut </span>out = Vec::new();
+        <span class="macro">assert_eq!</span>(input.write_to(<span class="kw-2">&amp;mut </span>out).unwrap(), expected_size);
+        {
+            <span class="kw">let </span><span class="kw-2">mut </span>reader = out.as_slice();
+            <span class="kw">let </span>(kind, bytes) = read_atom_header(<span class="kw-2">&amp;mut </span>reader).unwrap();
+            <span class="macro">assert_eq!</span>(
+                Float::read_from(kind, bytes <span class="kw">as </span>usize + <span class="number">1</span>, <span class="kw-2">&amp;mut </span>reader).unwrap(),
+                expected
+            );
+        }
+    }
+
     <span class="attr">#[test]
     </span><span class="kw">fn </span>header() {
         <span class="kw">let </span><span class="kw-2">mut </span>out = Vec::new();
@@ -2873,6 +2941,8 @@
     </span><span class="kw">fn </span>zero() {
         test_roundtrip_integer(Integer::from(<span class="number">0_u64</span>), Integer(InnerInteger::U8(<span class="number">0</span>)), <span class="number">2</span>);
         test_roundtrip_integer(Integer::from(<span class="number">0_i64</span>), Integer(InnerInteger::I8(<span class="number">0</span>)), <span class="number">2</span>);
+        test_roundtrip_float(Float::from(<span class="number">0_f32</span>), Float(InnerFloat::F32(<span class="number">0.</span>)), <span class="number">3</span>);
+        test_roundtrip_float(Float::from(<span class="number">0_f64</span>), Float(InnerFloat::F32(<span class="number">0.</span>)), <span class="number">3</span>);
     }
 
     <span class="attr">#[test]
