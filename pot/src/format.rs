@@ -14,7 +14,7 @@ use crate::Error;
 /// Writes an atom header into `writer`.
 #[allow(clippy::cast_possible_truncation)]
 pub fn write_atom_header<W: WriteBytesExt>(
-    writer: &mut W,
+    mut writer: W,
     kind: Kind,
     arg: Option<u64>,
 ) -> std::io::Result<usize> {
@@ -164,7 +164,7 @@ impl TryFrom<u64> for Special {
 /// Writes the Pot header. A u32 written in big endian. The first three bytes
 /// are 'Pot' (`0x506F74`), and the fourth byte is the version. The first
 /// version of Pot is 0.
-pub fn write_header<W: WriteBytesExt>(writer: &mut W, version: u8) -> std::io::Result<usize> {
+pub fn write_header<W: WriteBytesExt>(mut writer: W, version: u8) -> std::io::Result<usize> {
     writer.write_u32::<BigEndian>(0x506F_7400 | u32::from(version))?;
     Ok(4)
 }
@@ -181,27 +181,27 @@ pub fn read_header<R: ReadBytesExt>(reader: &mut R) -> Result<u8, Error> {
     }
 }
 /// Writes a [`Kind::Special`] atom.
-pub fn write_special<W: WriteBytesExt>(writer: &mut W, special: Special) -> std::io::Result<usize> {
+pub fn write_special<W: WriteBytesExt>(writer: W, special: Special) -> std::io::Result<usize> {
     write_atom_header(writer, Kind::Special, Some(special as u64))
 }
 
 /// Writes a [`Kind::Special`] atom with [`Special::None`].
-pub fn write_none<W: WriteBytesExt>(writer: &mut W) -> std::io::Result<usize> {
+pub fn write_none<W: WriteBytesExt>(writer: W) -> std::io::Result<usize> {
     write_special(writer, Special::None)
 }
 
 /// Writes a [`Kind::Special`] atom with [`Special::Unit`].
-pub fn write_unit<W: WriteBytesExt>(writer: &mut W) -> std::io::Result<usize> {
+pub fn write_unit<W: WriteBytesExt>(writer: W) -> std::io::Result<usize> {
     write_special(writer, Special::Unit)
 }
 
 /// Writes a [`Kind::Special`] atom with [`Special::Named`].
-pub fn write_named<W: WriteBytesExt>(writer: &mut W) -> std::io::Result<usize> {
+pub fn write_named<W: WriteBytesExt>(writer: W) -> std::io::Result<usize> {
     write_special(writer, Special::Named)
 }
 
 /// Writes a [`Kind::Special`] atom with either [`Special::True`] or [`Special::False`].
-pub fn write_bool<W: WriteBytesExt>(writer: &mut W, boolean: bool) -> std::io::Result<usize> {
+pub fn write_bool<W: WriteBytesExt>(writer: W, boolean: bool) -> std::io::Result<usize> {
     write_special(
         writer,
         if boolean {
@@ -213,9 +213,9 @@ pub fn write_bool<W: WriteBytesExt>(writer: &mut W, boolean: bool) -> std::io::R
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-pub fn write_i8<W: WriteBytesExt>(writer: &mut W, value: i8) -> std::io::Result<usize> {
+pub fn write_i8<W: WriteBytesExt>(mut writer: W, value: i8) -> std::io::Result<usize> {
     let header_len = write_atom_header(
-        writer,
+        &mut writer,
         Kind::Int,
         Some(std::mem::size_of::<i8>() as u64 - 1),
     )?;
@@ -225,11 +225,11 @@ pub fn write_i8<W: WriteBytesExt>(writer: &mut W, value: i8) -> std::io::Result<
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-pub fn write_i16<W: WriteBytesExt>(writer: &mut W, value: i16) -> std::io::Result<usize> {
+pub fn write_i16<W: WriteBytesExt>(mut writer: W, value: i16) -> std::io::Result<usize> {
     if let Ok(value) = i8::try_from(value) {
         write_i8(writer, value)
     } else {
-        let header_len = write_atom_header(writer, Kind::Int, Some(2 - 1))?;
+        let header_len = write_atom_header(&mut writer, Kind::Int, Some(2 - 1))?;
         writer
             .write_i16::<LittleEndian>(value)
             .map(|_| 2 + header_len)
@@ -237,11 +237,11 @@ pub fn write_i16<W: WriteBytesExt>(writer: &mut W, value: i16) -> std::io::Resul
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-pub fn write_i24<W: WriteBytesExt>(writer: &mut W, value: i32) -> std::io::Result<usize> {
+pub fn write_i24<W: WriteBytesExt>(mut writer: W, value: i32) -> std::io::Result<usize> {
     if let Ok(value) = i16::try_from(value) {
         write_i16(writer, value)
     } else {
-        let header_len = write_atom_header(writer, Kind::Int, Some(3 - 1))?;
+        let header_len = write_atom_header(&mut writer, Kind::Int, Some(3 - 1))?;
         writer
             .write_i24::<LittleEndian>(value)
             .map(|_| 3 + header_len)
@@ -249,11 +249,11 @@ pub fn write_i24<W: WriteBytesExt>(writer: &mut W, value: i32) -> std::io::Resul
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-pub fn write_i32<W: WriteBytesExt>(writer: &mut W, value: i32) -> std::io::Result<usize> {
+pub fn write_i32<W: WriteBytesExt>(mut writer: W, value: i32) -> std::io::Result<usize> {
     if value >= -(2_i32.pow(23)) && value < 2_i32.pow(23) {
         write_i24(writer, value)
     } else {
-        let header_len = write_atom_header(writer, Kind::Int, Some(4 - 1))?;
+        let header_len = write_atom_header(&mut writer, Kind::Int, Some(4 - 1))?;
         writer
             .write_i32::<LittleEndian>(value)
             .map(|_| 4 + header_len)
@@ -261,11 +261,11 @@ pub fn write_i32<W: WriteBytesExt>(writer: &mut W, value: i32) -> std::io::Resul
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-pub fn write_i48<W: WriteBytesExt>(writer: &mut W, value: i64) -> std::io::Result<usize> {
+pub fn write_i48<W: WriteBytesExt>(mut writer: W, value: i64) -> std::io::Result<usize> {
     if let Ok(value) = i32::try_from(value) {
         write_i32(writer, value)
     } else {
-        let header_len = write_atom_header(writer, Kind::Int, Some(6 - 1))?;
+        let header_len = write_atom_header(&mut writer, Kind::Int, Some(6 - 1))?;
         writer
             .write_i48::<LittleEndian>(value)
             .map(|_| 6 + header_len)
@@ -273,11 +273,11 @@ pub fn write_i48<W: WriteBytesExt>(writer: &mut W, value: i64) -> std::io::Resul
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-pub fn write_i64<W: WriteBytesExt>(writer: &mut W, value: i64) -> std::io::Result<usize> {
+pub fn write_i64<W: WriteBytesExt>(mut writer: W, value: i64) -> std::io::Result<usize> {
     if value >= -(2_i64.pow(47)) && value < 2_i64.pow(47) {
         write_i48(writer, value)
     } else {
-        let header_len = write_atom_header(writer, Kind::Int, Some(8 - 1))?;
+        let header_len = write_atom_header(&mut writer, Kind::Int, Some(8 - 1))?;
         writer
             .write_i64::<LittleEndian>(value)
             .map(|_| 8 + header_len)
@@ -285,11 +285,11 @@ pub fn write_i64<W: WriteBytesExt>(writer: &mut W, value: i64) -> std::io::Resul
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-pub fn write_i128<W: WriteBytesExt>(writer: &mut W, value: i128) -> std::io::Result<usize> {
+pub fn write_i128<W: WriteBytesExt>(mut writer: W, value: i128) -> std::io::Result<usize> {
     if let Ok(value) = i64::try_from(value) {
         write_i64(writer, value)
     } else {
-        let header_len = write_atom_header(writer, Kind::Int, Some(16 - 1))?;
+        let header_len = write_atom_header(&mut writer, Kind::Int, Some(16 - 1))?;
         writer
             .write_i128::<LittleEndian>(value)
             .map(|_| 16 + header_len)
@@ -297,9 +297,9 @@ pub fn write_i128<W: WriteBytesExt>(writer: &mut W, value: i128) -> std::io::Res
 }
 
 /// Writes an [`Kind::UInt`] atom with the given value.
-pub fn write_u8<W: WriteBytesExt>(writer: &mut W, value: u8) -> std::io::Result<usize> {
+pub fn write_u8<W: WriteBytesExt>(mut writer: W, value: u8) -> std::io::Result<usize> {
     let header_len = write_atom_header(
-        writer,
+        &mut writer,
         Kind::UInt,
         Some(std::mem::size_of::<u8>() as u64 - 1),
     )?;
@@ -309,12 +309,12 @@ pub fn write_u8<W: WriteBytesExt>(writer: &mut W, value: u8) -> std::io::Result<
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-pub fn write_u16<W: WriteBytesExt>(writer: &mut W, value: u16) -> std::io::Result<usize> {
+pub fn write_u16<W: WriteBytesExt>(mut writer: W, value: u16) -> std::io::Result<usize> {
     if let Ok(value) = u8::try_from(value) {
         write_u8(writer, value)
     } else {
         let header_len = write_atom_header(
-            writer,
+            &mut writer,
             Kind::UInt,
             Some(std::mem::size_of::<u16>() as u64 - 1),
         )?;
@@ -325,11 +325,11 @@ pub fn write_u16<W: WriteBytesExt>(writer: &mut W, value: u16) -> std::io::Resul
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-pub fn write_u24<W: WriteBytesExt>(writer: &mut W, value: u32) -> std::io::Result<usize> {
+pub fn write_u24<W: WriteBytesExt>(mut writer: W, value: u32) -> std::io::Result<usize> {
     if let Ok(value) = u16::try_from(value) {
         write_u16(writer, value)
     } else {
-        let header_len = write_atom_header(writer, Kind::UInt, Some(3 - 1))?;
+        let header_len = write_atom_header(&mut writer, Kind::UInt, Some(3 - 1))?;
         writer
             .write_u24::<LittleEndian>(value)
             .map(|_| 3 + header_len)
@@ -337,11 +337,11 @@ pub fn write_u24<W: WriteBytesExt>(writer: &mut W, value: u32) -> std::io::Resul
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-pub fn write_u32<W: WriteBytesExt>(writer: &mut W, value: u32) -> std::io::Result<usize> {
+pub fn write_u32<W: WriteBytesExt>(mut writer: W, value: u32) -> std::io::Result<usize> {
     if value < 2_u32.pow(24) {
         write_u24(writer, value)
     } else {
-        let header_len = write_atom_header(writer, Kind::UInt, Some(4 - 1))?;
+        let header_len = write_atom_header(&mut writer, Kind::UInt, Some(4 - 1))?;
         writer
             .write_u32::<LittleEndian>(value)
             .map(|_| std::mem::size_of::<u32>() + header_len)
@@ -349,11 +349,11 @@ pub fn write_u32<W: WriteBytesExt>(writer: &mut W, value: u32) -> std::io::Resul
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-pub fn write_u48<W: WriteBytesExt>(writer: &mut W, value: u64) -> std::io::Result<usize> {
+pub fn write_u48<W: WriteBytesExt>(mut writer: W, value: u64) -> std::io::Result<usize> {
     if let Ok(value) = u32::try_from(value) {
         write_u32(writer, value)
     } else {
-        let header_len = write_atom_header(writer, Kind::UInt, Some(6 - 1))?;
+        let header_len = write_atom_header(&mut writer, Kind::UInt, Some(6 - 1))?;
         writer
             .write_u48::<LittleEndian>(value)
             .map(|_| 6 + header_len)
@@ -361,11 +361,11 @@ pub fn write_u48<W: WriteBytesExt>(writer: &mut W, value: u64) -> std::io::Resul
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-pub fn write_u64<W: WriteBytesExt>(writer: &mut W, value: u64) -> std::io::Result<usize> {
+pub fn write_u64<W: WriteBytesExt>(mut writer: W, value: u64) -> std::io::Result<usize> {
     if value < 2_u64.pow(48) {
         write_u48(writer, value)
     } else {
-        let header_len = write_atom_header(writer, Kind::UInt, Some(8 - 1))?;
+        let header_len = write_atom_header(&mut writer, Kind::UInt, Some(8 - 1))?;
         writer
             .write_u64::<LittleEndian>(value)
             .map(|_| std::mem::size_of::<u64>() + header_len)
@@ -373,11 +373,11 @@ pub fn write_u64<W: WriteBytesExt>(writer: &mut W, value: u64) -> std::io::Resul
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
-pub fn write_u128<W: WriteBytesExt>(writer: &mut W, value: u128) -> std::io::Result<usize> {
+pub fn write_u128<W: WriteBytesExt>(mut writer: W, value: u128) -> std::io::Result<usize> {
     if let Ok(value) = u64::try_from(value) {
         write_u64(writer, value)
     } else {
-        let header_len = write_atom_header(writer, Kind::UInt, Some(16 - 1))?;
+        let header_len = write_atom_header(&mut writer, Kind::UInt, Some(16 - 1))?;
         writer
             .write_u128::<LittleEndian>(value)
             .map(|_| std::mem::size_of::<u128>() + header_len)
@@ -386,11 +386,11 @@ pub fn write_u128<W: WriteBytesExt>(writer: &mut W, value: u128) -> std::io::Res
 
 /// Writes an [`Kind::Float`] atom with the given value.
 #[allow(clippy::cast_possible_truncation, clippy::float_cmp)]
-pub fn write_f32<W: WriteBytesExt>(writer: &mut W, value: f32) -> std::io::Result<usize> {
+pub fn write_f32<W: WriteBytesExt>(mut writer: W, value: f32) -> std::io::Result<usize> {
     let as_f16 = f16::from_f32(value);
     if as_f16.to_f32() == value {
         let header_len = write_atom_header(
-            writer,
+            &mut writer,
             Kind::Float,
             Some(std::mem::size_of::<u16>() as u64 - 1),
         )?;
@@ -399,7 +399,7 @@ pub fn write_f32<W: WriteBytesExt>(writer: &mut W, value: f32) -> std::io::Resul
             .map(|_| std::mem::size_of::<u16>() + header_len)
     } else {
         let header_len = write_atom_header(
-            writer,
+            &mut writer,
             Kind::Float,
             Some(std::mem::size_of::<f32>() as u64 - 1),
         )?;
@@ -416,13 +416,13 @@ fn read_f16<R: ReadBytesExt>(reader: &mut R) -> std::io::Result<f32> {
 
 /// Writes an [`Kind::Float`] atom with the given value.
 #[allow(clippy::cast_possible_truncation, clippy::float_cmp)]
-pub fn write_f64<W: WriteBytesExt>(writer: &mut W, value: f64) -> std::io::Result<usize> {
+pub fn write_f64<W: WriteBytesExt>(mut writer: W, value: f64) -> std::io::Result<usize> {
     let as_f32 = value as f32;
     if f64::from(as_f32) == value {
         write_f32(writer, as_f32)
     } else {
         let header_len = write_atom_header(
-            writer,
+            &mut writer,
             Kind::Float,
             Some(std::mem::size_of::<f64>() as u64 - 1),
         )?;
@@ -433,13 +433,13 @@ pub fn write_f64<W: WriteBytesExt>(writer: &mut W, value: f64) -> std::io::Resul
 }
 
 /// Writes an [`Kind::Bytes`] atom with the bytes of the string.
-pub fn write_str<W: WriteBytesExt>(writer: &mut W, value: &str) -> std::io::Result<usize> {
+pub fn write_str<W: WriteBytesExt>(writer: W, value: &str) -> std::io::Result<usize> {
     write_bytes(writer, value.as_bytes())
 }
 
 /// Writes an [`Kind::Bytes`] atom with the given value.
-pub fn write_bytes<W: WriteBytesExt>(writer: &mut W, value: &[u8]) -> std::io::Result<usize> {
-    let header_len = write_atom_header(writer, Kind::Bytes, Some(value.len() as u64))?;
+pub fn write_bytes<W: WriteBytesExt>(mut writer: W, value: &[u8]) -> std::io::Result<usize> {
+    let header_len = write_atom_header(&mut writer, Kind::Bytes, Some(value.len() as u64))?;
     writer.write_all(value)?;
     Ok(value.len() + header_len)
 }
@@ -787,8 +787,8 @@ impl Integer {
         }
     }
 
-    #[cfg(test)]
-    fn write_to<W: WriteBytesExt>(&self, writer: &mut W) -> std::io::Result<usize> {
+    /// Writes this value using the smallest form possible.
+    pub fn write_to<W: WriteBytesExt>(&self, writer: W) -> std::io::Result<usize> {
         match self.0 {
             InnerInteger::I8(value) => write_i8(writer, value),
             InnerInteger::I16(value) => write_i16(writer, value),
@@ -1010,7 +1010,7 @@ pub struct Atom<'de> {
 #[serde(transparent)]
 pub struct Float(pub(crate) InnerFloat);
 
-#[derive(Debug, Serialize, Deserialize, Copy, Clone, PartialEq)]
+#[derive(Debug, Serialize, Deserialize, Copy, Clone)]
 pub(crate) enum InnerFloat {
     /// An f64 value.
     F64(f64),
@@ -1027,6 +1027,17 @@ impl From<f32> for Float {
 impl From<f64> for Float {
     fn from(value: f64) -> Self {
         Self(InnerFloat::F64(value))
+    }
+}
+
+impl PartialEq for InnerFloat {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (InnerFloat::F64(left), InnerFloat::F64(right)) => left == right,
+            (InnerFloat::F32(left), InnerFloat::F32(right)) => left == right,
+            (InnerFloat::F64(left), InnerFloat::F32(right)) => *left == f64::from(*right),
+            (InnerFloat::F32(left), InnerFloat::F64(right)) => f64::from(*left) == *right,
+        }
     }
 }
 
@@ -1096,6 +1107,14 @@ impl Float {
         }
     }
 
+    /// Writes this value using the smallest form possible.
+    pub fn write_to<W: WriteBytesExt>(&self, writer: W) -> std::io::Result<usize> {
+        match self.0 {
+            InnerFloat::F64(float) => write_f64(writer, float),
+            InnerFloat::F32(float) => write_f32(writer, float),
+        }
+    }
+
     /// Reads a floating point number given the atom `kind` and `byte_len`.
     /// `byte_len` should be the exact argument from the atom header.
     pub fn read_from<R: ReadBytesExt>(
@@ -1155,6 +1174,20 @@ mod tests {
         }
     }
 
+    #[allow(clippy::cast_possible_truncation)]
+    fn test_roundtrip_float(input: Float, expected: Float, expected_size: usize) {
+        let mut out = Vec::new();
+        assert_eq!(input.write_to(&mut out).unwrap(), expected_size);
+        {
+            let mut reader = out.as_slice();
+            let (kind, bytes) = read_atom_header(&mut reader).unwrap();
+            assert_eq!(
+                Float::read_from(kind, bytes as usize + 1, &mut reader).unwrap(),
+                expected
+            );
+        }
+    }
+
     #[test]
     fn header() {
         let mut out = Vec::new();
@@ -1203,6 +1236,8 @@ mod tests {
     fn zero() {
         test_roundtrip_integer(Integer::from(0_u64), Integer(InnerInteger::U8(0)), 2);
         test_roundtrip_integer(Integer::from(0_i64), Integer(InnerInteger::I8(0)), 2);
+        test_roundtrip_float(Float::from(0_f32), Float(InnerFloat::F32(0.)), 3);
+        test_roundtrip_float(Float::from(0_f64), Float(InnerFloat::F32(0.)), 3);
     }
 
     #[test]

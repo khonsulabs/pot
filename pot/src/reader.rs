@@ -18,6 +18,20 @@ pub struct SliceReader<'a> {
     pub(crate) data: &'a [u8],
 }
 
+impl<'a> SliceReader<'a> {
+    /// Returns the remaining bytes to read.
+    #[must_use]
+    pub const fn len(&self) -> usize {
+        self.data.len()
+    }
+
+    /// Returns true if there are no bytes remaining to read.
+    #[must_use]
+    pub const fn is_empty(&self) -> bool {
+        self.data.is_empty()
+    }
+}
+
 impl<'a> Debug for SliceReader<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("SliceReader")
@@ -32,6 +46,12 @@ impl<'a> Debug for SliceReader<'a> {
 impl<'a> From<&'a [u8]> for SliceReader<'a> {
     fn from(data: &'a [u8]) -> Self {
         Self { data }
+    }
+}
+
+impl<'a> From<SliceReader<'a>> for &'a [u8] {
+    fn from(reader: SliceReader<'a>) -> Self {
+        reader.data
     }
 }
 
@@ -101,4 +121,16 @@ impl<R: ReadBytesExt> Read for IoReader<R> {
     fn read_exact(&mut self, buf: &mut [u8]) -> std::io::Result<()> {
         self.reader.read_exact(buf)
     }
+}
+
+#[test]
+fn slice_reader_pub_methods() {
+    let mut reader = SliceReader::from(&b"a"[..]);
+    assert_eq!(reader.len(), 1);
+    assert!(!reader.is_empty());
+    reader.read_exact(&mut [0]).unwrap();
+
+    assert_eq!(reader.len(), 0);
+    assert!(reader.is_empty());
+    assert_eq!(<&[u8]>::from(reader), b"");
 }

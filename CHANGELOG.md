@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Breaking Changes
+
+- The `format` module has been refactored to pass `Write` by value rather than
+  by mutable reference. Most code should not be affected because `Write` is
+  implemented for `&mut Write`.
+
 ### Changed
 
 - The unit type `()` and `Option::None` are more fuzzy when deserializing. If
