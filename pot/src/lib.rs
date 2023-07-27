@@ -587,8 +587,11 @@ mod tests {
     /// In `BonsaiDb`, sometimes it's nice to use a `()` as an associated type
     /// as a default. To allow changing data that was previously serialized as a
     /// `()` but now has a new type, Pot allows converting between unit types
-    /// and defaults of all major serialized types. The net effect is that if
-    /// you replace
+    /// and defaults of all major serialized types. The net effect is if you
+    /// start with a derived `BonsaiDb` view with no `value =` argument, `()` is
+    /// used instead. With this flexibility, changing the value type to another
+    /// type will sometimes be able to work without requiring rebuilding the
+    /// views on deployment.
     #[test]
     #[allow(clippy::cognitive_complexity)]
     fn unit_adaptations() {
