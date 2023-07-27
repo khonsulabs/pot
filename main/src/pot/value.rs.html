@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `pot/src/value.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>value.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-1f7d512b176f0f72.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-124a1ca42af929b6.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-6827029ac823cab7.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-ebce58d0a40c3431.css"><link rel="stylesheet" disabled href="../../static.files/dark-f23faae4a2daf9a6.css"><link rel="stylesheet" disabled href="../../static.files/ayu-8af5e100b21cd173.css"><script id="default-settings" ></script><script src="../../static.files/storage-d43fa987303ecbbb.js"></script><script defer src="../../static.files/source-script-5cf2e01a42cc9858.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-c55e1eb52e1886b4.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../pot/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-5ec35bf9ca753509.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `pot/src/value.rs`."><title>value.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pot" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0 (8ede3aae2 2023-07-12)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../pot/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1936,7 +1936,9 @@
 <a href="#1936" id="1936">1936</a>
 <a href="#1937" id="1937">1937</a>
 <a href="#1938" id="1938">1938</a>
-</pre><pre class="rust"><code><span class="kw">use </span>std::borrow::Cow;
+<a href="#1939" id="1939">1939</a>
+<a href="#1940" id="1940">1940</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::borrow::Cow;
 <span class="kw">use </span>std::fmt::{Display, Write};
 <span class="kw">use </span>std::marker::PhantomData;
 <span class="kw">use </span>std::ops::{Deref, DerefMut};
@@ -1950,13 +1952,13 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::format::{Float, InnerFloat, InnerInteger, Integer};
 
-<span class="doccomment">/// A Pot encoded value. This type can be used to deserialize to and from Pot
+<span class="doccomment">/// A Pot-encoded value. This type can be used to deserialize to and from Pot
 /// without knowing the original data structure.
 </span><span class="attr">#[derive(Debug, Clone, PartialEq)]
 </span><span class="kw">pub enum </span>Value&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="doccomment">/// A value representing None.
+    <span class="doccomment">/// A value representing `None`.
     </span><span class="prelude-val">None</span>,
-    <span class="doccomment">/// A value representing a Unit (`()`).
+    <span class="doccomment">/// A value representing unit (`()`).
     </span>Unit,
     <span class="doccomment">/// A boolean value
     </span>Bool(bool),
@@ -2021,7 +2023,7 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Value&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="doccomment">/// Creates a `Value` from the given serde-compatible type.
+    <span class="doccomment">/// Creates a `Value` from the given Serde-compatible type.
     ///
     /// ```rust
     /// use pot::Value;
@@ -2044,7 +2046,9 @@
     /// );
     /// ```
     </span><span class="kw">pub fn </span>from_serialize&lt;T: Serialize&gt;(value: T) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="prelude-val">Ok</span>(value) = value.serialize(Serializer) <span class="kw">else </span>{ <span class="macro">unreachable!</span>() };
+        <span class="kw">let </span><span class="prelude-val">Ok</span>(value) = value.serialize(Serializer) <span class="kw">else </span>{
+            <span class="macro">unreachable!</span>()
+        };
         value
     }
 
@@ -2069,7 +2073,7 @@
         T::deserialize(Deserializer(<span class="self">self</span>))
     }
 
-    <span class="doccomment">/// Returns a new value from an interator of items that can be converted into a value.
+    <span class="doccomment">/// Returns a new value from an iterator of items that can be converted into a value.
     ///
     /// ```rust
     /// # use pot::Value;
@@ -2082,7 +2086,7 @@
         <span class="self">Self</span>::Sequence(sequence.into_iter().map(T::into).collect())
     }
 
-    <span class="doccomment">/// Returns a new value from an interator of 2-element tuples representing key-value pairs.
+    <span class="doccomment">/// Returns a new value from an iterator of 2-element tuples representing key-value pairs.
     ///
     /// ```rust
     /// # use pot::Value;
@@ -2101,7 +2105,7 @@
         )
     }
 
-    <span class="doccomment">/// Returns true if the value contained is considered empty.
+    <span class="doccomment">/// Returns `true` if the value contained is considered empty.
     ///
     /// ```rust
     /// # use pot::Value;
@@ -2143,7 +2147,7 @@
         }
     }
 
-    <span class="doccomment">/// Returns the value represented as a value.
+    <span class="doccomment">/// Returns the value as a `bool`.
     ///
     /// ```rust
     /// # use pot::Value;
@@ -2195,8 +2199,8 @@
         }
     }
 
-    <span class="doccomment">/// Returns the value as an [`Integer`]. Returns None if the value is not a
-    /// [`Self::Float`] or [`Self::Integer`]. Also returns None if the value is
+    <span class="doccomment">/// Returns the value as an [`Integer`]. Returns `None` if the value is not a
+    /// [`Self::Float`] or [`Self::Integer`]. Also returns `None` if the value is
     /// a float, but cannot be losslessly converted to an integer.
     </span><span class="attr">#[must_use]
     </span><span class="kw">pub fn </span>as_integer(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Integer&gt; {
@@ -2207,8 +2211,8 @@
         }
     }
 
-    <span class="doccomment">/// Returns the value as an [`Float`]. Returns None if the value is not a
-    /// [`Self::Float`] or [`Self::Integer`]. Also returns None if the value is
+    <span class="doccomment">/// Returns the value as an [`Float`]. Returns `None` if the value is not a
+    /// [`Self::Float`] or [`Self::Integer`]. Also returns `None` if the value is
     /// an integer, but cannot be losslessly converted to a float.
     </span><span class="attr">#[must_use]
     </span><span class="kw">pub fn </span>as_float(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Float&gt; {
@@ -2219,10 +2223,10 @@
         }
     }
 
-    <span class="doccomment">/// Returns the value as a string, or None if the value is not representable
+    <span class="doccomment">/// Returns the value as a string, or `None` if the value is not representable
     /// by a string. This will only return a value with variants
     /// [`Self::String`] and [`Self::Bytes`]. Bytes will only be returned if the
-    /// contained bytes can be safely interpretted as utf-8.
+    /// contained bytes can be safely interpretted as UTF-8.
     </span><span class="attr">#[must_use]
     </span><span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt; {
         <span class="kw">match </span><span class="self">self </span>{
@@ -2232,7 +2236,7 @@
         }
     }
 
-    <span class="doccomment">/// Returns the value&#39;s bytes, or None if the value is not stored as a
+    <span class="doccomment">/// Returns the value as bytes, or `None` if the value is not stored as a
     /// representation of bytes. This will only return a value with variants
     /// [`Self::String`] and [`Self::Bytes`].
     </span><span class="attr">#[must_use]
@@ -2244,7 +2248,7 @@
         }
     }
 
-    <span class="doccomment">/// Returns an interator that iterates over all values contained inside of
+    <span class="doccomment">/// Returns an iterator that iterates over all values contained inside of
     /// this value. Returns an empty iterator if not a [`Self::Sequence`] or
     /// [`Self::Mappings`]. If a [`Self::Mappings`], only the value portion of
     /// the mapping is returned.
@@ -2258,7 +2262,7 @@
         }
     }
 
-    <span class="doccomment">/// Returns an interator that iterates over all mappings contained inside of
+    <span class="doccomment">/// Returns an iterator that iterates over all mappings contained inside of
     /// this value. Returns an empty iterator if not a [`Self::Sequence`] or
     /// [`Self::Mappings`]. If a [`Self::Sequence`], the key will always be
     /// `Self::None`.
@@ -2269,7 +2273,7 @@
         }
     }
 
-    <span class="doccomment">/// Converts `self` to a static lifetime by cloning any borrowed data.
+    <span class="doccomment">/// Converts `self` to a `&#39;static` lifetime by cloning any borrowed data.
     </span><span class="kw">pub fn </span>into_static(<span class="self">self</span>) -&gt; Value&lt;<span class="lifetime">&#39;static</span>&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::None =&gt; Value::None,
@@ -2293,7 +2297,7 @@
         }
     }
 
-    <span class="doccomment">/// Converts `self` to a static lifetime by cloning all data.
+    <span class="doccomment">/// Converts `self` to a `&#39;static` lifetime by cloning all data.
     </span><span class="kw">pub fn </span>to_static(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Value&lt;<span class="lifetime">&#39;static</span>&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::None =&gt; Value::None,
@@ -2370,8 +2374,8 @@
     }
 }
 
-<span class="doccomment">/// A [`Value&lt;&#39;static&gt;`] wrapper that supports
-/// [`DeserializeOwned`](serde::DeserializeOwned).
+<span class="doccomment">/// A &lt;code&gt;[Value]&amp;lt;&amp;apos;static&amp;gt;&lt;/code&gt; wrapper that supports
+/// [`DeserializeOwned`](serde::de::DeserializeOwned).
 ///
 /// Because `Value&lt;&#39;a&gt;` can borrow strings and bytes during deserialization,
 /// `Value&lt;&#39;static&gt;` can&#39;t be used when `DeserializeOwned` is needed.
@@ -3861,7 +3865,7 @@
         <span class="doccomment">/// The value that was encountered.
         </span>value: Value&lt;<span class="lifetime">&#39;static</span>&gt;,
     },
-    <span class="doccomment">/// A custom deserialization error. These errors originate outside of `pot`,
+    <span class="doccomment">/// A custom deserialization error. These errors originate outside of Pot.
     </span><span class="attr">#[error(<span class="string">&quot;{0}&quot;</span>)]
     </span>Custom(String),
 }
@@ -3874,5 +3878,4 @@
         <span class="self">Self</span>::Custom(msg.to_string())
     }
 }
-</code></pre></div>
-</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pot" data-themes="" data-resource-suffix="" data-rustdoc-version="1.67.1 (d5a82bbd2 2023-02-07)" data-search-js="search-444266647c4dba98.js" data-settings-js="settings-bebeae96e00e4617.js" data-settings-css="settings-af96d9e2fc13e081.css" ></div></body></html>
+</code></pre></div></section></main></body></html>
