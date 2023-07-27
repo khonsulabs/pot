@@ -768,6 +768,9 @@
 <a href="#768" id="768">768</a>
 <a href="#769" id="769">769</a>
 <a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
+<a href="#772" id="772">772</a>
+<a href="#773" id="773">773</a>
 </pre></div><pre class="rust"><code><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">&quot;../crate-docs.md&quot;</span>)]
 #![forbid(unsafe_code)]
 #![warn(
@@ -1357,8 +1360,11 @@
     <span class="doccomment">/// In `BonsaiDb`, sometimes it&#39;s nice to use a `()` as an associated type
     /// as a default. To allow changing data that was previously serialized as a
     /// `()` but now has a new type, Pot allows converting between unit types
-    /// and defaults of all major serialized types. The net effect is that if
-    /// you replace
+    /// and defaults of all major serialized types. The net effect is if you
+    /// start with a derived `BonsaiDb` view with no `value =` argument, `()` is
+    /// used instead. With this flexibility, changing the value type to another
+    /// type will sometimes be able to work without requiring rebuilding the
+    /// views on deployment.
     </span><span class="attr">#[test]
     #[allow(clippy::cognitive_complexity)]
     </span><span class="kw">fn </span>unit_adaptations() {
