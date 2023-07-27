@@ -169,7 +169,7 @@ pub fn write_header<W: WriteBytesExt>(mut writer: W, version: u8) -> std::io::Re
     Ok(4)
 }
 
-/// Reads a Pot header. See `write_header` for more information. Returns the version number contained within.
+/// Reads a Pot header. See [`write_header`] for more information. Returns the version number contained within.
 #[allow(clippy::similar_names, clippy::cast_possible_truncation)]
 pub fn read_header<R: ReadBytesExt>(reader: &mut R) -> Result<u8, Error> {
     let header = reader.read_u32::<BigEndian>()?;

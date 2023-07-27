@@ -27,13 +27,13 @@ pub enum Error {
     /// A numerical value could not be handled without losing precision or truncation.
     #[error("numerical data cannot fit")]
     ImpreciseCastWouldLoseData,
-    /// An error occurred from io.
+    /// An IO error occurred.
     #[error("io error: {0}")]
     Io(#[from] std::io::Error),
     /// A sequence of unknown size cannot be serialized.
     #[error("serializing sequences of unknown size is unsupported")]
     SequenceSizeMustBeKnown,
-    /// String data contained invalid utf-8 characters.
+    /// String data contained invalid UTF-8 characters.
     #[error("invalid utf8: {0}")]
     InvalidUtf8(String),
     /// An unknown kind was encountered. Generally a sign that something else has been parsed incorrectly.

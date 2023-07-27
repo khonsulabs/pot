@@ -17,7 +17,7 @@ fn main() -> Result<(), pot::Error> {
     let deserialized: User = pot::from_slice(&serialized)?;
     assert_eq!(deserialized, user);
 
-    // Pot also provides a "Value" type for serializing Pot encoded payloads
+    // Pot also provides a "Value" type for serializing Pot-encoded payloads
     // without needing the original structure.
     let user: pot::Value<'_> = pot::from_slice(&serialized)?;
     println!("User decoded as value: {user}");

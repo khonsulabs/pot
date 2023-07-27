@@ -12,13 +12,13 @@ use serde::{Deserialize, Serialize};
 
 use crate::format::{Float, InnerFloat, InnerInteger, Integer};
 
-/// A Pot encoded value. This type can be used to deserialize to and from Pot
+/// A Pot-encoded value. This type can be used to deserialize to and from Pot
 /// without knowing the original data structure.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Value<'a> {
-    /// A value representing None.
+    /// A value representing `None`.
     None,
-    /// A value representing a Unit (`()`).
+    /// A value representing unit (`()`).
     Unit,
     /// A boolean value
     Bool(bool),
@@ -83,7 +83,7 @@ impl<'a> Display for Value<'a> {
 }
 
 impl<'a> Value<'a> {
-    /// Creates a `Value` from the given serde-compatible type.
+    /// Creates a `Value` from the given Serde-compatible type.
     ///
     /// ```rust
     /// use pot::Value;
@@ -106,7 +106,9 @@ impl<'a> Value<'a> {
     /// );
     /// ```
     pub fn from_serialize<T: Serialize>(value: T) -> Self {
-        let Ok(value) = value.serialize(Serializer) else { unreachable!() };
+        let Ok(value) = value.serialize(Serializer) else {
+            unreachable!()
+        };
         value
     }
 
@@ -131,7 +133,7 @@ impl<'a> Value<'a> {
         T::deserialize(Deserializer(self))
     }
 
-    /// Returns a new value from an interator of items that can be converted into a value.
+    /// Returns a new value from an iterator of items that can be converted into a value.
     ///
     /// ```rust
     /// # use pot::Value;
@@ -144,7 +146,7 @@ impl<'a> Value<'a> {
         Self::Sequence(sequence.into_iter().map(T::into).collect())
     }
 
-    /// Returns a new value from an interator of 2-element tuples representing key-value pairs.
+    /// Returns a new value from an iterator of 2-element tuples representing key-value pairs.
     ///
     /// ```rust
     /// # use pot::Value;
@@ -163,7 +165,7 @@ impl<'a> Value<'a> {
         )
     }
 
-    /// Returns true if the value contained is considered empty.
+    /// Returns `true` if the value contained is considered empty.
     ///
     /// ```rust
     /// # use pot::Value;
@@ -205,7 +207,7 @@ impl<'a> Value<'a> {
         }
     }
 
-    /// Returns the value represented as a value.
+    /// Returns the value as a `bool`.
     ///
     /// ```rust
     /// # use pot::Value;
@@ -257,8 +259,8 @@ impl<'a> Value<'a> {
         }
     }
 
-    /// Returns the value as an [`Integer`]. Returns None if the value is not a
-    /// [`Self::Float`] or [`Self::Integer`]. Also returns None if the value is
+    /// Returns the value as an [`Integer`]. Returns `None` if the value is not a
+    /// [`Self::Float`] or [`Self::Integer`]. Also returns `None` if the value is
     /// a float, but cannot be losslessly converted to an integer.
     #[must_use]
     pub fn as_integer(&self) -> Option<Integer> {
@@ -269,8 +271,8 @@ impl<'a> Value<'a> {
         }
     }
 
-    /// Returns the value as an [`Float`]. Returns None if the value is not a
-    /// [`Self::Float`] or [`Self::Integer`]. Also returns None if the value is
+    /// Returns the value as an [`Float`]. Returns `None` if the value is not a
+    /// [`Self::Float`] or [`Self::Integer`]. Also returns `None` if the value is
     /// an integer, but cannot be losslessly converted to a float.
     #[must_use]
     pub fn as_float(&self) -> Option<Float> {
@@ -281,10 +283,10 @@ impl<'a> Value<'a> {
         }
     }
 
-    /// Returns the value as a string, or None if the value is not representable
+    /// Returns the value as a string, or `None` if the value is not representable
     /// by a string. This will only return a value with variants
     /// [`Self::String`] and [`Self::Bytes`]. Bytes will only be returned if the
-    /// contained bytes can be safely interpretted as utf-8.
+    /// contained bytes can be safely interpretted as UTF-8.
     #[must_use]
     pub fn as_str(&self) -> Option<&str> {
         match self {
@@ -294,7 +296,7 @@ impl<'a> Value<'a> {
         }
     }
 
-    /// Returns the value's bytes, or None if the value is not stored as a
+    /// Returns the value as bytes, or `None` if the value is not stored as a
     /// representation of bytes. This will only return a value with variants
     /// [`Self::String`] and [`Self::Bytes`].
     #[must_use]
@@ -306,7 +308,7 @@ impl<'a> Value<'a> {
         }
     }
 
-    /// Returns an interator that iterates over all values contained inside of
+    /// Returns an iterator that iterates over all values contained inside of
     /// this value. Returns an empty iterator if not a [`Self::Sequence`] or
     /// [`Self::Mappings`]. If a [`Self::Mappings`], only the value portion of
     /// the mapping is returned.
@@ -320,7 +322,7 @@ impl<'a> Value<'a> {
         }
     }
 
-    /// Returns an interator that iterates over all mappings contained inside of
+    /// Returns an iterator that iterates over all mappings contained inside of
     /// this value. Returns an empty iterator if not a [`Self::Sequence`] or
     /// [`Self::Mappings`]. If a [`Self::Sequence`], the key will always be
     /// `Self::None`.
@@ -331,7 +333,7 @@ impl<'a> Value<'a> {
         }
     }
 
-    /// Converts `self` to a static lifetime by cloning any borrowed data.
+    /// Converts `self` to a `'static` lifetime by cloning any borrowed data.
     pub fn into_static(self) -> Value<'static> {
         match self {
             Self::None => Value::None,
@@ -355,7 +357,7 @@ impl<'a> Value<'a> {
         }
     }
 
-    /// Converts `self` to a static lifetime by cloning all data.
+    /// Converts `self` to a `'static` lifetime by cloning all data.
     pub fn to_static(&self) -> Value<'static> {
         match self {
             Self::None => Value::None,
@@ -432,8 +434,8 @@ impl<'de: 'a, 'a> Deserialize<'de> for Value<'a> {
     }
 }
 
-/// A [`Value<'static>`] wrapper that supports
-/// [`DeserializeOwned`](serde::DeserializeOwned).
+/// A <code>[Value]&lt;&apos;static&gt;</code> wrapper that supports
+/// [`DeserializeOwned`](serde::de::DeserializeOwned).
 ///
 /// Because `Value<'a>` can borrow strings and bytes during deserialization,
 /// `Value<'static>` can't be used when `DeserializeOwned` is needed.
@@ -1923,7 +1925,7 @@ pub enum ValueError {
         /// The value that was encountered.
         value: Value<'static>,
     },
-    /// A custom deserialization error. These errors originate outside of `pot`,
+    /// A custom deserialization error. These errors originate outside of Pot.
     #[error("{0}")]
     Custom(String),
 }

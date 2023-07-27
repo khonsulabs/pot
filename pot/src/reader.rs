@@ -8,7 +8,7 @@ use crate::Error;
 
 /// A reader that can temporarily buffer bytes read.
 pub trait Reader<'de>: ReadBytesExt {
-    /// Read exactly `length` bytes and return a reference to the buffer.
+    /// Reads exactly `length` bytes and returns a reference to the buffer.
     fn buffered_read_bytes(&mut self, length: usize) -> Result<Cow<'de, [u8]>, Error>;
 }
 
@@ -25,7 +25,7 @@ impl<'a> SliceReader<'a> {
         self.data.len()
     }
 
-    /// Returns true if there are no bytes remaining to read.
+    /// Returns `true` if there are no bytes remaining to read.
     #[must_use]
     pub const fn is_empty(&self) -> bool {
         self.data.is_empty()
