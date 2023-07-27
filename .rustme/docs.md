@@ -58,7 +58,7 @@ Pot achieves space savings requires some computational overhead. As such, it is
 expected that a hypothetically perfect CBOR implementation could outperform a
 hypothetically perfect Pot implementation.
 
-The results from the current benchmark suite executed on Github Actions are
+The results from the current benchmark suite executed on GitHub Actions are
 [viewable here](https://pot.bonsaidb.io/benchmarks/report/). The current suite
 is only aimed at comparing the default performance for each library.
 

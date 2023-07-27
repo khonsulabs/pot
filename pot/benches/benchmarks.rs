@@ -1,6 +1,7 @@
 //! Do not take these benchmarks seriously at the moment.
 //!
 //! Proper benchmarks will be coming.
+
 use std::fmt::Display;
 
 use chrono::{DateTime, Utc};

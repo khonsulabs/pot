@@ -68,7 +68,7 @@ where
     Config::default().serialize_into(value, writer)
 }
 
-/// Restore a previously Pot-serialized value from a slice.
+/// Restores a previously Pot-serialized value from a slice.
 ///
 /// ```rust
 /// let serialized = pot::to_vec(&"hello world").unwrap();
@@ -82,7 +82,7 @@ where
     Config::default().deserialize(serialized)
 }
 
-/// Restore a previously Pot-serialized value from a [`Read`] implementor.
+/// Restores a previously Pot-serialized value from a [`Read`] implementer.
 ///
 /// ```rust
 /// let mut serialized = Vec::new();
@@ -120,7 +120,7 @@ impl Config {
     /// allocating, but a deserializer can always allocate more memory than Pot
     /// can be aware of.
     ///
-    /// The default allocation budget is `usize::MAX`.
+    /// The default allocation budget is [`usize::MAX`].
     pub const fn allocation_budget(mut self, budget: usize) -> Self {
         self.allocation_budget = budget;
         self
@@ -140,7 +140,7 @@ impl Config {
         }
     }
 
-    /// Deserializes a value from a [`Read`] implementor using the configured
+    /// Deserializes a value from a [`Read`] implementer using the configured
     /// options.
     pub fn deserialize_from<T, R: Read>(&self, reader: R) -> Result<T>
     where
@@ -189,10 +189,10 @@ mod tests {
         drop(
             tracing_subscriber::fmt()
                 .pretty()
-                // enable everything
+                // Enable everything.
                 .with_max_level(tracing::Level::TRACE)
                 .with_span_events(tracing_subscriber::fmt::format::FmtSpan::ENTER)
-                // sets this to be the default, global collector for this application.
+                // Set this to be the default, global collector for this application.
                 .try_init(),
         );
     }
@@ -224,7 +224,7 @@ mod tests {
             assert_eq!(bytes.len() - 4, check_length);
         }
 
-        // do the same, but using the reader interface
+        // Do the same, but using the reader interface.
         let mut bytes = Vec::new();
         to_writer(value, &mut bytes).unwrap();
         println!("{value:?}: {bytes:02x?}");
@@ -322,7 +322,7 @@ mod tests {
         test_serialization(&-(2_i128.pow(63)), Some(9));
         test_serialization(&-(2_i128.pow(63) + 1), Some(17));
 
-        // Float packing relies on bitwise conversions and are lossless.
+        // Float packing relies on bitwise conversions and is lossless.
         test_serialization(&f64::INFINITY, Some(3));
         test_serialization(&f64::NEG_INFINITY, Some(3));
         test_serialization(&0_f64, Some(3));
@@ -415,7 +415,7 @@ mod tests {
             .deserialize::<StringsAndBytes<'_>>(&serialized)
             .is_err());
 
-        // Test number limits
+        // Test number limits.
         let serialized = to_vec(&NumbersStruct {
             u8: u8::MAX,
             u16: u16::MAX,

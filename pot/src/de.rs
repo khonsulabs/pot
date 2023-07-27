@@ -41,7 +41,7 @@ impl<'s, 'de> Deserializer<'s, 'de, SliceReader<'de>> {
         Self::new(SliceReader::from(input), symbols, maximum_bytes_allocatable)
     }
 
-    /// Returns true if the input has been consumed completely.
+    /// Returns `true` if the input has been consumed completely.
     #[must_use]
     pub fn end_of_input(&self) -> bool {
         self.input.data.is_empty() && self.peeked_atom.is_empty()
@@ -924,7 +924,7 @@ impl<'a, 's, 'de, R: Reader<'de>> EnumAccess<'de> for &'a mut Deserializer<'s, '
     where
         V: DeserializeSeed<'de>,
     {
-        // Have the seed deserialize the next atom, which should be the symbol
+        // Have the seed deserialize the next atom, which should be the symbol.
         let atom = self.read_atom()?;
         if atom.kind == Kind::Special && matches!(atom.nucleus, Some(Nucleus::Named)) {
             let val = seed.deserialize(&mut *self)?;

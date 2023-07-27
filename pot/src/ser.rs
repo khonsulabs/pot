@@ -463,7 +463,7 @@ struct RegisteredSymbol {
 }
 
 impl SymbolMap {
-    /// Returns a serializer that writes into `output` that persists symbols
+    /// Returns a serializer that writes into `output` and persists symbols
     /// into `self`.
     pub fn serializer_for<W: WriteBytesExt>(&mut self, output: W) -> Result<Serializer<'_, W>> {
         Serializer::new_with_symbol_map(output, SymbolMapRef::Borrowed(self))
