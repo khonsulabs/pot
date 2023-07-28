@@ -10,7 +10,7 @@ jobs:
       - name: Install Rust
         uses: hecrj/setup-rust-action@v1
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Generate Docs
         run: |
           cargo doc --no-deps --all-features

@@ -7,8 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v2
-      
+      - uses: actions/checkout@v3
+
       - name: Install Rust
         uses: hecrj/setup-rust-action@v1
 
@@ -19,7 +19,7 @@ jobs:
       - name: Run benchmarks
         run: |
           cargo bench
-      
+
       - name: Make plots have a solid white background
         run: |
           find target/criterion -name "*.svg" -exec sed -i 's/<svg/<svg style="background-color:#EEE;"/g' {} \;
