@@ -1924,20 +1924,6 @@
 <a href="#1924" id="1924">1924</a>
 <a href="#1925" id="1925">1925</a>
 <a href="#1926" id="1926">1926</a>
-<a href="#1927" id="1927">1927</a>
-<a href="#1928" id="1928">1928</a>
-<a href="#1929" id="1929">1929</a>
-<a href="#1930" id="1930">1930</a>
-<a href="#1931" id="1931">1931</a>
-<a href="#1932" id="1932">1932</a>
-<a href="#1933" id="1933">1933</a>
-<a href="#1934" id="1934">1934</a>
-<a href="#1935" id="1935">1935</a>
-<a href="#1936" id="1936">1936</a>
-<a href="#1937" id="1937">1937</a>
-<a href="#1938" id="1938">1938</a>
-<a href="#1939" id="1939">1939</a>
-<a href="#1940" id="1940">1940</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::borrow::Cow;
 <span class="kw">use </span>std::fmt::{Display, Write};
 <span class="kw">use </span>std::marker::PhantomData;
@@ -2045,11 +2031,8 @@
     ///     ])
     /// );
     /// ```
-    </span><span class="kw">pub fn </span>from_serialize&lt;T: Serialize&gt;(value: T) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="prelude-val">Ok</span>(value) = value.serialize(Serializer) <span class="kw">else </span>{
-            <span class="macro">unreachable!</span>()
-        };
-        value
+    </span><span class="kw">pub fn </span>from_serialize&lt;T: Serialize&gt;(value: T) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, ValueError&gt; {
+        value.serialize(Serializer)
     }
 
     <span class="doccomment">/// Attempts to create an instance of `T` from this value.
@@ -2877,7 +2860,7 @@
 <span class="kw">struct </span>Serializer;
 
 <span class="kw">impl </span>serde::Serializer <span class="kw">for </span>Serializer {
-    <span class="kw">type </span>Error = Infallible;
+    <span class="kw">type </span>Error = ValueError;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= Value&lt;<span class="lifetime">&#39;static</span>&gt;;
     <span class="kw">type </span>SerializeMap = MappingsSerializer;
     <span class="kw">type </span>SerializeSeq = SequenceSerializer;
@@ -3068,7 +3051,7 @@
 <span class="kw">struct </span>SequenceSerializer(Vec&lt;Value&lt;<span class="lifetime">&#39;static</span>&gt;&gt;);
 
 <span class="kw">impl </span>SerializeSeq <span class="kw">for </span>SequenceSerializer {
-    <span class="kw">type </span>Error = Infallible;
+    <span class="kw">type </span>Error = ValueError;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= Value&lt;<span class="lifetime">&#39;static</span>&gt;;
 
     <span class="kw">fn </span>serialize_element&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt;
@@ -3085,7 +3068,7 @@
 }
 
 <span class="kw">impl </span>SerializeTuple <span class="kw">for </span>SequenceSerializer {
-    <span class="kw">type </span>Error = Infallible;
+    <span class="kw">type </span>Error = ValueError;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= Value&lt;<span class="lifetime">&#39;static</span>&gt;;
 
     <span class="kw">fn </span>serialize_element&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt;
@@ -3102,7 +3085,7 @@
 }
 
 <span class="kw">impl </span>SerializeTupleStruct <span class="kw">for </span>SequenceSerializer {
-    <span class="kw">type </span>Error = Infallible;
+    <span class="kw">type </span>Error = ValueError;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= Value&lt;<span class="lifetime">&#39;static</span>&gt;;
 
     <span class="kw">fn </span>serialize_field&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt;
@@ -3124,7 +3107,7 @@
 }
 
 <span class="kw">impl </span>SerializeTupleVariant <span class="kw">for </span>TupleVariantSerializer {
-    <span class="kw">type </span>Error = Infallible;
+    <span class="kw">type </span>Error = ValueError;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= Value&lt;<span class="lifetime">&#39;static</span>&gt;;
 
     <span class="kw">fn </span>serialize_field&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt;
@@ -3146,7 +3129,7 @@
 <span class="kw">struct </span>MappingsSerializer(Vec&lt;(Value&lt;<span class="lifetime">&#39;static</span>&gt;, Value&lt;<span class="lifetime">&#39;static</span>&gt;)&gt;);
 
 <span class="kw">impl </span>SerializeMap <span class="kw">for </span>MappingsSerializer {
-    <span class="kw">type </span>Error = Infallible;
+    <span class="kw">type </span>Error = ValueError;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= Value&lt;<span class="lifetime">&#39;static</span>&gt;;
 
     <span class="kw">fn </span>serialize_key&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt;
@@ -3174,7 +3157,7 @@
 }
 
 <span class="kw">impl </span>SerializeStruct <span class="kw">for </span>MappingsSerializer {
-    <span class="kw">type </span>Error = Infallible;
+    <span class="kw">type </span>Error = ValueError;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= Value&lt;<span class="lifetime">&#39;static</span>&gt;;
 
     <span class="kw">fn </span>serialize_field&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt;
@@ -3199,7 +3182,7 @@
 }
 
 <span class="kw">impl </span>SerializeStructVariant <span class="kw">for </span>StructVariantSerializer {
-    <span class="kw">type </span>Error = Infallible;
+    <span class="kw">type </span>Error = ValueError;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= Value&lt;<span class="lifetime">&#39;static</span>&gt;;
 
     <span class="kw">fn </span>serialize_field&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt;
@@ -3833,28 +3816,8 @@
     }
 }
 
-<span class="attr">#[derive(Debug)]
-</span><span class="kw">pub enum </span>Infallible {}
-
-<span class="kw">impl </span>serde::ser::Error <span class="kw">for </span>Infallible {
-    <span class="kw">fn </span>custom&lt;T&gt;(_msg: T) -&gt; <span class="self">Self
-    </span><span class="kw">where
-        </span>T: Display,
-    {
-        <span class="macro">unreachable!</span>()
-    }
-}
-
-<span class="kw">impl </span>std::error::Error <span class="kw">for </span>Infallible {}
-
-<span class="kw">impl </span>Display <span class="kw">for </span>Infallible {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, _f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        <span class="macro">unreachable!</span>()
-    }
-}
-
 <span class="doccomment">/// An error from deserializing a type using [`Value::deserialize_as`].
-</span><span class="attr">#[derive(thiserror::Error, Debug)]
+</span><span class="attr">#[derive(thiserror::Error, Debug, PartialEq)]
 </span><span class="kw">pub enum </span>ValueError {
     <span class="doccomment">/// A kind of data was expected, but the [`Value`] cannot be interpreted as
     /// that kind.
@@ -3871,6 +3834,15 @@
 }
 
 <span class="kw">impl </span>serde::de::Error <span class="kw">for </span>ValueError {
+    <span class="kw">fn </span>custom&lt;T&gt;(msg: T) -&gt; <span class="self">Self
+    </span><span class="kw">where
+        </span>T: Display,
+    {
+        <span class="self">Self</span>::Custom(msg.to_string())
+    }
+}
+
+<span class="kw">impl </span>serde::ser::Error <span class="kw">for </span>ValueError {
     <span class="kw">fn </span>custom&lt;T&gt;(msg: T) -&gt; <span class="self">Self
     </span><span class="kw">where
         </span>T: Display,

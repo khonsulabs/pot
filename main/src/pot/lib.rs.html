@@ -771,6 +771,26 @@
 <a href="#771" id="771">771</a>
 <a href="#772" id="772">772</a>
 <a href="#773" id="773">773</a>
+<a href="#774" id="774">774</a>
+<a href="#775" id="775">775</a>
+<a href="#776" id="776">776</a>
+<a href="#777" id="777">777</a>
+<a href="#778" id="778">778</a>
+<a href="#779" id="779">779</a>
+<a href="#780" id="780">780</a>
+<a href="#781" id="781">781</a>
+<a href="#782" id="782">782</a>
+<a href="#783" id="783">783</a>
+<a href="#784" id="784">784</a>
+<a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
+<a href="#788" id="788">788</a>
+<a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
 </pre></div><pre class="rust"><code><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">&quot;../crate-docs.md&quot;</span>)]
 #![forbid(unsafe_code)]
 #![warn(
@@ -805,7 +825,7 @@
 <span class="kw">pub use </span><span class="self">self</span>::error::Error;
 <span class="kw">pub use </span><span class="self">self</span>::value::{OwnedValue, Value, ValueError};
 <span class="doccomment">/// A result alias that returns [`Error`].
-</span><span class="kw">pub type </span><span class="prelude-ty">Result</span>&lt;T&gt; = std::result::Result&lt;T, Error&gt;;
+</span><span class="kw">pub type </span><span class="prelude-ty">Result</span>&lt;T, E = Error&gt; = std::result::Result&lt;T, E&gt;;
 <span class="kw">use </span>serde::de::DeserializeOwned;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
@@ -1517,7 +1537,7 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>direct_value_serialization() {
         <span class="kw">fn </span>roundtrip&lt;T: Serialize + <span class="kw">for</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; + PartialEq + Debug&gt;(value: <span class="kw-2">&amp;</span>T) {
-            <span class="kw">let </span>as_value = Value::from_serialize(value);
+            <span class="kw">let </span>as_value = Value::from_serialize(value).unwrap();
             <span class="kw">let </span>deserialized = as_value.deserialize_as::&lt;T&gt;().unwrap();
             <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>deserialized, value);
         }
@@ -1542,6 +1562,26 @@
         roundtrip(<span class="kw-2">&amp;</span>EnumVariants::Tuple(<span class="number">1</span>));
         roundtrip(<span class="kw-2">&amp;</span>EnumVariants::TupleTwoArgs(<span class="number">1</span>, <span class="number">2</span>));
         roundtrip(<span class="kw-2">&amp;</span>EnumVariants::Unit);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>value_error() {
+        <span class="attr">#[derive(Debug)]
+        </span><span class="kw">struct </span>Fallible;
+
+        <span class="kw">impl </span>Serialize <span class="kw">for </span>Fallible {
+            <span class="kw">fn </span>serialize&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, _serializer: S) -&gt; <span class="prelude-ty">Result</span>&lt;S::Ok, S::Error&gt;
+            <span class="kw">where
+                </span>S: Serializer,
+            {
+                <span class="prelude-val">Err</span>(serde::ser::Error::custom(<span class="string">&quot;oh no!&quot;</span>))
+            }
+        }
+
+        <span class="macro">assert_eq!</span>(
+            Value::from_serialize(Fallible),
+            <span class="prelude-val">Err</span>(ValueError::Custom(String::from(<span class="string">&quot;oh no!&quot;</span>)))
+        );
     }
 }
 </code></pre></div></section></main></body></html>
