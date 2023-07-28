@@ -105,11 +105,8 @@ impl<'a> Value<'a> {
     ///     ])
     /// );
     /// ```
-    pub fn from_serialize<T: Serialize>(value: T) -> Self {
-        let Ok(value) = value.serialize(Serializer) else {
-            unreachable!()
-        };
-        value
+    pub fn from_serialize<T: Serialize>(value: T) -> Result<Self, ValueError> {
+        value.serialize(Serializer)
     }
 
     /// Attempts to create an instance of `T` from this value.
@@ -937,7 +934,7 @@ fn value_as_integer_tests() {
 struct Serializer;
 
 impl serde::Serializer for Serializer {
-    type Error = Infallible;
+    type Error = ValueError;
     type Ok = Value<'static>;
     type SerializeMap = MappingsSerializer;
     type SerializeSeq = SequenceSerializer;
@@ -1128,7 +1125,7 @@ impl serde::Serializer for Serializer {
 struct SequenceSerializer(Vec<Value<'static>>);
 
 impl SerializeSeq for SequenceSerializer {
-    type Error = Infallible;
+    type Error = ValueError;
     type Ok = Value<'static>;
 
     fn serialize_element<T>(&mut self, value: &T) -> Result<(), Self::Error>
@@ -1145,7 +1142,7 @@ impl SerializeSeq for SequenceSerializer {
 }
 
 impl SerializeTuple for SequenceSerializer {
-    type Error = Infallible;
+    type Error = ValueError;
     type Ok = Value<'static>;
 
     fn serialize_element<T>(&mut self, value: &T) -> Result<(), Self::Error>
@@ -1162,7 +1159,7 @@ impl SerializeTuple for SequenceSerializer {
 }
 
 impl SerializeTupleStruct for SequenceSerializer {
-    type Error = Infallible;
+    type Error = ValueError;
     type Ok = Value<'static>;
 
     fn serialize_field<T>(&mut self, value: &T) -> Result<(), Self::Error>
@@ -1184,7 +1181,7 @@ struct TupleVariantSerializer {
 }
 
 impl SerializeTupleVariant for TupleVariantSerializer {
-    type Error = Infallible;
+    type Error = ValueError;
     type Ok = Value<'static>;
 
     fn serialize_field<T>(&mut self, value: &T) -> Result<(), Self::Error>
@@ -1206,7 +1203,7 @@ impl SerializeTupleVariant for TupleVariantSerializer {
 struct MappingsSerializer(Vec<(Value<'static>, Value<'static>)>);
 
 impl SerializeMap for MappingsSerializer {
-    type Error = Infallible;
+    type Error = ValueError;
     type Ok = Value<'static>;
 
     fn serialize_key<T>(&mut self, key: &T) -> Result<(), Self::Error>
@@ -1234,7 +1231,7 @@ impl SerializeMap for MappingsSerializer {
 }
 
 impl SerializeStruct for MappingsSerializer {
-    type Error = Infallible;
+    type Error = ValueError;
     type Ok = Value<'static>;
 
     fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<(), Self::Error>
@@ -1259,7 +1256,7 @@ struct StructVariantSerializer {
 }
 
 impl SerializeStructVariant for StructVariantSerializer {
-    type Error = Infallible;
+    type Error = ValueError;
     type Ok = Value<'static>;
 
     fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<(), Self::Error>
@@ -1893,28 +1890,8 @@ impl<'de> MapAccess<'de> for MappingsDeserializer<'de> {
     }
 }
 
-#[derive(Debug)]
-pub enum Infallible {}
-
-impl serde::ser::Error for Infallible {
-    fn custom<T>(_msg: T) -> Self
-    where
-        T: Display,
-    {
-        unreachable!()
-    }
-}
-
-impl std::error::Error for Infallible {}
-
-impl Display for Infallible {
-    fn fmt(&self, _f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        unreachable!()
-    }
-}
-
 /// An error from deserializing a type using [`Value::deserialize_as`].
-#[derive(thiserror::Error, Debug)]
+#[derive(thiserror::Error, Debug, PartialEq)]
 pub enum ValueError {
     /// A kind of data was expected, but the [`Value`] cannot be interpreted as
     /// that kind.
@@ -1931,6 +1908,15 @@ pub enum ValueError {
 }
 
 impl serde::de::Error for ValueError {
+    fn custom<T>(msg: T) -> Self
+    where
+        T: Display,
+    {
+        Self::Custom(msg.to_string())
+    }
+}
+
+impl serde::ser::Error for ValueError {
     fn custom<T>(msg: T) -> Self
     where
         T: Display,

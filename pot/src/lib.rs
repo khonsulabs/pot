@@ -32,7 +32,7 @@ use byteorder::WriteBytesExt;
 pub use self::error::Error;
 pub use self::value::{OwnedValue, Value, ValueError};
 /// A result alias that returns [`Error`].
-pub type Result<T> = std::result::Result<T, Error>;
+pub type Result<T, E = Error> = std::result::Result<T, E>;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 
@@ -744,7 +744,7 @@ mod tests {
     #[test]
     fn direct_value_serialization() {
         fn roundtrip<T: Serialize + for<'de> Deserialize<'de> + PartialEq + Debug>(value: &T) {
-            let as_value = Value::from_serialize(value);
+            let as_value = Value::from_serialize(value).unwrap();
             let deserialized = as_value.deserialize_as::<T>().unwrap();
             assert_eq!(&deserialized, value);
         }
@@ -769,5 +769,25 @@ mod tests {
         roundtrip(&EnumVariants::Tuple(1));
         roundtrip(&EnumVariants::TupleTwoArgs(1, 2));
         roundtrip(&EnumVariants::Unit);
+    }
+
+    #[test]
+    fn value_error() {
+        #[derive(Debug)]
+        struct Fallible;
+
+        impl Serialize for Fallible {
+            fn serialize<S>(&self, _serializer: S) -> Result<S::Ok, S::Error>
+            where
+                S: Serializer,
+            {
+                Err(serde::ser::Error::custom("oh no!"))
+            }
+        }
+
+        assert_eq!(
+            Value::from_serialize(Fallible),
+            Err(ValueError::Custom(String::from("oh no!")))
+        );
     }
 }

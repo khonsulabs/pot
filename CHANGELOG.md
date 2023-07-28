@@ -5,7 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## v2.0.0
+## Unreleased
+
+### Breaking Changes
+
+- [#9][9]`Value::from_serialize` now returns a `Result`. Previously, if a Serialize
+  implementation returned an error, the function would panic. Thanks to
+  @wackbyte for finding this.
+
+### Changed
+
+- `pot::Result<T>` is now `pot::Result<T,E = pot::Error>`. This avoids issues
+  with other code when `pot::Result` is imported.
+
+[9]: https://github.com/khonsulabs/pot/issues/9
+
+## v2.0.0 (2023-02-28)
 
 ### Breaking Changes
 
@@ -43,7 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   this flexibility causes lifetime errors when trying to deserialize a
   `Value<'static>` as `DeserializeOwned`.
 
-## v1.0.2
+## v1.0.2 (2022-04-09)
 
 ### Fixed
 
@@ -51,23 +66,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [5]: https://github.com/khonsulabs/pot/issues/5
 
-## v1.0.1
+## v1.0.1 (2022-02-10)
 
 ### Added
 
 - `serde(flatten)` is now supported.
 
-## v1.0.0
+## v1.0.0 (2022-02-04)
 
 - There were no changes in this release.
 
-## v1.0.0-rc.4
+## v1.0.0-rc.4 (2022-01-25)
 
 ### Changed
 
 - Fixed compilation error caused by a new dependency upgrade.
 
-## v1.0.0-rc.3
+## v1.0.0-rc.3 (2021-12-31)
 
 ### Changed
 
@@ -75,13 +90,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   prevents errors at compile time that would arise at runtime when deserializing
   instead.
 
-## v1.0.0-rc.2
+## v1.0.0-rc.2 (2021-12-27)
 
 ### Changed
 
 - `Config` now implements `Clone` and `Debug`.
 
-## v1.0.0-rc.1
+## v1.0.0-rc.1 (2021-12-23)
 
 ### Added
 
@@ -93,18 +108,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Small fixes when packing floats and integers. No breaking changes, as the
   incorrect code would just use more space than needed for certain values.
 
-## v0.1.0-alpha.3
+## v0.1.0-alpha.3 (2021-12-10)
 
 ### Fixed
 
 - Fixed deserializing unit enum variants.
 
-## v0.1.0-alpha.2
+## v0.1.0-alpha.2 (2021-10-28)
 
 ### Breaking Changes
 
 - A minor format change was necessary to add full `deserialize_any()` support.
 
-## v0.1.0-alpha.1
+## v0.1.0-alpha.1 (2021-10-27)
 
 - First release.
