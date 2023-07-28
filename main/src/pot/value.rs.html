@@ -1924,6 +1924,12 @@
 <a href="#1924" id="1924">1924</a>
 <a href="#1925" id="1925">1925</a>
 <a href="#1926" id="1926">1926</a>
+<a href="#1927" id="1927">1927</a>
+<a href="#1928" id="1928">1928</a>
+<a href="#1929" id="1929">1929</a>
+<a href="#1930" id="1930">1930</a>
+<a href="#1931" id="1931">1931</a>
+<a href="#1932" id="1932">1932</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::borrow::Cow;
 <span class="kw">use </span>std::fmt::{Display, Write};
 <span class="kw">use </span>std::marker::PhantomData;
@@ -2012,6 +2018,7 @@
     <span class="doccomment">/// Creates a `Value` from the given Serde-compatible type.
     ///
     /// ```rust
+    /// # fn test() -&gt; Result&lt;(), pot::ValueError&gt; {
     /// use pot::Value;
     /// use serde::Serialize;
     ///
@@ -2022,7 +2029,7 @@
     /// }
     ///
     /// let original = vec![Example::Hello, Example::World];
-    /// let serialized = Value::from_serialize(&amp;original);
+    /// let serialized = Value::from_serialize(&amp;original)?;
     /// assert_eq!(
     ///     serialized,
     ///     Value::Sequence(vec![
@@ -2030,6 +2037,8 @@
     ///         Value::from(String::from(&quot;World&quot;))
     ///     ])
     /// );
+    /// # Ok(())
+    /// # }
     /// ```
     </span><span class="kw">pub fn </span>from_serialize&lt;T: Serialize&gt;(value: T) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, ValueError&gt; {
         value.serialize(Serializer)
@@ -2038,6 +2047,7 @@
     <span class="doccomment">/// Attempts to create an instance of `T` from this value.
     ///
     /// ```rust
+    /// # fn test() -&gt; Result&lt;(), pot::ValueError&gt; {
     /// use pot::Value;
     /// use serde::{Deserialize, Serialize};
     ///
@@ -2048,9 +2058,11 @@
     /// }
     ///
     /// let original = vec![Example::Hello, Example::World];
-    /// let serialized = Value::from_serialize(&amp;original);
-    /// let deserialized: Vec&lt;Example&gt; = serialized.deserialize_as().unwrap();
+    /// let serialized = Value::from_serialize(&amp;original)?;
+    /// let deserialized: Vec&lt;Example&gt; = serialized.deserialize_as()?;
     /// assert_eq!(deserialized, original);
+    /// # Ok(())
+    /// # }
     /// ```
     </span><span class="kw">pub fn </span>deserialize_as&lt;<span class="lifetime">&#39;de</span>, T: Deserialize&lt;<span class="lifetime">&#39;de</span>&gt;&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;T, ValueError&gt; {
         T::deserialize(Deserializer(<span class="self">self</span>))
