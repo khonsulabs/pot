@@ -86,6 +86,7 @@ impl<'a> Value<'a> {
     /// Creates a `Value` from the given Serde-compatible type.
     ///
     /// ```rust
+    /// # fn test() -> Result<(), pot::ValueError> {
     /// use pot::Value;
     /// use serde::Serialize;
     ///
@@ -96,7 +97,7 @@ impl<'a> Value<'a> {
     /// }
     ///
     /// let original = vec![Example::Hello, Example::World];
-    /// let serialized = Value::from_serialize(&original);
+    /// let serialized = Value::from_serialize(&original)?;
     /// assert_eq!(
     ///     serialized,
     ///     Value::Sequence(vec![
@@ -104,6 +105,8 @@ impl<'a> Value<'a> {
     ///         Value::from(String::from("World"))
     ///     ])
     /// );
+    /// # Ok(())
+    /// # }
     /// ```
     pub fn from_serialize<T: Serialize>(value: T) -> Result<Self, ValueError> {
         value.serialize(Serializer)
@@ -112,6 +115,7 @@ impl<'a> Value<'a> {
     /// Attempts to create an instance of `T` from this value.
     ///
     /// ```rust
+    /// # fn test() -> Result<(), pot::ValueError> {
     /// use pot::Value;
     /// use serde::{Deserialize, Serialize};
     ///
@@ -122,9 +126,11 @@ impl<'a> Value<'a> {
     /// }
     ///
     /// let original = vec![Example::Hello, Example::World];
-    /// let serialized = Value::from_serialize(&original);
-    /// let deserialized: Vec<Example> = serialized.deserialize_as().unwrap();
+    /// let serialized = Value::from_serialize(&original)?;
+    /// let deserialized: Vec<Example> = serialized.deserialize_as()?;
     /// assert_eq!(deserialized, original);
+    /// # Ok(())
+    /// # }
     /// ```
     pub fn deserialize_as<'de, T: Deserialize<'de>>(&'de self) -> Result<T, ValueError> {
         T::deserialize(Deserializer(self))
