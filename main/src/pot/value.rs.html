@@ -1930,6 +1930,15 @@
 <a href="#1930" id="1930">1930</a>
 <a href="#1931" id="1931">1931</a>
 <a href="#1932" id="1932">1932</a>
+<a href="#1933" id="1933">1933</a>
+<a href="#1934" id="1934">1934</a>
+<a href="#1935" id="1935">1935</a>
+<a href="#1936" id="1936">1936</a>
+<a href="#1937" id="1937">1937</a>
+<a href="#1938" id="1938">1938</a>
+<a href="#1939" id="1939">1939</a>
+<a href="#1940" id="1940">1940</a>
+<a href="#1941" id="1941">1941</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::borrow::Cow;
 <span class="kw">use </span>std::fmt::{Display, Write};
 <span class="kw">use </span>std::marker::PhantomData;
@@ -3829,11 +3838,10 @@
 }
 
 <span class="doccomment">/// An error from deserializing a type using [`Value::deserialize_as`].
-</span><span class="attr">#[derive(thiserror::Error, Debug, PartialEq)]
+</span><span class="attr">#[derive(Debug, PartialEq)]
 </span><span class="kw">pub enum </span>ValueError {
     <span class="doccomment">/// A kind of data was expected, but the [`Value`] cannot be interpreted as
     /// that kind.
-    </span><span class="attr">#[error(<span class="string">&quot;expected {kind} but got {value}&quot;</span>)]
     </span>Expected {
         <span class="doccomment">/// The kind of data expected.
         </span>kind: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
@@ -3841,8 +3849,18 @@
         </span>value: Value&lt;<span class="lifetime">&#39;static</span>&gt;,
     },
     <span class="doccomment">/// A custom deserialization error. These errors originate outside of Pot.
-    </span><span class="attr">#[error(<span class="string">&quot;{0}&quot;</span>)]
     </span>Custom(String),
+}
+
+<span class="kw">impl </span>std::error::Error <span class="kw">for </span>ValueError {}
+
+<span class="kw">impl </span>Display <span class="kw">for </span>ValueError {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+        <span class="kw">match </span><span class="self">self </span>{
+            ValueError::Expected { kind, value } =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;expected {kind} but got {value}&quot;</span>),
+            ValueError::Custom(msg) =&gt; f.write_str(msg),
+        }
+    }
 }
 
 <span class="kw">impl </span>serde::de::Error <span class="kw">for </span>ValueError {

@@ -518,12 +518,17 @@
 <a href="#518" id="518">518</a>
 <a href="#519" id="519">519</a>
 <a href="#520" id="520">520</a>
+<a href="#521" id="521">521</a>
+<a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
+<a href="#525" id="525">525</a>
+<a href="#526" id="526">526</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::fmt::Debug;
 <span class="kw">use </span>std::ops::{Deref, DerefMut};
 <span class="kw">use </span>std::usize;
 
 <span class="kw">use </span>byteorder::WriteBytesExt;
-<span class="kw">use </span>derive_where::derive_where;
 <span class="kw">use </span>serde::{ser, Serialize};
 <span class="attr">#[cfg(feature = <span class="string">&quot;tracing&quot;</span>)]
 </span><span class="kw">use </span>tracing::instrument;
@@ -532,12 +537,19 @@
 <span class="kw">use crate</span>::{Error, <span class="prelude-ty">Result</span>};
 
 <span class="doccomment">/// A Pot serializer.
-</span><span class="attr">#[derive_where(Debug)]
 </span><span class="kw">pub struct </span>Serializer&lt;<span class="lifetime">&#39;a</span>, W: WriteBytesExt&gt; {
     symbol_map: SymbolMapRef&lt;<span class="lifetime">&#39;a</span>&gt;,
-    <span class="attr">#[derive_where(skip)]
-    </span>output: W,
+    output: W,
     bytes_written: usize,
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, W: WriteBytesExt&gt; Debug <span class="kw">for </span>Serializer&lt;<span class="lifetime">&#39;a</span>, W&gt; {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+        f.debug_struct(<span class="string">&quot;Serializer&quot;</span>)
+            .field(<span class="string">&quot;symbol_map&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.symbol_map)
+            .field(<span class="string">&quot;bytes_written&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.bytes_written)
+            .finish()
+    }
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, W: WriteBytesExt&gt; Serializer&lt;<span class="lifetime">&#39;a</span>, W&gt; {

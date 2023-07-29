@@ -1054,12 +1054,28 @@
 <a href="#1054" id="1054">1054</a>
 <a href="#1055" id="1055">1055</a>
 <a href="#1056" id="1056">1056</a>
+<a href="#1057" id="1057">1057</a>
+<a href="#1058" id="1058">1058</a>
+<a href="#1059" id="1059">1059</a>
+<a href="#1060" id="1060">1060</a>
+<a href="#1061" id="1061">1061</a>
+<a href="#1062" id="1062">1062</a>
+<a href="#1063" id="1063">1063</a>
+<a href="#1064" id="1064">1064</a>
+<a href="#1065" id="1065">1065</a>
+<a href="#1066" id="1066">1066</a>
+<a href="#1067" id="1067">1067</a>
+<a href="#1068" id="1068">1068</a>
+<a href="#1069" id="1069">1069</a>
+<a href="#1070" id="1070">1070</a>
+<a href="#1071" id="1071">1071</a>
+<a href="#1072" id="1072">1072</a>
+<a href="#1073" id="1073">1073</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::borrow::Cow;
 <span class="kw">use </span>std::collections::VecDeque;
 <span class="kw">use </span>std::fmt::Debug;
 
 <span class="kw">use </span>byteorder::ReadBytesExt;
-<span class="kw">use </span>derive_where::derive_where;
 <span class="kw">use </span>format::Kind;
 <span class="kw">use </span>serde::de::{
     <span class="self">self</span>, DeserializeSeed, EnumAccess, Error <span class="kw">as _</span>, MapAccess, SeqAccess, VariantAccess, Visitor,
@@ -1074,13 +1090,21 @@
 <span class="kw">use crate</span>::{Error, <span class="prelude-ty">Result</span>};
 
 <span class="doccomment">/// Deserializer for the Pot format.
-</span><span class="attr">#[derive_where(Debug)]
 </span><span class="kw">pub struct </span>Deserializer&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; {
-    <span class="attr">#[derive_where(skip)]
-    </span>input: R,
+    input: R,
     symbols: SymbolMap&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>&gt;,
     peeked_atom: VecDeque&lt;Atom&lt;<span class="lifetime">&#39;de</span>&gt;&gt;,
     remaining_budget: usize,
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; Debug <span class="kw">for </span>Deserializer&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R&gt; {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+        f.debug_struct(<span class="string">&quot;Deserializer&quot;</span>)
+            .field(<span class="string">&quot;symbols&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.symbols)
+            .field(<span class="string">&quot;peeked_atom&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.peeked_atom)
+            .field(<span class="string">&quot;remaining_budget&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.remaining_budget)
+            .finish()
+    }
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>&gt; Deserializer&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, SliceReader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; {
@@ -1879,8 +1903,7 @@
     }
 }
 
-<span class="attr">#[derive_where(Debug)]
-</span><span class="kw">struct </span>AtomList&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; {
+<span class="kw">struct </span>AtomList&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; {
     de: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Deserializer&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R&gt;,
     consumed: usize,
     count: <span class="prelude-ty">Option</span>&lt;usize&gt;,
@@ -1917,6 +1940,17 @@
         }
 
         <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)
+    }
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; Debug <span class="kw">for </span>AtomList&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R&gt; {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+        f.debug_struct(<span class="string">&quot;AtomList&quot;</span>)
+            .field(<span class="string">&quot;de&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.de)
+            .field(<span class="string">&quot;consumed&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.consumed)
+            .field(<span class="string">&quot;count&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.count)
+            .field(<span class="string">&quot;eof&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.eof)
+            .finish()
     }
 }
 
