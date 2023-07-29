@@ -1897,11 +1897,10 @@ impl<'de> MapAccess<'de> for MappingsDeserializer<'de> {
 }
 
 /// An error from deserializing a type using [`Value::deserialize_as`].
-#[derive(thiserror::Error, Debug, PartialEq)]
+#[derive(Debug, PartialEq)]
 pub enum ValueError {
     /// A kind of data was expected, but the [`Value`] cannot be interpreted as
     /// that kind.
-    #[error("expected {kind} but got {value}")]
     Expected {
         /// The kind of data expected.
         kind: &'static str,
@@ -1909,8 +1908,18 @@ pub enum ValueError {
         value: Value<'static>,
     },
     /// A custom deserialization error. These errors originate outside of Pot.
-    #[error("{0}")]
     Custom(String),
+}
+
+impl std::error::Error for ValueError {}
+
+impl Display for ValueError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ValueError::Expected { kind, value } => write!(f, "expected {kind} but got {value}"),
+            ValueError::Custom(msg) => f.write_str(msg),
+        }
+    }
 }
 
 impl serde::de::Error for ValueError {

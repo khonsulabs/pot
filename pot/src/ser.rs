@@ -3,7 +3,6 @@ use std::ops::{Deref, DerefMut};
 use std::usize;
 
 use byteorder::WriteBytesExt;
-use derive_where::derive_where;
 use serde::{ser, Serialize};
 #[cfg(feature = "tracing")]
 use tracing::instrument;
@@ -12,12 +11,19 @@ use crate::format::{self, Kind, Special, CURRENT_VERSION};
 use crate::{Error, Result};
 
 /// A Pot serializer.
-#[derive_where(Debug)]
 pub struct Serializer<'a, W: WriteBytesExt> {
     symbol_map: SymbolMapRef<'a>,
-    #[derive_where(skip)]
     output: W,
     bytes_written: usize,
+}
+
+impl<'a, W: WriteBytesExt> Debug for Serializer<'a, W> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Serializer")
+            .field("symbol_map", &self.symbol_map)
+            .field("bytes_written", &self.bytes_written)
+            .finish()
+    }
 }
 
 impl<'a, W: WriteBytesExt> Serializer<'a, W> {

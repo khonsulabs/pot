@@ -3,7 +3,6 @@ use std::collections::VecDeque;
 use std::fmt::Debug;
 
 use byteorder::ReadBytesExt;
-use derive_where::derive_where;
 use format::Kind;
 use serde::de::{
     self, DeserializeSeed, EnumAccess, Error as _, MapAccess, SeqAccess, VariantAccess, Visitor,
@@ -18,13 +17,21 @@ use crate::reader::{IoReader, Reader, SliceReader};
 use crate::{Error, Result};
 
 /// Deserializer for the Pot format.
-#[derive_where(Debug)]
 pub struct Deserializer<'s, 'de, R: Reader<'de>> {
-    #[derive_where(skip)]
     input: R,
     symbols: SymbolMap<'s, 'de>,
     peeked_atom: VecDeque<Atom<'de>>,
     remaining_budget: usize,
+}
+
+impl<'s, 'de, R: Reader<'de>> Debug for Deserializer<'s, 'de, R> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Deserializer")
+            .field("symbols", &self.symbols)
+            .field("peeked_atom", &self.peeked_atom)
+            .field("remaining_budget", &self.remaining_budget)
+            .finish()
+    }
 }
 
 impl<'s, 'de> Deserializer<'s, 'de, SliceReader<'de>> {
@@ -823,7 +830,6 @@ impl<'de> SeqAccess<'de> for EmptyList {
     }
 }
 
-#[derive_where(Debug)]
 struct AtomList<'a, 's, 'de, R: Reader<'de>> {
     de: &'a mut Deserializer<'s, 'de, R>,
     consumed: usize,
@@ -861,6 +867,17 @@ impl<'a, 's, 'de, R: Reader<'de>> AtomList<'a, 's, 'de, R> {
         }
 
         Ok(false)
+    }
+}
+
+impl<'a, 's, 'de, R: Reader<'de>> Debug for AtomList<'a, 's, 'de, R> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("AtomList")
+            .field("de", &self.de)
+            .field("consumed", &self.consumed)
+            .field("count", &self.count)
+            .field("eof", &self.eof)
+            .finish()
     }
 }
 

@@ -1,4 +1,5 @@
-use std::fmt::Display;
+use std::fmt::{Debug, Display};
+use std::io;
 use std::str::Utf8Error;
 use std::string::FromUtf8Error;
 
@@ -7,50 +8,72 @@ use serde::{de, ser};
 use crate::format::Kind;
 
 /// All errors that Pot may return.
-#[derive(thiserror::Error, Debug)]
+#[derive(Debug)]
 pub enum Error {
     /// Payload is not a Pot payload.
-    #[error("not a pot: invalid header")]
     NotAPot,
     /// Data was written with an incompatible version.
-    #[error("incompatible version")]
     IncompatibleVersion,
     /// A generic error occurred.
-    #[error("{0}")]
     Message(String),
     /// Extra data appeared at the end of the input.
-    #[error("extra data at end of input")]
     TrailingBytes,
     /// Expected more data but encountered the end of the input.
-    #[error("unexpected end of file")]
     Eof,
     /// A numerical value could not be handled without losing precision or truncation.
-    #[error("numerical data cannot fit")]
     ImpreciseCastWouldLoseData,
     /// An IO error occurred.
-    #[error("io error: {0}")]
-    Io(#[from] std::io::Error),
+    Io(io::Error),
     /// A sequence of unknown size cannot be serialized.
-    #[error("serializing sequences of unknown size is unsupported")]
     SequenceSizeMustBeKnown,
     /// String data contained invalid UTF-8 characters.
-    #[error("invalid utf8: {0}")]
     InvalidUtf8(String),
     /// An unknown kind was encountered. Generally a sign that something else has been parsed incorrectly.
-    #[error("invalid kind: {0}")]
     InvalidKind(u8),
     /// Encountered an unexpected atom kind.
-    #[error("encountered atom kind {0:?}, expected {1:?}")]
     UnexpectedKind(Kind, Kind),
     /// A requested symbol id was not found.
-    #[error("unknown symbol {0}")]
     UnknownSymbol(u64),
     /// An atom header was incorrectly formatted.
-    #[error("an atom header was incorrectly formatted")]
     InvalidAtomHeader,
     /// The amount of data read exceeds the configured maximum number of bytes.
-    #[error("the deserialized value is larger than the allowed allocation limit")]
     TooManyBytesRead,
+}
+
+impl Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Error::NotAPot => f.write_str("not a pot: invalid header"),
+            Error::IncompatibleVersion => f.write_str("incompatible version"),
+            Error::Message(message) => f.write_str(message),
+            Error::TrailingBytes => f.write_str("extra data at end of input"),
+            Error::Eof => f.write_str("unexpected end of file"),
+            Error::ImpreciseCastWouldLoseData => f.write_str("numerical data cannot fit"),
+            Error::Io(io) => write!(f, "io error: {io}"),
+            Error::SequenceSizeMustBeKnown => {
+                f.write_str("serializing sequences of unknown size is unsupported")
+            }
+            Error::InvalidUtf8(err) => write!(f, "invalid utf8: {err}"),
+            Error::InvalidKind(kind) => write!(f, "invalid kind: {kind}"),
+            Error::UnexpectedKind(encountered, expected) => write!(
+                f,
+                "encountered atom kind {encountered:?}, expected {expected:?}"
+            ),
+            Error::UnknownSymbol(sym) => write!(f, "unknown symbol {sym}"),
+            Error::InvalidAtomHeader => f.write_str("an atom header was incorrectly formatted"),
+            Error::TooManyBytesRead => {
+                f.write_str("the deserialized value is larger than the allowed allocation limit")
+            }
+        }
+    }
+}
+
+impl std::error::Error for Error {}
+
+impl From<io::Error> for Error {
+    fn from(err: io::Error) -> Self {
+        Self::Io(err)
+    }
 }
 
 impl ser::Error for Error {
