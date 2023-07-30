@@ -1200,8 +1200,39 @@
 <a href="#1200" id="1200">1200</a>
 <a href="#1201" id="1201">1201</a>
 <a href="#1202" id="1202">1202</a>
+<a href="#1203" id="1203">1203</a>
+<a href="#1204" id="1204">1204</a>
+<a href="#1205" id="1205">1205</a>
+<a href="#1206" id="1206">1206</a>
+<a href="#1207" id="1207">1207</a>
+<a href="#1208" id="1208">1208</a>
+<a href="#1209" id="1209">1209</a>
+<a href="#1210" id="1210">1210</a>
+<a href="#1211" id="1211">1211</a>
+<a href="#1212" id="1212">1212</a>
+<a href="#1213" id="1213">1213</a>
+<a href="#1214" id="1214">1214</a>
+<a href="#1215" id="1215">1215</a>
+<a href="#1216" id="1216">1216</a>
+<a href="#1217" id="1217">1217</a>
+<a href="#1218" id="1218">1218</a>
+<a href="#1219" id="1219">1219</a>
+<a href="#1220" id="1220">1220</a>
+<a href="#1221" id="1221">1221</a>
+<a href="#1222" id="1222">1222</a>
+<a href="#1223" id="1223">1223</a>
+<a href="#1224" id="1224">1224</a>
+<a href="#1225" id="1225">1225</a>
+<a href="#1226" id="1226">1226</a>
+<a href="#1227" id="1227">1227</a>
+<a href="#1228" id="1228">1228</a>
+<a href="#1229" id="1229">1229</a>
+<a href="#1230" id="1230">1230</a>
+<a href="#1231" id="1231">1231</a>
+<a href="#1232" id="1232">1232</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::VecDeque;
 <span class="kw">use </span>std::fmt::Debug;
+<span class="kw">use </span>std::io::Read;
 <span class="kw">use </span>std::ops::{Deref, Range};
 
 <span class="kw">use </span>byteorder::ReadBytesExt;
@@ -1221,7 +1252,7 @@
 <span class="doccomment">/// Deserializer for the Pot format.
 </span><span class="kw">pub struct </span>Deserializer&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; {
     input: R,
-    symbols: SymbolMap&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>&gt;,
+    symbols: SymbolMapRef&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>&gt;,
     peeked_atom: VecDeque&lt;Atom&lt;<span class="lifetime">&#39;de</span>&gt;&gt;,
     remaining_budget: usize,
     scratch: Vec&lt;u8&gt;,
@@ -1241,16 +1272,12 @@
     <span class="doccomment">/// Returns a new deserializer for `input`.
     </span><span class="attr">#[inline]
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_slice(input: <span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span>[u8], maximum_bytes_allocatable: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="self">Self</span>::from_slice_with_symbols(
-            input,
-            SymbolMap::Borrowed(SymbolList::new()),
-            maximum_bytes_allocatable,
-        )
+        <span class="self">Self</span>::from_slice_with_symbols(input, SymbolMapRef::temporary(), maximum_bytes_allocatable)
     }
 
     <span class="kw">fn </span>from_slice_with_symbols(
         input: <span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span>[u8],
-        symbols: SymbolMap&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>&gt;,
+        symbols: SymbolMapRef&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>&gt;,
         maximum_bytes_allocatable: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="self">Self</span>::new(SliceReader::from(input), symbols, maximum_bytes_allocatable)
@@ -1267,12 +1294,12 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: ReadBytesExt&gt; Deserializer&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, IoReader&lt;R&gt;&gt; {
     <span class="doccomment">/// Returns a new deserializer for `input`.
     </span><span class="attr">#[inline]
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_read(input: R, maximum_bytes_allocatable: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="self">Self</span>::new(
-            IoReader::new(input),
-            SymbolMap::Borrowed(SymbolList::new()),
-            maximum_bytes_allocatable,
-        )
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_read(
+        input: R,
+        symbols: SymbolMapRef&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>&gt;,
+        maximum_bytes_allocatable: usize,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="self">Self</span>::new(IoReader::new(input), symbols, maximum_bytes_allocatable)
     }
 }
 
@@ -1280,7 +1307,7 @@
     <span class="attr">#[inline]
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(
         input: R,
-        symbols: SymbolMap&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>&gt;,
+        symbols: SymbolMapRef&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>&gt;,
         maximum_bytes_allocatable: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>deserializer = Deserializer {
@@ -2249,64 +2276,32 @@
     }
 }
 
-<span class="doccomment">/// A collection of deserialized symbols.
+<span class="doccomment">/// A reference to a [`SymbolList`].
 </span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub enum </span>SymbolMap&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>&gt; {
-    <span class="doccomment">/// An owned list of symbols.
-    </span>Owned(SymbolList&lt;<span class="lifetime">&#39;static</span>&gt;),
-    <span class="doccomment">/// A mutable reference to an owned list of symbols.
-    </span>Persistent(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>SymbolList&lt;<span class="lifetime">&#39;static</span>&gt;),
-    <span class="doccomment">/// A list of borrowed symbols.
-    </span>Borrowed(SymbolList&lt;<span class="lifetime">&#39;de</span>&gt;),
+</span><span class="kw">pub struct </span>SymbolMapRef&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>&gt;(SymbolMapRefPrivate&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>&gt;);
+
+<span class="attr">#[derive(Debug)]
+</span><span class="kw">enum </span>SymbolMapRefPrivate&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>&gt; {
+    <span class="doccomment">/// A reference to a temporary symbol list, which is able to borrow from the
+    /// source data.
+    </span>Temporary(SymbolList&lt;<span class="lifetime">&#39;de</span>&gt;),
+    <span class="doccomment">/// A reference to a persistent symbol list that retains symbols across
+    /// multiple deserialization sessions.
+    </span>Persistent(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>SymbolMap),
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; SymbolMap&lt;<span class="lifetime">&#39;static</span>, <span class="lifetime">&#39;de</span>&gt; {
-    <span class="doccomment">/// Returns a new symbol map that will persist symbols between payloads.
-    </span><span class="attr">#[must_use]
-    #[inline]
-    </span><span class="kw">pub const fn </span>new() -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::Owned(SymbolList::new())
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>&gt; SymbolMapRef&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>&gt; {
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const fn </span>temporary() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>(SymbolMapRefPrivate::Temporary(SymbolList::new()))
     }
 
-    <span class="doccomment">/// Returns a deserializer for `slice`.
-    </span><span class="attr">#[inline]
-    </span><span class="kw">pub fn </span>deserializer_for_slice&lt;<span class="lifetime">&#39;a</span>&gt;(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span><span class="self">self</span>,
-        slice: <span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span>[u8],
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Deserializer&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>, SliceReader&lt;<span class="lifetime">&#39;de</span>&gt;&gt;&gt; {
-        Deserializer::from_slice_with_symbols(slice, <span class="self">self</span>.persistent(), usize::MAX)
-    }
-
-    <span class="attr">#[must_use]
-    </span><span class="kw">fn </span>persistent(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; SymbolMap&lt;<span class="lifetime">&#39;_</span>, <span class="lifetime">&#39;de</span>&gt; {
-        <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Owned(vec) =&gt; SymbolMap::Persistent(vec),
-            <span class="self">Self</span>::Persistent(vec) =&gt; SymbolMap::Persistent(vec),
-            <span class="self">Self</span>::Borrowed(<span class="kw">_</span>) =&gt; <span class="macro">unreachable!</span>(),
-        }
-    }
-}
-
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>&gt; SymbolMap&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>&gt; {
     <span class="attr">#[allow(clippy::cast_possible_truncation)]
     </span><span class="kw">fn </span>visit_symbol_id&lt;V&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, symbol_id: u64, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
         </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
     {
-        <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Owned(vec) =&gt; {
-                <span class="kw">let </span>symbol = vec
-                    .get(symbol_id <span class="kw">as </span>usize)
-                    .ok_or(Error::UnknownSymbol(symbol_id))<span class="question-mark">?</span>;
-                visitor.visit_str(<span class="kw-2">&amp;</span>symbol)
-            }
-            <span class="self">Self</span>::Persistent(vec) =&gt; {
-                <span class="kw">let </span>symbol = vec
-                    .get(symbol_id <span class="kw">as </span>usize)
-                    .ok_or(Error::UnknownSymbol(symbol_id))<span class="question-mark">?</span>;
-                visitor.visit_str(<span class="kw-2">&amp;</span>symbol)
-            }
-            <span class="self">Self</span>::Borrowed(vec) =&gt; {
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0 </span>{
+            SymbolMapRefPrivate::Temporary(vec) =&gt; {
                 <span class="kw">let </span>symbol = vec
                     .get(symbol_id <span class="kw">as </span>usize)
                     .ok_or(Error::UnknownSymbol(symbol_id))<span class="question-mark">?</span>;
@@ -2315,23 +2310,27 @@
                     SymbolStr::InList(symbol) =&gt; visitor.visit_str(symbol),
                 }
             }
+            SymbolMapRefPrivate::Persistent(vec) =&gt; {
+                <span class="kw">let </span>symbol = vec
+                    .get(symbol_id <span class="kw">as </span>usize)
+                    .ok_or(Error::UnknownSymbol(symbol_id))<span class="question-mark">?</span>;
+                visitor.visit_str(<span class="kw-2">&amp;</span>symbol)
+            }
         }
     }
 
     <span class="kw">fn </span>push(<span class="kw-2">&amp;mut </span><span class="self">self</span>, symbol: <span class="kw-2">&amp;</span>str) {
         <span class="attr">#[allow(clippy::match_same_arms)] </span><span class="comment">// false positive due to lifetimes
-        </span><span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Owned(vec) =&gt; vec.push(symbol),
-            <span class="self">Self</span>::Persistent(vec) =&gt; vec.push(symbol),
-            <span class="self">Self</span>::Borrowed(vec) =&gt; vec.push(symbol),
+        </span><span class="kw">match </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.<span class="number">0 </span>{
+            SymbolMapRefPrivate::Temporary(vec) =&gt; vec.push(symbol),
+            SymbolMapRefPrivate::Persistent(vec) =&gt; vec.push(symbol),
         }
     }
 
     <span class="kw">fn </span>push_borrowed(<span class="kw-2">&amp;mut </span><span class="self">self</span>, symbol: <span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span>str) {
-        <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Owned(vec) =&gt; vec.push(symbol),
-            <span class="self">Self</span>::Persistent(vec) =&gt; vec.push(symbol),
-            <span class="self">Self</span>::Borrowed(vec) =&gt; vec.push_borrowed(symbol),
+        <span class="kw">match </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.<span class="number">0 </span>{
+            SymbolMapRefPrivate::Temporary(vec) =&gt; vec.push_borrowed(symbol),
+            SymbolMapRefPrivate::Persistent(vec) =&gt; vec.push(symbol),
         }
     }
 }
@@ -2343,8 +2342,17 @@
     entries: Vec&lt;SymbolListEntry&lt;<span class="lifetime">&#39;de</span>&gt;&gt;,
 }
 
+<span class="kw">impl </span>Default <span class="kw">for </span>SymbolList&lt;<span class="lifetime">&#39;_</span>&gt; {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::new()
+    }
+}
+
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; SymbolList&lt;<span class="lifetime">&#39;de</span>&gt; {
-    <span class="kw">const fn </span>new() -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Returns a new, empty symbol list.
+    </span><span class="attr">#[inline]
+    #[must_use]
+    </span><span class="kw">pub const fn </span>new() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             buffer: String::new(),
             entries: Vec::new(),
@@ -2375,6 +2383,58 @@
             SymbolListEntry::Buffer(range) =&gt; <span class="prelude-val">Some</span>(SymbolStr::InList(<span class="kw-2">&amp;</span><span class="self">self</span>.buffer[range.clone()])),
             SymbolListEntry::Borrowed(str) =&gt; <span class="prelude-val">Some</span>(SymbolStr::Data(str)),
         }
+    }
+
+    <span class="doccomment">/// Returns the number of entries in the symbol list.
+    </span><span class="attr">#[inline]
+    #[must_use]
+    </span><span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+        <span class="self">self</span>.entries.len()
+    }
+
+    <span class="doccomment">/// Returns true if there are no symbols in this list.
+    </span><span class="attr">#[inline]
+    #[must_use]
+    </span><span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.len() == <span class="number">0
+    </span>}
+}
+
+<span class="doccomment">/// An alias to a [`SymbolList`] with a static lifetime. This type persists
+/// symbols referenced across multiple deserialization sessions.
+</span><span class="kw">pub type </span>SymbolMap = SymbolList&lt;<span class="lifetime">&#39;static</span>&gt;;
+
+<span class="kw">impl </span>SymbolMap {
+    <span class="doccomment">/// Returns a deserializer for `slice` that reuses symbol ids.
+    ///
+    /// This should only be used with data generated by using a persistent
+    /// [`ser::SymbolMap`](crate::ser::SymbolMap).
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>deserializer_for_slice&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>&gt;(
+        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span><span class="self">self</span>,
+        slice: <span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span>[u8],
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Deserializer&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>, SliceReader&lt;<span class="lifetime">&#39;de</span>&gt;&gt;&gt; {
+        Deserializer::from_slice_with_symbols(slice, <span class="self">self</span>.persistent(), usize::MAX)
+    }
+
+    <span class="doccomment">/// Returns a deserializer for `reader`.
+    ///
+    /// This should only be used with data generated by using a persistent
+    /// [`ser::SymbolMap`](crate::ser::SymbolMap).
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>deserializer_for&lt;<span class="lifetime">&#39;de</span>, R&gt;(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        reader: R,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Deserializer&lt;<span class="lifetime">&#39;_</span>, <span class="lifetime">&#39;de</span>, IoReader&lt;R&gt;&gt;&gt;
+    <span class="kw">where
+        </span>R: Read,
+    {
+        Deserializer::from_read(reader, <span class="self">self</span>.persistent(), usize::MAX)
+    }
+
+    <span class="attr">#[must_use]
+    </span><span class="kw">fn </span>persistent&lt;<span class="lifetime">&#39;de</span>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; SymbolMapRef&lt;<span class="lifetime">&#39;_</span>, <span class="lifetime">&#39;de</span>&gt; {
+        SymbolMapRef(SymbolMapRefPrivate::Persistent(<span class="self">self</span>))
     }
 }
 

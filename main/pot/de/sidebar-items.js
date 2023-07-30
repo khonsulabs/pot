@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["SymbolMap","SymbolStr"],"struct":["Deserializer","SymbolList"]};
+window.SIDEBAR_ITEMS = {"enum":["SymbolStr"],"struct":["Deserializer","SymbolList","SymbolMapRef"],"type":["SymbolMap"]};
