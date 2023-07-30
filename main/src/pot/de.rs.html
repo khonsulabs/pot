@@ -1196,6 +1196,10 @@
 <a href="#1196" id="1196">1196</a>
 <a href="#1197" id="1197">1197</a>
 <a href="#1198" id="1198">1198</a>
+<a href="#1199" id="1199">1199</a>
+<a href="#1200" id="1200">1200</a>
+<a href="#1201" id="1201">1201</a>
+<a href="#1202" id="1202">1202</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::VecDeque;
 <span class="kw">use </span>std::fmt::Debug;
 <span class="kw">use </span>std::ops::{Deref, Range};
@@ -1237,7 +1241,11 @@
     <span class="doccomment">/// Returns a new deserializer for `input`.
     </span><span class="attr">#[inline]
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_slice(input: <span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span>[u8], maximum_bytes_allocatable: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="self">Self</span>::from_slice_with_symbols(input, SymbolMap::new(), maximum_bytes_allocatable)
+        <span class="self">Self</span>::from_slice_with_symbols(
+            input,
+            SymbolMap::Borrowed(SymbolList::new()),
+            maximum_bytes_allocatable,
+        )
     }
 
     <span class="kw">fn </span>from_slice_with_symbols(
@@ -1262,7 +1270,7 @@
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_read(input: R, maximum_bytes_allocatable: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="self">Self</span>::new(
             IoReader::new(input),
-            SymbolMap::new(),
+            SymbolMap::Borrowed(SymbolList::new()),
             maximum_bytes_allocatable,
         )
     }
