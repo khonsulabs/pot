@@ -1316,21 +1316,17 @@ mod tests {
     }
 
     #[test]
-    fn atom_headers() {
+    fn atom_header_args() {
         let mut out = Vec::new();
-        {
-            write_atom_header(&mut out, Kind::Map, 32).unwrap();
-            let (kind, arg) = read_atom_header(&mut out.as_slice()).unwrap();
+        for arg in 1..=64 {
+            let arg = 2_u64.saturating_pow(arg);
+            write_atom_header(&mut out, Kind::Map, arg).unwrap();
+            println!("header: {out:?}");
+            let (kind, read_arg) = read_atom_header(&mut out.as_slice()).unwrap();
             assert_eq!(kind, Kind::Map);
-            assert_eq!(arg, 32);
+            assert_eq!(read_arg, arg);
+            out.clear();
         }
-        out.clear();
-
-        write_atom_header(&mut out, Kind::Map, u64::MAX).unwrap();
-        println!("header: {out:?}");
-        let (kind, arg) = read_atom_header(&mut out.as_slice()).unwrap();
-        assert_eq!(kind, Kind::Map);
-        assert_eq!(arg, u64::MAX);
     }
 
     #[test]
