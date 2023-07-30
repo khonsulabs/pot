@@ -39,7 +39,11 @@ impl<'s, 'de> Deserializer<'s, 'de, SliceReader<'de>> {
     /// Returns a new deserializer for `input`.
     #[inline]
     pub(crate) fn from_slice(input: &'de [u8], maximum_bytes_allocatable: usize) -> Result<Self> {
-        Self::from_slice_with_symbols(input, SymbolMap::new(), maximum_bytes_allocatable)
+        Self::from_slice_with_symbols(
+            input,
+            SymbolMap::Borrowed(SymbolList::new()),
+            maximum_bytes_allocatable,
+        )
     }
 
     fn from_slice_with_symbols(
@@ -64,7 +68,7 @@ impl<'s, 'de, R: ReadBytesExt> Deserializer<'s, 'de, IoReader<R>> {
     pub(crate) fn from_read(input: R, maximum_bytes_allocatable: usize) -> Result<Self> {
         Self::new(
             IoReader::new(input),
-            SymbolMap::new(),
+            SymbolMap::Borrowed(SymbolList::new()),
             maximum_bytes_allocatable,
         )
     }

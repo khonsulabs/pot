@@ -339,6 +339,11 @@ mod tests {
     }
 
     #[test]
+    fn tuples() {
+        test_serialization(&(1, true, 3), None);
+    }
+
+    #[test]
     fn enums() {
         test_serialization(&EnumVariants::Unit, None);
 
