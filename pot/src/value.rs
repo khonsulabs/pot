@@ -14,7 +14,7 @@ use crate::format::{Float, InnerFloat, InnerInteger, Integer};
 
 /// A Pot-encoded value. This type can be used to deserialize to and from Pot
 /// without knowing the original data structure.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone)]
 pub enum Value<'a> {
     /// A value representing `None`.
     None,
@@ -34,52 +34,6 @@ pub enum Value<'a> {
     Sequence(Vec<Self>),
     /// A sequence of key-value mappings.
     Mappings(Vec<(Self, Self)>),
-}
-
-impl<'a> Display for Value<'a> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Value::None => f.write_str("None"),
-            Value::Unit => f.write_str("()"),
-            Value::Bool(true) => f.write_str("true"),
-            Value::Bool(false) => f.write_str("false"),
-            Value::Integer(value) => Display::fmt(value, f),
-            Value::Float(value) => Display::fmt(value, f),
-            Value::Bytes(bytes) => {
-                f.write_str("0x")?;
-                for (index, byte) in bytes.iter().enumerate() {
-                    if index > 0 && index % 4 == 0 {
-                        f.write_char('_')?;
-                    }
-                    write!(f, "{byte:02x}")?;
-                }
-                Ok(())
-            }
-            Value::String(string) => f.write_str(string),
-            Value::Sequence(sequence) => {
-                f.write_char('[')?;
-                for (index, value) in sequence.iter().enumerate() {
-                    if index > 0 {
-                        f.write_str(", ")?;
-                    }
-                    Display::fmt(value, f)?;
-                }
-                f.write_char(']')
-            }
-            Value::Mappings(mappings) => {
-                f.write_char('{')?;
-                for (index, (key, value)) in mappings.iter().enumerate() {
-                    if index > 0 {
-                        f.write_str(", ")?;
-                    }
-                    Display::fmt(key, f)?;
-                    f.write_str(": ")?;
-                    Display::fmt(value, f)?;
-                }
-                f.write_char('}')
-            }
-        }
-    }
 }
 
 impl<'a> Value<'a> {
@@ -395,6 +349,70 @@ impl<'a> Value<'a> {
     }
 }
 
+impl<'a, 'b> PartialEq<Value<'b>> for Value<'a> {
+    #[inline]
+    fn eq(&self, other: &Value<'b>) -> bool {
+        match (self, other) {
+            (Self::Bool(l0), Value::Bool(r0)) => l0 == r0,
+            (Self::Integer(l0), Value::Integer(r0)) => l0 == r0,
+            (Self::Float(l0), Value::Float(r0)) => l0 == r0,
+            (Self::Bytes(l0), Value::Bytes(r0)) => l0 == r0,
+            (Self::String(l0), Value::String(r0)) => l0 == r0,
+            (Self::Bytes(l0), Value::String(r0)) => *l0 == r0.as_bytes(),
+            (Self::String(l0), Value::Bytes(r0)) => l0.as_bytes() == &**r0,
+            (Self::Sequence(l0), Value::Sequence(r0)) => l0 == r0,
+            (Self::Mappings(l0), Value::Mappings(r0)) => l0 == r0,
+            _ => core::mem::discriminant(self) == core::mem::discriminant(other),
+        }
+    }
+}
+
+impl<'a> Display for Value<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Value::None => f.write_str("None"),
+            Value::Unit => f.write_str("()"),
+            Value::Bool(true) => f.write_str("true"),
+            Value::Bool(false) => f.write_str("false"),
+            Value::Integer(value) => Display::fmt(value, f),
+            Value::Float(value) => Display::fmt(value, f),
+            Value::Bytes(bytes) => {
+                f.write_str("0x")?;
+                for (index, byte) in bytes.iter().enumerate() {
+                    if index > 0 && index % 4 == 0 {
+                        f.write_char('_')?;
+                    }
+                    write!(f, "{byte:02x}")?;
+                }
+                Ok(())
+            }
+            Value::String(string) => f.write_str(string),
+            Value::Sequence(sequence) => {
+                f.write_char('[')?;
+                for (index, value) in sequence.iter().enumerate() {
+                    if index > 0 {
+                        f.write_str(", ")?;
+                    }
+                    Display::fmt(value, f)?;
+                }
+                f.write_char(']')
+            }
+            Value::Mappings(mappings) => {
+                f.write_char('{')?;
+                for (index, (key, value)) in mappings.iter().enumerate() {
+                    if index > 0 {
+                        f.write_str(", ")?;
+                    }
+                    Display::fmt(key, f)?;
+                    f.write_str(": ")?;
+                    Display::fmt(value, f)?;
+                }
+                f.write_char('}')
+            }
+        }
+    }
+}
+
 impl<'a> Serialize for Value<'a> {
     #[inline]
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
@@ -497,6 +515,20 @@ impl<'de> Deserialize<'de> for OwnedValue {
         deserializer
             .deserialize_any(ValueVisitor::default())
             .map(|value| Self(value.into_static()))
+    }
+}
+
+impl<'a> From<Value<'a>> for OwnedValue {
+    #[inline]
+    fn from(value: Value<'a>) -> Self {
+        Self(value.into_static())
+    }
+}
+
+impl<'a> From<&'a Value<'a>> for OwnedValue {
+    #[inline]
+    fn from(value: &'a Value<'a>) -> Self {
+        Self(value.to_static())
     }
 }
 
@@ -938,6 +970,31 @@ fn value_as_integer_tests() {
     macro_rules! test_signed {
         ($primitive:ty, $signed_method:ident, $unsigned:ty, $unsigned_method:ident, $float:ty) => {
             assert_eq!(
+                Value::from(<$primitive>::MAX)
+                    .as_integer()
+                    .expect("integer conversion failed")
+                    .$signed_method()
+                    .unwrap(),
+                <$primitive>::MAX,
+            );
+            assert_eq!(
+                Value::from(<$primitive>::MIN)
+                    .as_integer()
+                    .expect("integer conversion failed")
+                    .$signed_method()
+                    .unwrap(),
+                <$primitive>::MIN,
+            );
+            assert_eq!(
+                Value::from(<$primitive>::MAX)
+                    .as_integer()
+                    .expect("integer conversion failed")
+                    .$unsigned_method()
+                    .unwrap(),
+                <$unsigned>::try_from(<$primitive>::MAX).unwrap(),
+            );
+
+            assert_eq!(
                 Value::from(<$float>::from(<$primitive>::MAX))
                     .as_integer()
                     .expect("integer conversion failed")
@@ -970,6 +1027,19 @@ fn value_as_integer_tests() {
 
     macro_rules! test_unsigned {
         ($primitive:ty, $unsigned_method:ident, $signed:ty, $signed_method:ident, $float:ty) => {
+            assert_eq!(
+                Value::from(<$primitive>::MAX)
+                    .as_integer()
+                    .expect("integer conversion failed")
+                    .$unsigned_method()
+                    .unwrap(),
+                <$primitive>::MAX,
+            );
+            assert!(Value::from(<$primitive>::MAX)
+                .as_integer()
+                .expect("integer conversion failed")
+                .$signed_method()
+                .is_err());
             assert_eq!(
                 Value::from(<$float>::from(<$primitive>::MAX))
                     .as_integer()
@@ -1992,4 +2062,173 @@ impl serde::ser::Error for ValueError {
     {
         Self::Custom(msg.to_string())
     }
+}
+
+#[test]
+fn is_empty() {
+    for expected_empty in [
+        Value::None,
+        Value::Bytes(Cow::Borrowed(b"")),
+        Value::String(Cow::Borrowed("")),
+        Value::Sequence(vec![]),
+        Value::Mappings(vec![]),
+    ] {
+        assert!(expected_empty.is_empty(), "{expected_empty} was not empty");
+    }
+    for expected_not_empty in [
+        Value::Unit,
+        Value::Bool(true),
+        Value::Integer(Integer::from(0)),
+        Value::Float(Float::from(0f32)),
+        Value::Bytes(Cow::Borrowed(b"a")),
+        Value::String(Cow::Borrowed("a")),
+        Value::Sequence(vec![Value::None]),
+        Value::Mappings(vec![(Value::None, Value::None)]),
+    ] {
+        assert!(
+            !expected_not_empty.is_empty(),
+            "{expected_not_empty} was empty"
+        );
+    }
+}
+
+#[test]
+fn as_bool() {
+    for expected_true in [
+        Value::Unit,
+        Value::Bool(true),
+        Value::Integer(Integer::from(1)),
+        Value::Float(Float::from(1f32)),
+        Value::Bytes(Cow::Borrowed(b"a")),
+        Value::String(Cow::Borrowed("a")),
+        Value::Sequence(vec![Value::None]),
+        Value::Mappings(vec![(Value::None, Value::None)]),
+    ] {
+        assert!(expected_true.as_bool(), "{expected_true} was false");
+    }
+    for expected_false in [
+        Value::None,
+        Value::Bool(false),
+        Value::Integer(Integer::from(0)),
+        Value::Float(Float::from(0f32)),
+        Value::Bytes(Cow::Borrowed(b"")),
+        Value::String(Cow::Borrowed("")),
+        Value::Sequence(vec![]),
+        Value::Mappings(vec![]),
+    ] {
+        assert!(!expected_false.as_bool(), "{expected_false} was true");
+    }
+}
+
+#[test]
+fn as_integer() {
+    assert_eq!(
+        Value::from(1_i32).as_integer().unwrap().as_i32().unwrap(),
+        1
+    );
+    assert_eq!(
+        Value::from(1_f32).as_integer().unwrap().as_i32().unwrap(),
+        1
+    );
+    assert_eq!(Value::from(true).as_integer(), None);
+}
+
+#[test]
+fn as_float() {
+    approx::assert_abs_diff_eq!(
+        Value::from(1_i32).as_float().unwrap().as_f32().unwrap(),
+        1_f32
+    );
+
+    approx::assert_abs_diff_eq!(
+        Value::from(1_f32).as_float().unwrap().as_f32().unwrap(),
+        1_f32
+    );
+    assert_eq!(Value::from(true).as_float(), None);
+}
+
+#[test]
+fn as_str() {
+    assert_eq!(Value::from("asdf").as_str(), Some("asdf"));
+    assert_eq!(Value::from(b"asdf").as_str(), Some("asdf"));
+    assert_eq!(Value::from(false).as_str(), None);
+}
+
+#[test]
+fn as_bytes() {
+    assert_eq!(Value::from(b"asdf").as_bytes(), Some(&b"asdf"[..]));
+    assert_eq!(Value::from("asdf").as_bytes(), Some(&b"asdf"[..]));
+    assert_eq!(Value::from(false).as_str(), None);
+}
+
+#[test]
+fn values() {
+    assert_eq!(
+        Value::from_sequence([Value::Bool(true), Value::Bool(false)])
+            .values()
+            .collect::<Vec<_>>(),
+        &[&Value::Bool(true), &Value::Bool(false)]
+    );
+    assert_eq!(
+        Value::from_mappings([(0, Value::Bool(true)), (1, Value::Bool(false))])
+            .values()
+            .collect::<Vec<_>>(),
+        &[&Value::Bool(true), &Value::Bool(false)]
+    );
+}
+
+#[test]
+fn mappings() {
+    assert_eq!(
+        Value::from_sequence([Value::Bool(true), Value::Bool(false)])
+            .mappings()
+            .cloned()
+            .collect::<Vec<_>>(),
+        &[]
+    );
+    assert_eq!(
+        Value::from_mappings([(0, Value::Bool(true)), (1, Value::Bool(false))])
+            .mappings()
+            .collect::<Vec<_>>(),
+        &[
+            &(Value::from(0), Value::Bool(true)),
+            &(Value::from(1), Value::Bool(false))
+        ]
+    );
+}
+
+#[test]
+fn into_static() {
+    for borrowed in [
+        Value::None,
+        Value::Unit,
+        Value::Bool(true),
+        Value::from(1_i32),
+        Value::from(1_f32),
+        Value::from(b"hi"),
+        Value::from("hi"),
+        Value::from_sequence([1]),
+        Value::from_mappings([(1, 2)]),
+    ] {
+        let cloned = borrowed.clone();
+        assert_eq!(borrowed.to_static(), borrowed);
+        assert_eq!(borrowed.into_static(), cloned);
+    }
+}
+
+#[test]
+fn owned_deref() {
+    let mut owned_value = OwnedValue::from(&Value::from("hello"));
+    assert_eq!(owned_value.as_str(), Some("hello"));
+    let Value::String(Cow::Owned(str)) = &mut *owned_value else { unreachable!() };
+    str.push_str(", world");
+    assert_eq!(owned_value.as_str(), Some("hello, world"));
+}
+
+#[test]
+fn owned_serialization() {
+    let owned_value = OwnedValue::from(Value::from(b"asdf"));
+    let serialized = crate::to_vec(&owned_value).unwrap();
+    let deserialized_owned: OwnedValue = crate::from_slice(&serialized).unwrap();
+    assert_eq!(deserialized_owned, owned_value);
 }

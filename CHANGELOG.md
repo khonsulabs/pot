@@ -12,11 +12,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - [#9][9]`Value::from_serialize` now returns a `Result`. Previously, if a Serialize
   implementation returned an error, the function would panic. Thanks to
   @wackbyte for finding this.
+- `Reader::buffered_read_bytes` now takes a third parameter, `scratch: &mut
+  Vec<u8>` and returns a new type `BufferedBytes`. This allows callers to supply a buffer for reading bytes into rather than requiring implementors allocate new buffers.
+- `PartialEq` for `Value` has been changed such that if the bytes contained by a
+  string match the bytes contained by a byte value, the values now compare as
+  equal. Previously, all discriminants required exact matches.
+
+  This was done due to Pot not knowing whether a value is a string or bytes when
+  serialized. Bytes are auto-promoted to string if the bytes are valid UTF-8 in
+  Value deserialization.
+- `SymbolMap` now utilizes a new structure `SymbolList` for managing symbols.
+  This type optimizes storage of symbols when they are not borrowed from the
+  deserialization source.
+- `format::write_atom_header` no longer accepts an option for the `arg`
+  parameter.
+- `format::read_atom` now accepts a `scratch: &mut Vec<u8>` parameter which is
+  used when reading an associated `Nucleus::Bytes`. When `Nucleus::Bytes`
+  contains `BufferedBytes::Scratch`, `scratch` will contain the bytes contained
+  in the atom.
 
 ### Changed
 
 - `pot::Result<T>` is now `pot::Result<T,E = pot::Error>`. This avoids issues
   with other code when `pot::Result` is imported.
+- `OwnedValue` now implements `From` for `Value<'_>` and `&Value<'_>`.
 
 [9]: https://github.com/khonsulabs/pot/issues/9
 
