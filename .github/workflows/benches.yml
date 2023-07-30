@@ -18,7 +18,7 @@ jobs:
 
       - name: Run benchmarks
         run: |
-          cargo bench
+          cargo bench -p benchmarks -- -s0
 
       - name: Make plots have a solid white background
         run: |
