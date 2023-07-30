@@ -1939,6 +1939,60 @@
 <a href="#1939" id="1939">1939</a>
 <a href="#1940" id="1940">1940</a>
 <a href="#1941" id="1941">1941</a>
+<a href="#1942" id="1942">1942</a>
+<a href="#1943" id="1943">1943</a>
+<a href="#1944" id="1944">1944</a>
+<a href="#1945" id="1945">1945</a>
+<a href="#1946" id="1946">1946</a>
+<a href="#1947" id="1947">1947</a>
+<a href="#1948" id="1948">1948</a>
+<a href="#1949" id="1949">1949</a>
+<a href="#1950" id="1950">1950</a>
+<a href="#1951" id="1951">1951</a>
+<a href="#1952" id="1952">1952</a>
+<a href="#1953" id="1953">1953</a>
+<a href="#1954" id="1954">1954</a>
+<a href="#1955" id="1955">1955</a>
+<a href="#1956" id="1956">1956</a>
+<a href="#1957" id="1957">1957</a>
+<a href="#1958" id="1958">1958</a>
+<a href="#1959" id="1959">1959</a>
+<a href="#1960" id="1960">1960</a>
+<a href="#1961" id="1961">1961</a>
+<a href="#1962" id="1962">1962</a>
+<a href="#1963" id="1963">1963</a>
+<a href="#1964" id="1964">1964</a>
+<a href="#1965" id="1965">1965</a>
+<a href="#1966" id="1966">1966</a>
+<a href="#1967" id="1967">1967</a>
+<a href="#1968" id="1968">1968</a>
+<a href="#1969" id="1969">1969</a>
+<a href="#1970" id="1970">1970</a>
+<a href="#1971" id="1971">1971</a>
+<a href="#1972" id="1972">1972</a>
+<a href="#1973" id="1973">1973</a>
+<a href="#1974" id="1974">1974</a>
+<a href="#1975" id="1975">1975</a>
+<a href="#1976" id="1976">1976</a>
+<a href="#1977" id="1977">1977</a>
+<a href="#1978" id="1978">1978</a>
+<a href="#1979" id="1979">1979</a>
+<a href="#1980" id="1980">1980</a>
+<a href="#1981" id="1981">1981</a>
+<a href="#1982" id="1982">1982</a>
+<a href="#1983" id="1983">1983</a>
+<a href="#1984" id="1984">1984</a>
+<a href="#1985" id="1985">1985</a>
+<a href="#1986" id="1986">1986</a>
+<a href="#1987" id="1987">1987</a>
+<a href="#1988" id="1988">1988</a>
+<a href="#1989" id="1989">1989</a>
+<a href="#1990" id="1990">1990</a>
+<a href="#1991" id="1991">1991</a>
+<a href="#1992" id="1992">1992</a>
+<a href="#1993" id="1993">1993</a>
+<a href="#1994" id="1994">1994</a>
+<a href="#1995" id="1995">1995</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::borrow::Cow;
 <span class="kw">use </span>std::fmt::{Display, Write};
 <span class="kw">use </span>std::marker::PhantomData;
@@ -2049,6 +2103,7 @@
     /// # Ok(())
     /// # }
     /// ```
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>from_serialize&lt;T: Serialize&gt;(value: T) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, ValueError&gt; {
         value.serialize(Serializer)
     }
@@ -2073,6 +2128,7 @@
     /// # Ok(())
     /// # }
     /// ```
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>deserialize_as&lt;<span class="lifetime">&#39;de</span>, T: Deserialize&lt;<span class="lifetime">&#39;de</span>&gt;&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;T, ValueError&gt; {
         T::deserialize(Deserializer(<span class="self">self</span>))
     }
@@ -2084,6 +2140,7 @@
     /// let mappings = Value::from_sequence(Vec::&lt;String&gt;::new());
     /// assert!(matches!(mappings, Value::Sequence(_)));
     /// ```
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>from_sequence&lt;IntoIter: IntoIterator&lt;Item = T&gt;, T: Into&lt;<span class="self">Self</span>&gt;&gt;(
         sequence: IntoIter,
     ) -&gt; <span class="self">Self </span>{
@@ -2098,6 +2155,7 @@
     /// let mappings = Value::from_mappings(HashMap::&lt;String, u32&gt;::new());
     /// assert!(matches!(mappings, Value::Mappings(_)));
     /// ```
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>from_mappings&lt;IntoIter: IntoIterator&lt;Item = (K, V)&gt;, K: Into&lt;<span class="self">Self</span>&gt;, V: Into&lt;<span class="self">Self</span>&gt;&gt;(
         mappings: IntoIter,
     ) -&gt; <span class="self">Self </span>{
@@ -2140,6 +2198,7 @@
     /// );
     /// ```
     </span><span class="attr">#[must_use]
+    #[inline]
     </span><span class="kw">pub fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="kw">match </span><span class="self">self </span>{
             Value::None =&gt; <span class="bool-val">true</span>,
@@ -2189,6 +2248,7 @@
     /// );
     /// ```
     </span><span class="attr">#[must_use]
+    #[inline]
     </span><span class="kw">pub fn </span>as_bool(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="kw">match </span><span class="self">self </span>{
             Value::None =&gt; <span class="bool-val">false</span>,
@@ -2207,6 +2267,7 @@
     /// [`Self::Float`] or [`Self::Integer`]. Also returns `None` if the value is
     /// a float, but cannot be losslessly converted to an integer.
     </span><span class="attr">#[must_use]
+    #[inline]
     </span><span class="kw">pub fn </span>as_integer(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Integer&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             Value::Integer(value) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">*</span>value),
@@ -2219,6 +2280,7 @@
     /// [`Self::Float`] or [`Self::Integer`]. Also returns `None` if the value is
     /// an integer, but cannot be losslessly converted to a float.
     </span><span class="attr">#[must_use]
+    #[inline]
     </span><span class="kw">pub fn </span>as_float(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Float&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             Value::Integer(value) =&gt; value.as_float().ok(),
@@ -2232,6 +2294,7 @@
     /// [`Self::String`] and [`Self::Bytes`]. Bytes will only be returned if the
     /// contained bytes can be safely interpretted as UTF-8.
     </span><span class="attr">#[must_use]
+    #[inline]
     </span><span class="kw">pub fn </span>as_str(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Bytes(bytes) =&gt; std::str::from_utf8(bytes).ok(),
@@ -2244,6 +2307,7 @@
     /// representation of bytes. This will only return a value with variants
     /// [`Self::String`] and [`Self::Bytes`].
     </span><span class="attr">#[must_use]
+    #[inline]
     </span><span class="kw">pub fn </span>as_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>[u8]&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Bytes(bytes) =&gt; <span class="prelude-val">Some</span>(bytes),
@@ -2257,6 +2321,7 @@
     /// [`Self::Mappings`]. If a [`Self::Mappings`], only the value portion of
     /// the mapping is returned.
     </span><span class="attr">#[must_use]
+    #[inline]
     </span><span class="kw">pub fn </span>values(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SequenceIter&lt;<span class="lifetime">&#39;_</span>&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Sequence(sequence) =&gt; SequenceIter::Sequence(sequence.iter()),
@@ -2270,6 +2335,7 @@
     /// this value. Returns an empty iterator if not a [`Self::Sequence`] or
     /// [`Self::Mappings`]. If a [`Self::Sequence`], the key will always be
     /// `Self::None`.
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>mappings(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; std::slice::Iter&lt;<span class="lifetime">&#39;_</span>, (<span class="self">Self</span>, <span class="self">Self</span>)&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Mappings(mappings) =&gt; mappings.iter(),
@@ -2325,7 +2391,8 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Serialize <span class="kw">for </span>Value&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>serialize&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, serializer: S) -&gt; <span class="prelude-ty">Result</span>&lt;S::Ok, S::Error&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>serialize&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, serializer: S) -&gt; <span class="prelude-ty">Result</span>&lt;S::Ok, S::Error&gt;
     <span class="kw">where
         </span>S: serde::Serializer,
     {
@@ -2370,7 +2437,8 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>: <span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;a</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>Value&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>deserialize&lt;D&gt;(deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, D::Error&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>deserialize&lt;D&gt;(deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, D::Error&gt;
     <span class="kw">where
         </span>D: serde::Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
     {
@@ -2392,19 +2460,22 @@
 <span class="kw">impl </span>Deref <span class="kw">for </span>OwnedValue {
     <span class="kw">type </span>Target = Value&lt;<span class="lifetime">&#39;static</span>&gt;;
 
-    <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0
     </span>}
 }
 
 <span class="kw">impl </span>DerefMut <span class="kw">for </span>OwnedValue {
-    <span class="kw">fn </span>deref_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Target {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>deref_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Target {
         <span class="kw-2">&amp;mut </span><span class="self">self</span>.<span class="number">0
     </span>}
 }
 
 <span class="kw">impl </span>Serialize <span class="kw">for </span>OwnedValue {
-    <span class="kw">fn </span>serialize&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, serializer: S) -&gt; <span class="prelude-ty">Result</span>&lt;S::Ok, S::Error&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>serialize&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, serializer: S) -&gt; <span class="prelude-ty">Result</span>&lt;S::Ok, S::Error&gt;
     <span class="kw">where
         </span>S: serde::Serializer,
     {
@@ -2413,7 +2484,8 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>OwnedValue {
-    <span class="kw">fn </span>deserialize&lt;D&gt;(deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, D::Error&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>deserialize&lt;D&gt;(deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, D::Error&gt;
     <span class="kw">where
         </span>D: serde::Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
     {
@@ -2433,161 +2505,184 @@
         formatter.write_str(<span class="string">&quot;any value&quot;</span>)
     }
 
-    <span class="kw">fn </span>visit_none&lt;E&gt;(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_none&lt;E&gt;(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::None)
     }
 
-    <span class="kw">fn </span>visit_bool&lt;E&gt;(<span class="self">self</span>, v: bool) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_bool&lt;E&gt;(<span class="self">self</span>, v: bool) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::Bool(v))
     }
 
-    <span class="kw">fn </span>visit_i8&lt;E&gt;(<span class="self">self</span>, v: i8) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_i8&lt;E&gt;(<span class="self">self</span>, v: i8) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::Integer(Integer::from(v)))
     }
 
-    <span class="kw">fn </span>visit_i32&lt;E&gt;(<span class="self">self</span>, v: i32) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_i32&lt;E&gt;(<span class="self">self</span>, v: i32) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::Integer(Integer::from(v)))
     }
 
-    <span class="kw">fn </span>visit_i16&lt;E&gt;(<span class="self">self</span>, v: i16) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_i16&lt;E&gt;(<span class="self">self</span>, v: i16) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::Integer(Integer::from(v)))
     }
 
-    <span class="kw">fn </span>visit_i64&lt;E&gt;(<span class="self">self</span>, v: i64) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_i64&lt;E&gt;(<span class="self">self</span>, v: i64) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::Integer(Integer::from(v)))
     }
 
-    <span class="kw">fn </span>visit_i128&lt;E&gt;(<span class="self">self</span>, v: i128) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_i128&lt;E&gt;(<span class="self">self</span>, v: i128) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::Integer(Integer::from(v)))
     }
 
-    <span class="kw">fn </span>visit_u8&lt;E&gt;(<span class="self">self</span>, v: u8) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_u8&lt;E&gt;(<span class="self">self</span>, v: u8) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::Integer(Integer::from(v)))
     }
 
-    <span class="kw">fn </span>visit_u16&lt;E&gt;(<span class="self">self</span>, v: u16) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_u16&lt;E&gt;(<span class="self">self</span>, v: u16) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::Integer(Integer::from(v)))
     }
 
-    <span class="kw">fn </span>visit_u32&lt;E&gt;(<span class="self">self</span>, v: u32) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_u32&lt;E&gt;(<span class="self">self</span>, v: u32) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::Integer(Integer::from(v)))
     }
 
-    <span class="kw">fn </span>visit_u64&lt;E&gt;(<span class="self">self</span>, v: u64) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_u64&lt;E&gt;(<span class="self">self</span>, v: u64) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::Integer(Integer::from(v)))
     }
 
-    <span class="kw">fn </span>visit_u128&lt;E&gt;(<span class="self">self</span>, v: u128) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_u128&lt;E&gt;(<span class="self">self</span>, v: u128) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::Integer(Integer::from(v)))
     }
 
-    <span class="kw">fn </span>visit_f32&lt;E&gt;(<span class="self">self</span>, v: f32) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_f32&lt;E&gt;(<span class="self">self</span>, v: f32) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::Float(Float::from(v)))
     }
 
-    <span class="kw">fn </span>visit_f64&lt;E&gt;(<span class="self">self</span>, v: f64) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_f64&lt;E&gt;(<span class="self">self</span>, v: f64) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::Float(Float::from(v)))
     }
 
-    <span class="kw">fn </span>visit_str&lt;E&gt;(<span class="self">self</span>, v: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_str&lt;E&gt;(<span class="self">self</span>, v: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::String(Cow::Owned(v.to_string())))
     }
 
-    <span class="kw">fn </span>visit_borrowed_str&lt;E&gt;(<span class="self">self</span>, v: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_borrowed_str&lt;E&gt;(<span class="self">self</span>, v: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::String(Cow::Borrowed(v)))
     }
 
-    <span class="kw">fn </span>visit_string&lt;E&gt;(<span class="self">self</span>, v: String) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_string&lt;E&gt;(<span class="self">self</span>, v: String) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::String(Cow::Owned(v)))
     }
 
-    <span class="kw">fn </span>visit_bytes&lt;E&gt;(<span class="self">self</span>, v: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_bytes&lt;E&gt;(<span class="self">self</span>, v: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::Bytes(Cow::Owned(v.to_vec())))
     }
 
-    <span class="kw">fn </span>visit_borrowed_bytes&lt;E&gt;(<span class="self">self</span>, v: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_borrowed_bytes&lt;E&gt;(<span class="self">self</span>, v: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::Bytes(Cow::Borrowed(v)))
     }
 
-    <span class="kw">fn </span>visit_byte_buf&lt;E&gt;(<span class="self">self</span>, v: Vec&lt;u8&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_byte_buf&lt;E&gt;(<span class="self">self</span>, v: Vec&lt;u8&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::Bytes(Cow::Owned(v)))
     }
 
-    <span class="kw">fn </span>visit_some&lt;D&gt;(<span class="self">self</span>, deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, D::Error&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_some&lt;D&gt;(<span class="self">self</span>, deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, D::Error&gt;
     <span class="kw">where
         </span>D: serde::Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
     {
         deserializer.deserialize_any(<span class="self">Self</span>::default())
     }
 
-    <span class="kw">fn </span>visit_unit&lt;E&gt;(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_unit&lt;E&gt;(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt;
     <span class="kw">where
         </span>E: serde::de::Error,
     {
         <span class="prelude-val">Ok</span>(Value::Unit)
     }
 
-    <span class="kw">fn </span>visit_seq&lt;A&gt;(<span class="self">self</span>, <span class="kw-2">mut </span>seq: A) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, A::Error&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_seq&lt;A&gt;(<span class="self">self</span>, <span class="kw-2">mut </span>seq: A) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, A::Error&gt;
     <span class="kw">where
         </span>A: serde::de::SeqAccess&lt;<span class="lifetime">&#39;de</span>&gt;,
     {
@@ -2602,7 +2697,8 @@
         <span class="prelude-val">Ok</span>(Value::Sequence(values))
     }
 
-    <span class="kw">fn </span>visit_map&lt;A&gt;(<span class="self">self</span>, <span class="kw-2">mut </span>map: A) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, A::Error&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>visit_map&lt;A&gt;(<span class="self">self</span>, <span class="kw-2">mut </span>map: A) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, A::Error&gt;
     <span class="kw">where
         </span>A: serde::de::MapAccess&lt;<span class="lifetime">&#39;de</span>&gt;,
     {
@@ -2619,7 +2715,8 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;<span class="prelude-ty">Option</span>&lt;Value&lt;<span class="lifetime">&#39;a</span>&gt;&gt;&gt; <span class="kw">for </span>Value&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>from(value: <span class="prelude-ty">Option</span>&lt;Value&lt;<span class="lifetime">&#39;a</span>&gt;&gt;) -&gt; <span class="self">Self </span>{
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>from(value: <span class="prelude-ty">Option</span>&lt;Value&lt;<span class="lifetime">&#39;a</span>&gt;&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">if let </span><span class="prelude-val">Some</span>(value) = value {
             value
         } <span class="kw">else </span>{
@@ -2629,13 +2726,15 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;()&gt; <span class="kw">for </span>Value&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>from(<span class="kw">_</span>: ()) -&gt; <span class="self">Self </span>{
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>from(<span class="kw">_</span>: ()) -&gt; <span class="self">Self </span>{
         Value::Unit
     }
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;bool&gt; <span class="kw">for </span>Value&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>from(value: bool) -&gt; <span class="self">Self </span>{
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>from(value: bool) -&gt; <span class="self">Self </span>{
         Value::Bool(value)
     }
 }
@@ -2643,7 +2742,8 @@
 <span class="macro">macro_rules! </span>define_value_from_primitive {
     (<span class="macro-nonterminal">$container</span>:ident, <span class="macro-nonterminal">$variant</span>:ident, <span class="macro-nonterminal">$primitive</span>:ty) =&gt; {
         <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;<span class="macro-nonterminal">$primitive</span>&gt; <span class="kw">for </span>Value&lt;<span class="lifetime">&#39;a</span>&gt; {
-            <span class="kw">fn </span>from(value: <span class="macro-nonterminal">$primitive</span>) -&gt; <span class="self">Self </span>{
+            <span class="attr">#[inline]
+            </span><span class="kw">fn </span>from(value: <span class="macro-nonterminal">$primitive</span>) -&gt; <span class="self">Self </span>{
                 <span class="self">Self</span>::<span class="macro-nonterminal">$container</span>(<span class="macro-nonterminal">$container::from</span>(value))
             }
         }
@@ -2666,43 +2766,50 @@
 <span class="macro">define_value_from_primitive!</span>(Float, F64, f64);
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]&gt; <span class="kw">for </span>Value&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>from(bytes: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]) -&gt; <span class="self">Self </span>{
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>from(bytes: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::Bytes(Cow::Borrowed(bytes))
     }
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;Vec&lt;u8&gt;&gt; <span class="kw">for </span>Value&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>from(bytes: Vec&lt;u8&gt;) -&gt; <span class="self">Self </span>{
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>from(bytes: Vec&lt;u8&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::Bytes(Cow::Owned(bytes))
     }
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="kw">const </span>N: usize&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8; N]&gt; <span class="kw">for </span>Value&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>from(bytes: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8; N]) -&gt; <span class="self">Self </span>{
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>from(bytes: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8; N]) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::Bytes(Cow::Borrowed(bytes))
     }
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt; <span class="kw">for </span>Value&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>from(string: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; <span class="self">Self </span>{
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>from(string: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::String(Cow::Borrowed(string))
     }
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;String&gt; <span class="kw">for </span>Value&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>from(string: String) -&gt; <span class="self">Self </span>{
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>from(string: String) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::String(Cow::Owned(string))
     }
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;Vec&lt;Value&lt;<span class="lifetime">&#39;a</span>&gt;&gt;&gt; <span class="kw">for </span>Value&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>from(value: Vec&lt;Value&lt;<span class="lifetime">&#39;a</span>&gt;&gt;) -&gt; <span class="self">Self </span>{
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>from(value: Vec&lt;Value&lt;<span class="lifetime">&#39;a</span>&gt;&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::Sequence(value)
     }
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;Vec&lt;(Value&lt;<span class="lifetime">&#39;a</span>&gt;, Value&lt;<span class="lifetime">&#39;a</span>&gt;)&gt;&gt; <span class="kw">for </span>Value&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>from(value: Vec&lt;(Value&lt;<span class="lifetime">&#39;a</span>&gt;, Value&lt;<span class="lifetime">&#39;a</span>&gt;)&gt;) -&gt; <span class="self">Self </span>{
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>from(value: Vec&lt;(Value&lt;<span class="lifetime">&#39;a</span>&gt;, Value&lt;<span class="lifetime">&#39;a</span>&gt;)&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::Mappings(value)
     }
 }
@@ -2715,7 +2822,8 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Iterator <span class="kw">for </span>SequenceIter&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">type </span>Item = <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Value&lt;<span class="lifetime">&#39;a</span>&gt;;
 
-    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             SequenceIter::Sequence(sequence) =&gt; sequence.next(),
             SequenceIter::Mappings(mappings) =&gt; mappings.next().map(|(_k, v)| v),

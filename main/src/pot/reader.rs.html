@@ -134,8 +134,58 @@
 <a href="#134" id="134">134</a>
 <a href="#135" id="135">135</a>
 <a href="#136" id="136">136</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>std::borrow::Cow;
-<span class="kw">use </span>std::fmt::Debug;
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::fmt::Debug;
 <span class="kw">use </span>std::io::Read;
 
 <span class="kw">use </span>byteorder::ReadBytesExt;
@@ -144,8 +194,39 @@
 
 <span class="doccomment">/// A reader that can temporarily buffer bytes read.
 </span><span class="kw">pub trait </span>Reader&lt;<span class="lifetime">&#39;de</span>&gt;: ReadBytesExt {
-    <span class="doccomment">/// Reads exactly `length` bytes and returns a reference to the buffer.
-    </span><span class="kw">fn </span>buffered_read_bytes(<span class="kw-2">&amp;mut </span><span class="self">self</span>, length: usize) -&gt; <span class="prelude-ty">Result</span>&lt;Cow&lt;<span class="lifetime">&#39;de</span>, [u8]&gt;, Error&gt;;
+    <span class="doccomment">/// Reads exactly `length` bytes.
+    ///
+    /// If the reader supports borrowing bytes, [`BufferedBytes::Data`] should
+    /// be returned. Otherwise, the bytes will be read into `scratch`. `scratch`
+    /// should only be assumed to be valid if [`BufferedBytes::Scratch`] is
+    /// returned.
+    </span><span class="kw">fn </span>buffered_read_bytes(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        length: usize,
+        scratch: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;BufferedBytes&lt;<span class="lifetime">&#39;de</span>&gt;, Error&gt;;
+}
+
+<span class="doccomment">/// Bytes that have been read into a buffer.
+</span><span class="attr">#[derive(Debug)]
+</span><span class="kw">pub enum </span>BufferedBytes&lt;<span class="lifetime">&#39;de</span>&gt; {
+    <span class="doccomment">/// The bytes that have been read can be borrowed from the source.
+    </span>Data(<span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span>[u8]),
+    <span class="doccomment">/// The bytes that have been read have been stored in the scratch buffer
+    /// passed to the function reading bytes.
+    </span>Scratch,
+}
+
+<span class="kw">impl </span>BufferedBytes&lt;<span class="lifetime">&#39;_</span>&gt; {
+    <span class="doccomment">/// Resolves the bytes to a byte slice.
+    </span><span class="attr">#[inline]
+    #[must_use]
+    </span><span class="kw">pub fn </span>as_slice&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>, scratch: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8] {
+        <span class="kw">match </span><span class="self">self </span>{
+            BufferedBytes::Data(data) =&gt; data,
+            BufferedBytes::Scratch =&gt; scratch,
+        }
+    }
 }
 
 <span class="doccomment">/// Reads data from a slice.
@@ -157,12 +238,14 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; SliceReader&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="doccomment">/// Returns the remaining bytes to read.
     </span><span class="attr">#[must_use]
+    #[inline]
     </span><span class="kw">pub const fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
         <span class="self">self</span>.data.len()
     }
 
     <span class="doccomment">/// Returns `true` if there are no bytes remaining to read.
     </span><span class="attr">#[must_use]
+    #[inline]
     </span><span class="kw">pub const fn </span>is_empty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.data.is_empty()
     }
@@ -180,32 +263,40 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]&gt; <span class="kw">for </span>SliceReader&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>from(data: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]) -&gt; <span class="self">Self </span>{
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>from(data: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{ data }
     }
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;SliceReader&lt;<span class="lifetime">&#39;a</span>&gt;&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8] {
-    <span class="kw">fn </span>from(reader: SliceReader&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="self">Self </span>{
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>from(reader: SliceReader&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="self">Self </span>{
         reader.data
     }
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Reader&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>SliceReader&lt;<span class="lifetime">&#39;de</span>&gt; {
-    <span class="kw">fn </span>buffered_read_bytes(<span class="kw-2">&amp;mut </span><span class="self">self</span>, length: usize) -&gt; <span class="prelude-ty">Result</span>&lt;Cow&lt;<span class="lifetime">&#39;de</span>, [u8]&gt;, Error&gt; {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>buffered_read_bytes(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        length: usize,
+        _scratch: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;BufferedBytes&lt;<span class="lifetime">&#39;de</span>&gt;, Error&gt; {
         <span class="kw">if </span>length &gt; <span class="self">self</span>.data.len() {
             <span class="self">self</span>.data = <span class="kw-2">&amp;</span><span class="self">self</span>.data[<span class="self">self</span>.data.len()..];
             <span class="prelude-val">Err</span>(Error::Eof)
         } <span class="kw">else </span>{
             <span class="kw">let </span>(start, remaining) = <span class="self">self</span>.data.split_at(length);
             <span class="self">self</span>.data = remaining;
-            <span class="prelude-val">Ok</span>(Cow::Borrowed(start))
+            <span class="prelude-val">Ok</span>(BufferedBytes::Data(start))
         }
     }
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Read <span class="kw">for </span>SliceReader&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>read(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>[u8]) -&gt; std::io::Result&lt;usize&gt; {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>read(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>[u8]) -&gt; std::io::Result&lt;usize&gt; {
         <span class="kw">let </span>remaining_length = <span class="self">self</span>.data.len();
         <span class="kw">let </span>(to_copy, remaining) = <span class="self">self</span>.data.split_at(remaining_length.min(buf.len()));
         buf[..to_copy.len()].copy_from_slice(to_copy);
@@ -213,7 +304,8 @@
         <span class="prelude-val">Ok</span>(to_copy.len())
     }
 
-    <span class="kw">fn </span>read_exact(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>[u8]) -&gt; std::io::Result&lt;()&gt; {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>read_exact(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>[u8]) -&gt; std::io::Result&lt;()&gt; {
         <span class="self">self</span>.read(buf).map(|<span class="kw">_</span>| ())
     }
 }
@@ -230,31 +322,41 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>, R: ReadBytesExt&gt; Reader&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>IoReader&lt;R&gt; {
-    <span class="kw">fn </span>buffered_read_bytes(<span class="kw-2">&amp;mut </span><span class="self">self</span>, length: usize) -&gt; <span class="prelude-ty">Result</span>&lt;Cow&lt;<span class="lifetime">&#39;de</span>, [u8]&gt;, Error&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>buffer = <span class="macro">vec!</span>[<span class="number">0</span>; length];
-        <span class="self">self</span>.reader.read_exact(<span class="kw-2">&amp;mut </span>buffer)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(Cow::Owned(buffer))
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>buffered_read_bytes(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        length: usize,
+        scratch: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;BufferedBytes&lt;<span class="lifetime">&#39;de</span>&gt;, Error&gt; {
+        scratch.resize(length, <span class="number">0</span>);
+        <span class="self">self</span>.reader.read_exact(scratch)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(BufferedBytes::Scratch)
     }
 }
 
 <span class="kw">impl</span>&lt;R: ReadBytesExt&gt; Read <span class="kw">for </span>IoReader&lt;R&gt; {
-    <span class="kw">fn </span>read(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>[u8]) -&gt; std::io::Result&lt;usize&gt; {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>read(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>[u8]) -&gt; std::io::Result&lt;usize&gt; {
         <span class="self">self</span>.reader.read(buf)
     }
 
-    <span class="kw">fn </span>read_vectored(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bufs: <span class="kw-2">&amp;mut </span>[std::io::IoSliceMut&lt;<span class="lifetime">&#39;_</span>&gt;]) -&gt; std::io::Result&lt;usize&gt; {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>read_vectored(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bufs: <span class="kw-2">&amp;mut </span>[std::io::IoSliceMut&lt;<span class="lifetime">&#39;_</span>&gt;]) -&gt; std::io::Result&lt;usize&gt; {
         <span class="self">self</span>.reader.read_vectored(bufs)
     }
 
-    <span class="kw">fn </span>read_to_end(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;) -&gt; std::io::Result&lt;usize&gt; {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>read_to_end(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;) -&gt; std::io::Result&lt;usize&gt; {
         <span class="self">self</span>.reader.read_to_end(buf)
     }
 
-    <span class="kw">fn </span>read_to_string(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>String) -&gt; std::io::Result&lt;usize&gt; {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>read_to_string(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>String) -&gt; std::io::Result&lt;usize&gt; {
         <span class="self">self</span>.reader.read_to_string(buf)
     }
 
-    <span class="kw">fn </span>read_exact(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>[u8]) -&gt; std::io::Result&lt;()&gt; {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>read_exact(<span class="kw-2">&amp;mut </span><span class="self">self</span>, buf: <span class="kw-2">&amp;mut </span>[u8]) -&gt; std::io::Result&lt;()&gt; {
         <span class="self">self</span>.reader.read_exact(buf)
     }
 }

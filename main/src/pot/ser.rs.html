@@ -524,6 +524,56 @@
 <a href="#524" id="524">524</a>
 <a href="#525" id="525">525</a>
 <a href="#526" id="526">526</a>
+<a href="#527" id="527">527</a>
+<a href="#528" id="528">528</a>
+<a href="#529" id="529">529</a>
+<a href="#530" id="530">530</a>
+<a href="#531" id="531">531</a>
+<a href="#532" id="532">532</a>
+<a href="#533" id="533">533</a>
+<a href="#534" id="534">534</a>
+<a href="#535" id="535">535</a>
+<a href="#536" id="536">536</a>
+<a href="#537" id="537">537</a>
+<a href="#538" id="538">538</a>
+<a href="#539" id="539">539</a>
+<a href="#540" id="540">540</a>
+<a href="#541" id="541">541</a>
+<a href="#542" id="542">542</a>
+<a href="#543" id="543">543</a>
+<a href="#544" id="544">544</a>
+<a href="#545" id="545">545</a>
+<a href="#546" id="546">546</a>
+<a href="#547" id="547">547</a>
+<a href="#548" id="548">548</a>
+<a href="#549" id="549">549</a>
+<a href="#550" id="550">550</a>
+<a href="#551" id="551">551</a>
+<a href="#552" id="552">552</a>
+<a href="#553" id="553">553</a>
+<a href="#554" id="554">554</a>
+<a href="#555" id="555">555</a>
+<a href="#556" id="556">556</a>
+<a href="#557" id="557">557</a>
+<a href="#558" id="558">558</a>
+<a href="#559" id="559">559</a>
+<a href="#560" id="560">560</a>
+<a href="#561" id="561">561</a>
+<a href="#562" id="562">562</a>
+<a href="#563" id="563">563</a>
+<a href="#564" id="564">564</a>
+<a href="#565" id="565">565</a>
+<a href="#566" id="566">566</a>
+<a href="#567" id="567">567</a>
+<a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
+<a href="#570" id="570">570</a>
+<a href="#571" id="571">571</a>
+<a href="#572" id="572">572</a>
+<a href="#573" id="573">573</a>
+<a href="#574" id="574">574</a>
+<a href="#575" id="575">575</a>
+<a href="#576" id="576">576</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::fmt::Debug;
 <span class="kw">use </span>std::ops::{Deref, DerefMut};
 <span class="kw">use </span>std::usize;
@@ -554,6 +604,7 @@
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, W: WriteBytesExt&gt; Serializer&lt;<span class="lifetime">&#39;a</span>, W&gt; {
     <span class="doccomment">/// Returns a new serializer outputting written bytes into `output`.
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>new(output: W) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="self">Self</span>::new_with_symbol_map(output, SymbolMapRef::Owned(SymbolMap::default()))
     }
@@ -573,8 +624,7 @@
         <span class="kw">if </span>registered_symbol.new {
             <span class="comment">// The arg is the length followed by a 0 bit.
             </span><span class="kw">let </span>arg = (symbol.len() <span class="kw">as </span>u64) &lt;&lt; <span class="number">1</span>;
-            <span class="self">self</span>.bytes_written +=
-                format::write_atom_header(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, Kind::Symbol, <span class="prelude-val">Some</span>(arg))<span class="question-mark">?</span>;
+            <span class="self">self</span>.bytes_written += format::write_atom_header(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, Kind::Symbol, arg)<span class="question-mark">?</span>;
             <span class="self">self</span>.output.write_all(symbol.as_bytes())<span class="question-mark">?</span>;
             <span class="self">self</span>.bytes_written += symbol.len();
         } <span class="kw">else </span>{
@@ -582,7 +632,7 @@
             </span><span class="self">self</span>.bytes_written += format::write_atom_header(
                 <span class="kw-2">&amp;mut </span><span class="self">self</span>.output,
                 Kind::Symbol,
-                <span class="prelude-val">Some</span>(u64::from((registered_symbol.id &lt;&lt; <span class="number">1</span>) | <span class="number">1</span>)),
+                u64::from((registered_symbol.id &lt;&lt; <span class="number">1</span>) | <span class="number">1</span>),
             )<span class="question-mark">?</span>;
         }
         <span class="prelude-val">Ok</span>(())
@@ -600,113 +650,132 @@
     <span class="kw">type </span>SerializeTupleStruct = <span class="self">Self</span>;
     <span class="kw">type </span>SerializeTupleVariant = <span class="self">Self</span>;
 
-    <span class="kw">fn </span>is_human_readable(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>is_human_readable(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="bool-val">false
     </span>}
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_bool(<span class="self">self</span>, v: bool) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_bool(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_i8(<span class="self">self</span>, v: i8) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_i8(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_i16(<span class="self">self</span>, v: i16) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_i16(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_i32(<span class="self">self</span>, v: i32) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_i32(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_i64(<span class="self">self</span>, v: i64) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_i64(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_i128(<span class="self">self</span>, v: i128) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_i128(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_u8(<span class="self">self</span>, v: u8) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_u8(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_u16(<span class="self">self</span>, v: u16) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_u16(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_u32(<span class="self">self</span>, v: u32) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_u32(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_u64(<span class="self">self</span>, v: u64) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_u64(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_u128(<span class="self">self</span>, v: u128) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_u128(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_f32(<span class="self">self</span>, v: f32) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_f32(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_f64(<span class="self">self</span>, v: f64) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_f64(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_char(<span class="self">self</span>, v: char) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_u32(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v <span class="kw">as </span>u32)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_str(<span class="self">self</span>, v: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_str(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_bytes(<span class="self">self</span>, v: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_bytes(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_none(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_none(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(value)))]
+    #[inline]
     </span><span class="kw">fn </span>serialize_some&lt;T&gt;(<span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>T: <span class="question-mark">?</span>Sized + Serialize,
@@ -715,17 +784,20 @@
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_unit(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_unit(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_unit_struct(<span class="self">self</span>, _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.serialize_unit()
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_unit_variant(
         <span class="self">self</span>,
         _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
@@ -738,6 +810,7 @@
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(value)))]
+    #[inline]
     </span><span class="kw">fn </span>serialize_newtype_struct&lt;T&gt;(<span class="self">self</span>, _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>T: <span class="question-mark">?</span>Sized + Serialize,
@@ -746,6 +819,7 @@
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(value)))]
+    #[inline]
     </span><span class="kw">fn </span>serialize_newtype_variant&lt;T&gt;(
         <span class="self">self</span>,
         _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
@@ -763,19 +837,22 @@
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_seq(<span class="self">self</span>, len: <span class="prelude-ty">Option</span>&lt;usize&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::SerializeSeq&gt; {
         <span class="kw">let </span>len = len.ok_or(Error::SequenceSizeMustBeKnown)<span class="question-mark">?</span>;
         <span class="self">self</span>.bytes_written +=
-            format::write_atom_header(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, Kind::Sequence, <span class="prelude-val">Some</span>(len <span class="kw">as </span>u64))<span class="question-mark">?</span>;
+            format::write_atom_header(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, Kind::Sequence, len <span class="kw">as </span>u64)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="self">self</span>)
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_tuple(<span class="self">self</span>, len: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::SerializeTuple&gt; {
         <span class="self">self</span>.serialize_seq(<span class="prelude-val">Some</span>(len))
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_tuple_struct(
         <span class="self">self</span>,
         _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
@@ -785,6 +862,7 @@
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_tuple_variant(
         <span class="self">self</span>,
         _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
@@ -798,10 +876,11 @@
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_map(<span class="self">self</span>, len: <span class="prelude-ty">Option</span>&lt;usize&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::SerializeMap&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(len) = len {
             <span class="self">self</span>.bytes_written +=
-                format::write_atom_header(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, Kind::Map, <span class="prelude-val">Some</span>(len <span class="kw">as </span>u64))<span class="question-mark">?</span>;
+                format::write_atom_header(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, Kind::Map, len <span class="kw">as </span>u64)<span class="question-mark">?</span>;
             <span class="prelude-val">Ok</span>(MapSerializer {
                 serializer: <span class="self">self</span>,
                 known_length: <span class="bool-val">true</span>,
@@ -816,11 +895,13 @@
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_struct(<span class="self">self</span>, _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, len: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::SerializeStruct&gt; {
         <span class="self">self</span>.serialize_map(<span class="prelude-val">Some</span>(len))
     }
 
     <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    #[inline]
     </span><span class="kw">fn </span>serialize_struct_variant(
         <span class="self">self</span>,
         name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
@@ -838,14 +919,16 @@
     <span class="kw">type </span>Error = Error;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
-    <span class="kw">fn </span>serialize_element&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>serialize_element&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>T: <span class="question-mark">?</span>Sized + Serialize,
     {
         value.serialize(<span class="kw-2">&amp;mut **</span><span class="self">self</span>)
     }
 
-    <span class="kw">fn </span>end(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>end(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="prelude-val">Ok</span>(())
     }
 }
@@ -854,14 +937,16 @@
     <span class="kw">type </span>Error = Error;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
-    <span class="kw">fn </span>serialize_element&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>serialize_element&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>T: <span class="question-mark">?</span>Sized + Serialize,
     {
         value.serialize(<span class="kw-2">&amp;mut **</span><span class="self">self</span>)
     }
 
-    <span class="kw">fn </span>end(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>end(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="prelude-val">Ok</span>(())
     }
 }
@@ -870,14 +955,16 @@
     <span class="kw">type </span>Error = Error;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
-    <span class="kw">fn </span>serialize_field&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>serialize_field&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>T: <span class="question-mark">?</span>Sized + Serialize,
     {
         value.serialize(<span class="kw-2">&amp;mut **</span><span class="self">self</span>)
     }
 
-    <span class="kw">fn </span>end(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>end(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="prelude-val">Ok</span>(())
     }
 }
@@ -888,14 +975,16 @@
     <span class="kw">type </span>Error = Error;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
-    <span class="kw">fn </span>serialize_field&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>serialize_field&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>T: <span class="question-mark">?</span>Sized + Serialize,
     {
         value.serialize(<span class="kw-2">&amp;mut **</span><span class="self">self</span>)
     }
 
-    <span class="kw">fn </span>end(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>end(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="prelude-val">Ok</span>(())
     }
 }
@@ -910,21 +999,24 @@
     <span class="kw">type </span>Error = Error;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
-    <span class="kw">fn </span>serialize_key&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>serialize_key&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>T: <span class="question-mark">?</span>Sized + Serialize,
     {
         key.serialize(<span class="kw-2">&amp;mut *</span><span class="self">self</span>.serializer)
     }
 
-    <span class="kw">fn </span>serialize_value&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>serialize_value&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>T: <span class="question-mark">?</span>Sized + Serialize,
     {
         value.serialize(<span class="kw-2">&amp;mut *</span><span class="self">self</span>.serializer)
     }
 
-    <span class="kw">fn </span>end(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>end(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">if </span>!<span class="self">self</span>.known_length {
             format::write_special(<span class="kw-2">&amp;mut </span><span class="self">self</span>.serializer.output, Special::DynamicEnd)<span class="question-mark">?</span>;
         }
@@ -936,7 +1028,8 @@
     <span class="kw">type </span>Error = Error;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
-    <span class="kw">fn </span>serialize_field&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>serialize_field&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>T: <span class="question-mark">?</span>Sized + Serialize,
     {
@@ -944,7 +1037,8 @@
         value.serialize(<span class="kw-2">&amp;mut *</span><span class="self">self</span>.serializer)
     }
 
-    <span class="kw">fn </span>end(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>end(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">if </span>!<span class="self">self</span>.known_length {
             format::write_special(<span class="kw-2">&amp;mut </span><span class="self">self</span>.serializer.output, Special::DynamicEnd)<span class="question-mark">?</span>;
         }
@@ -958,7 +1052,8 @@
     <span class="kw">type </span>Error = Error;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
-    <span class="kw">fn </span>serialize_field&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>serialize_field&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>T: <span class="question-mark">?</span>Sized + Serialize,
     {
@@ -966,7 +1061,8 @@
         value.serialize(<span class="kw-2">&amp;mut *</span><span class="self">self</span>.serializer)
     }
 
-    <span class="kw">fn </span>end(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>end(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">if </span>!<span class="self">self</span>.known_length {
             format::write_special(<span class="kw-2">&amp;mut </span><span class="self">self</span>.serializer.output, Special::DynamicEnd)<span class="question-mark">?</span>;
         }
@@ -981,7 +1077,8 @@
 }
 
 <span class="kw">impl </span>Default <span class="kw">for </span>SymbolMap {
-    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>symbols = Vec::default();
         <span class="comment">// TODO make this configurable
         </span>symbols.reserve(<span class="number">1024</span>);
@@ -997,6 +1094,7 @@
 <span class="kw">impl </span>SymbolMap {
     <span class="doccomment">/// Returns a serializer that writes into `output` and persists symbols
     /// into `self`.
+    </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>serializer_for&lt;W: WriteBytesExt&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, output: W) -&gt; <span class="prelude-ty">Result</span>&lt;Serializer&lt;<span class="lifetime">&#39;_</span>, W&gt;&gt; {
         Serializer::new_with_symbol_map(output, SymbolMapRef::Borrowed(<span class="self">self</span>))
     }
@@ -1034,7 +1132,8 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; Deref <span class="kw">for </span>SymbolMapRef&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">type </span>Target = SymbolMap;
 
-    <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
         <span class="kw">match </span><span class="self">self </span>{
             SymbolMapRef::Owned(map) =&gt; map,
             SymbolMapRef::Borrowed(map) =&gt; map,
@@ -1043,7 +1142,8 @@
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; DerefMut <span class="kw">for </span>SymbolMapRef&lt;<span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">fn </span>deref_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Target {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>deref_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Target {
         <span class="kw">match </span><span class="self">self </span>{
             SymbolMapRef::Owned(map) =&gt; map,
             SymbolMapRef::Borrowed(map) =&gt; map,

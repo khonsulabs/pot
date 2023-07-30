@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["IoReader","SliceReader"],"trait":["Reader"]};
+window.SIDEBAR_ITEMS = {"enum":["BufferedBytes"],"struct":["IoReader","SliceReader"],"trait":["Reader"]};
