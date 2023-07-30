@@ -847,6 +847,7 @@
 <a href="#847" id="847">847</a>
 <a href="#848" id="848">848</a>
 <a href="#849" id="849">849</a>
+<a href="#850" id="850">850</a>
 </pre></div><pre class="rust"><code><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">&quot;../crate-docs.md&quot;</span>)]
 #![forbid(unsafe_code)]
 #![warn(
@@ -1329,6 +1330,7 @@
         <span class="macro">roundtrip!</span>(Value::None);
         <span class="macro">roundtrip!</span>(Value::Unit);
         <span class="macro">roundtrip!</span>(Value::Bool(<span class="bool-val">true</span>));
+        <span class="macro">roundtrip!</span>(Value::Bool(<span class="bool-val">false</span>));
         <span class="macro">roundtrip!</span>(Value::Integer(Integer::from(i8::MAX)));
         <span class="macro">roundtrip!</span>(Value::Integer(Integer::from(i16::MAX)));
         <span class="macro">roundtrip!</span>(Value::Integer(Integer::from(i32::MAX)));
