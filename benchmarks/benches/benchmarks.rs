@@ -72,7 +72,7 @@ impl Level {
 }
 
 enum Backend {
-    Pbor,
+    Pot,
     Cbor,
     Bincode,
     Msgpack,
@@ -82,7 +82,7 @@ enum Backend {
 impl Backend {
     fn all() -> [Self; 5] {
         [
-            Self::Pbor,
+            Self::Pot,
             Self::Cbor,
             Self::Bincode,
             Self::Msgpack,
@@ -94,7 +94,7 @@ impl Backend {
 impl Display for Backend {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_str(match self {
-            Self::Pbor => "pot",
+            Self::Pot => "pot",
             Self::Cbor => "cbor",
             Self::Bincode => "bincode",
             Self::Msgpack => "MessagePack",
@@ -144,7 +144,7 @@ fn bench_logs(c: &mut Criterion) {
     let mut serialize_group = c.benchmark_group("logs/serialize");
     for backend in Backend::all() {
         let serialize = match backend {
-            Backend::Pbor => |logs| pot::to_vec(logs).unwrap(),
+            Backend::Pot => |logs| pot::to_vec(logs).unwrap(),
             Backend::Cbor => |logs| {
                 let mut cbor_bytes = Vec::new();
                 ciborium::ser::into_writer(&logs, &mut cbor_bytes).unwrap();
@@ -166,7 +166,7 @@ fn bench_logs(c: &mut Criterion) {
     let mut serialize_reuse_group = c.benchmark_group("logs/serialize-reuse");
     for backend in Backend::all() {
         let serialize = match backend {
-            Backend::Pbor => pbor_serialize_into,
+            Backend::Pot => pot_serialize_into,
             Backend::Cbor => cbor_serialize_into,
             Backend::Bincode => bincode_serialize_into,
             Backend::Msgpack => msgpack_serialize_into,
@@ -186,13 +186,13 @@ fn bench_logs(c: &mut Criterion) {
 
     for backend in Backend::all() {
         let deserialize = match backend {
-            Backend::Pbor => |logs| pot::from_slice::<LogArchive>(logs).unwrap(),
+            Backend::Pot => |logs| pot::from_slice::<LogArchive>(logs).unwrap(),
             Backend::Cbor => |logs| ciborium::de::from_reader(logs).unwrap(),
             Backend::Bincode => |logs| bincode::deserialize(logs).unwrap(),
             Backend::Msgpack | Backend::MsgpackNamed => |logs| rmp_serde::from_slice(logs).unwrap(),
         };
         let bytes = match backend {
-            Backend::Pbor => pot::to_vec(&logs).unwrap(),
+            Backend::Pot => pot::to_vec(&logs).unwrap(),
             Backend::Cbor => {
                 let mut cbor_bytes = Vec::new();
                 ciborium::ser::into_writer(&logs, &mut cbor_bytes).unwrap();
@@ -210,7 +210,7 @@ fn bench_logs(c: &mut Criterion) {
     }
 }
 
-fn pbor_serialize_into(logs: &LogArchive, buffer: &mut Vec<u8>) {
+fn pot_serialize_into(logs: &LogArchive, buffer: &mut Vec<u8>) {
     logs.serialize(&mut pot::ser::Serializer::new(buffer).unwrap())
         .unwrap();
 }

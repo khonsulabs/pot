@@ -13,7 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   implementation returned an error, the function would panic. Thanks to
   @wackbyte for finding this.
 - `Reader::buffered_read_bytes` now takes a third parameter, `scratch: &mut
-  Vec<u8>` and returns a new type `BufferedBytes`. This allows callers to supply a buffer for reading bytes into rather than requiring implementors allocate new buffers.
+  Vec<u8>` and returns a new type `BufferedBytes`. This allows callers to supply
+  a buffer for reading bytes into rather than requiring implementors allocate
+  new buffers.
 - `PartialEq` for `Value` has been changed such that if the bytes contained by a
   string match the bytes contained by a byte value, the values now compare as
   equal. Previously, all discriminants required exact matches.

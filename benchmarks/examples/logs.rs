@@ -14,7 +14,7 @@ fn main() -> anyhow::Result<()> {
     let logs = LogArchive::generate(&mut thread_rng(), 10_000);
 
     // Encode without a persistent session
-    let pbor_bytes = pot::to_vec(&logs)?;
+    let pot_bytes = pot::to_vec(&logs)?;
     let bincode_bytes = bincode::serialize(&logs)?;
     let bincode_varint_bytes = bincode::DefaultOptions::default()
         .with_varint_encoding()
@@ -28,7 +28,7 @@ fn main() -> anyhow::Result<()> {
         vec![
             vec![
                 "pot".cell(),
-                pbor_bytes.len().separate_with_commas().cell(),
+                pot_bytes.len().separate_with_commas().cell(),
                 "yes".cell(),
             ],
             vec![
