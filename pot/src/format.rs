@@ -2,11 +2,11 @@ use std::fmt::Display;
 
 use byteorder::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
 use half::f16;
-use serde::de::Error as _;
 use serde::{Deserialize, Serialize};
 
 pub(crate) const CURRENT_VERSION: u8 = 0;
 
+use crate::error::KindOrClass;
 use crate::reader::{BufferedBytes, Reader};
 use crate::Error;
 /// Writes an atom header into `writer`.
@@ -217,7 +217,7 @@ pub enum Special {
 pub(crate) const SPECIAL_COUNT: u64 = Special::Named as u64 + 1;
 
 impl TryFrom<u64> for Special {
-    type Error = Error;
+    type Error = UnknownSpecial;
 
     #[inline]
     fn try_from(value: u64) -> Result<Self, Self::Error> {
@@ -229,8 +229,26 @@ impl TryFrom<u64> for Special {
             4 => Ok(Self::Named),
             5 => Ok(Self::DynamicMap),
             6 => Ok(Self::DynamicEnd),
-            _ => Err(Error::custom("unknown special type")),
+            _ => Err(UnknownSpecial(value)),
         }
+    }
+}
+
+#[test]
+fn unknown_special() {
+    assert!(matches!(
+        Special::try_from(u64::MAX),
+        Err(UnknownSpecial(u64::MAX))
+    ));
+}
+
+/// An unknown [`Special`] was encountered.
+#[derive(Debug, Clone, Copy)]
+pub struct UnknownSpecial(pub u64);
+
+impl Display for UnknownSpecial {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "unknown special id: {}", self.0)
     }
 }
 
@@ -915,7 +933,7 @@ impl Integer {
                 6 => Ok(InnerInteger::I64(reader.read_i48::<LittleEndian>()?)),
                 8 => Ok(InnerInteger::I64(reader.read_i64::<LittleEndian>()?)),
                 16 => Ok(InnerInteger::I128(reader.read_i128::<LittleEndian>()?)),
-                _ => Err(Error::custom("unsupported int byte count")),
+                count => Err(Error::UnsupportedByteCount(KindOrClass::Integer, count)),
             },
             Kind::UInt => match byte_len {
                 1 => Ok(InnerInteger::U8(reader.read_u8()?)),
@@ -925,9 +943,9 @@ impl Integer {
                 6 => Ok(InnerInteger::U64(reader.read_u48::<LittleEndian>()?)),
                 8 => Ok(InnerInteger::U64(reader.read_u64::<LittleEndian>()?)),
                 16 => Ok(InnerInteger::U128(reader.read_u128::<LittleEndian>()?)),
-                _ => Err(Error::custom("unsupported uint byte count")),
+                count => Err(Error::UnsupportedByteCount(KindOrClass::Integer, count)),
             },
-            other => Err(Error::custom(format!("expected integer, found {other:?}"))),
+            _ => Err(Error::UnexpectedKind(kind, KindOrClass::Integer)),
         }
         .map(Integer)
     }
@@ -1243,10 +1261,10 @@ impl Float {
                 2 => Ok(Self::from(read_f16(reader)?)),
                 4 => Ok(Self::from(reader.read_f32::<LittleEndian>()?)),
                 8 => Ok(Self::from(reader.read_f64::<LittleEndian>()?)),
-                _ => Err(Error::custom("unsupported float byte count")),
+                count => Err(Error::UnsupportedByteCount(KindOrClass::Float, count)),
             }
         } else {
-            Err(Error::custom(format!("expected float, got {kind:?}")))
+            Err(Error::UnexpectedKind(kind, KindOrClass::Float))
         }
     }
 }

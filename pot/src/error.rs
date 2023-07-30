@@ -5,10 +5,11 @@ use std::string::FromUtf8Error;
 
 use serde::{de, ser};
 
-use crate::format::Kind;
+use crate::format::{Kind, UnknownSpecial};
 
 /// All errors that Pot may return.
 #[derive(Debug)]
+#[non_exhaustive]
 pub enum Error {
     /// Payload is not a Pot payload.
     NotAPot,
@@ -31,13 +32,17 @@ pub enum Error {
     /// An unknown kind was encountered. Generally a sign that something else has been parsed incorrectly.
     InvalidKind(u8),
     /// Encountered an unexpected atom kind.
-    UnexpectedKind(Kind, Kind),
+    UnexpectedKind(Kind, KindOrClass),
     /// A requested symbol id was not found.
     UnknownSymbol(u64),
+    /// An unsupported byte count for a numeric type was encountered.
+    UnsupportedByteCount(KindOrClass, usize),
     /// An atom header was incorrectly formatted.
     InvalidAtomHeader,
     /// The amount of data read exceeds the configured maximum number of bytes.
     TooManyBytesRead,
+    /// An unknown [`Special`](crate::format::Special) was encountered.
+    UnknownSpecial(UnknownSpecial),
 }
 
 impl Display for Error {
@@ -64,6 +69,27 @@ impl Display for Error {
             Error::TooManyBytesRead => {
                 f.write_str("the deserialized value is larger than the allowed allocation limit")
             }
+            Error::UnsupportedByteCount(kind, count) => {
+                write!(f, "unexpected {kind} byte count ({count})")
+            }
+            Error::UnknownSpecial(err) => Display::fmt(err, f),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub enum KindOrClass {
+    Kind(Kind),
+    Float,
+    Integer,
+}
+
+impl Display for KindOrClass {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            KindOrClass::Kind(kind) => Debug::fmt(kind, f),
+            KindOrClass::Float => f.write_str("float"),
+            KindOrClass::Integer => f.write_str("integer"),
         }
     }
 }
@@ -97,5 +123,11 @@ impl From<Utf8Error> for Error {
 impl From<FromUtf8Error> for Error {
     fn from(err: FromUtf8Error) -> Self {
         Self::InvalidUtf8(err.to_string())
+    }
+}
+
+impl From<UnknownSpecial> for Error {
+    fn from(err: UnknownSpecial) -> Self {
+        Self::UnknownSpecial(err)
     }
 }

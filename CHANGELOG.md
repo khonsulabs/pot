@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   contains `BufferedBytes::Scratch`, `scratch` will contain the bytes contained
   in the atom.
 - `SymbolMapRef` is now a struct with private contents.
+- `Error` is now `#[non_exhaustive]`.
 
 ### Changed
 

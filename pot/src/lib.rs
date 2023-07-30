@@ -480,6 +480,7 @@ mod tests {
         roundtrip!(Value::None);
         roundtrip!(Value::Unit);
         roundtrip!(Value::Bool(true));
+        roundtrip!(Value::Bool(false));
         roundtrip!(Value::Integer(Integer::from(i8::MAX)));
         roundtrip!(Value::Integer(Integer::from(i16::MAX)));
         roundtrip!(Value::Integer(Integer::from(i32::MAX)));
