@@ -45,6 +45,7 @@ use crate::reader::IoReader;
 /// let deserialized = pot::from_slice::<String>(&serialized).unwrap();
 /// assert_eq!(deserialized, "hello world");
 /// ```
+#[inline]
 pub fn to_vec<T>(value: &T) -> Result<Vec<u8>>
 where
     T: Serialize,
@@ -60,6 +61,7 @@ where
 /// let deserialized = pot::from_reader::<String, _>(&serialized[..]).unwrap();
 /// assert_eq!(deserialized, "hello world");
 /// ```
+#[inline]
 pub fn to_writer<T, W>(value: &T, writer: W) -> Result<()>
 where
     T: Serialize,
@@ -75,6 +77,7 @@ where
 /// let deserialized = pot::from_slice::<String>(&serialized).unwrap();
 /// assert_eq!(deserialized, "hello world");
 /// ```
+#[inline]
 pub fn from_slice<'a, T>(serialized: &'a [u8]) -> Result<T>
 where
     T: Deserialize<'a>,
@@ -90,6 +93,7 @@ where
 /// let deserialized = pot::from_reader::<String, _>(&serialized[..]).unwrap();
 /// assert_eq!(deserialized, "hello world");
 /// ```
+#[inline]
 pub fn from_reader<T, R>(reader: R) -> Result<T>
 where
     T: DeserializeOwned,
@@ -106,6 +110,7 @@ pub struct Config {
 }
 
 impl Default for Config {
+    #[inline]
     fn default() -> Self {
         Self {
             allocation_budget: usize::MAX,
@@ -121,12 +126,14 @@ impl Config {
     /// can be aware of.
     ///
     /// The default allocation budget is [`usize::MAX`].
+    #[inline]
     pub const fn allocation_budget(mut self, budget: usize) -> Self {
         self.allocation_budget = budget;
         self
     }
 
     /// Deserializes a value from a slice using the configured options.
+    #[inline]
     pub fn deserialize<'de, T>(&self, serialized: &'de [u8]) -> Result<T>
     where
         T: Deserialize<'de>,
@@ -142,6 +149,7 @@ impl Config {
 
     /// Deserializes a value from a [`Read`] implementer using the configured
     /// options.
+    #[inline]
     pub fn deserialize_from<T, R: Read>(&self, reader: R) -> Result<T>
     where
         T: DeserializeOwned,
@@ -162,6 +170,7 @@ impl Config {
 
     /// Serializes a value to a writer using the configured options.
     #[allow(clippy::unused_self)]
+    #[inline]
     pub fn serialize_into<T, W>(&self, value: &T, writer: W) -> Result<()>
     where
         T: Serialize,
@@ -178,8 +187,6 @@ mod tests {
     use std::marker::PhantomData;
 
     use serde::{Deserializer, Serializer};
-    use serde_json::value::Value as JsonValue;
-    use serde_json::Number;
 
     use super::*;
     use crate::format::{Float, Integer, CURRENT_VERSION};
@@ -451,25 +458,6 @@ mod tests {
     }
 
     #[test]
-    fn json_value() {
-        test_serialization(&JsonValue::Null, None);
-        test_serialization(&JsonValue::Bool(false), None);
-        test_serialization(&JsonValue::Bool(true), None);
-        test_serialization(
-            &JsonValue::Array(vec![serde_json::value::Value::Null]),
-            None,
-        );
-        test_serialization(&JsonValue::Number(Number::from_f64(1.).unwrap()), None);
-        test_serialization(&JsonValue::String(String::from("Hello world")), None);
-        test_serialization(
-            &JsonValue::Object(
-                std::iter::once((String::from("key"), JsonValue::Bool(true))).collect(),
-            ),
-            None,
-        );
-    }
-
-    #[test]
     fn value() {
         macro_rules! roundtrip {
             ($value:expr) => {{
@@ -561,7 +549,7 @@ mod tests {
     fn invalid_symbol() {
         let mut valid_bytes = Vec::new();
         format::write_header(&mut valid_bytes, CURRENT_VERSION).unwrap();
-        format::write_atom_header(&mut valid_bytes, format::Kind::Symbol, Some(4)).unwrap();
+        format::write_atom_header(&mut valid_bytes, format::Kind::Symbol, 4).unwrap();
         format::write_bytes(&mut valid_bytes, &0xFFFF_FFFF_u32.to_be_bytes()).unwrap();
 
         assert!(matches!(
@@ -577,7 +565,7 @@ mod tests {
         format::write_atom_header(
             &mut invalid_bytes,
             format::Kind::Special,
-            Some(format::SPECIAL_COUNT),
+            format::SPECIAL_COUNT,
         )
         .unwrap();
 
@@ -642,8 +630,7 @@ mod tests {
     fn invalid_numbers() {
         let mut invalid_float_byte_len = Vec::new();
         format::write_header(&mut invalid_float_byte_len, CURRENT_VERSION).unwrap();
-        format::write_atom_header(&mut invalid_float_byte_len, format::Kind::Float, Some(0))
-            .unwrap();
+        format::write_atom_header(&mut invalid_float_byte_len, format::Kind::Float, 0).unwrap();
 
         assert!(matches!(from_slice::<f32>(&invalid_float_byte_len), Err(_)));
 
@@ -654,8 +641,7 @@ mod tests {
 
         let mut invalid_signed_byte_len = Vec::new();
         format::write_header(&mut invalid_signed_byte_len, CURRENT_VERSION).unwrap();
-        format::write_atom_header(&mut invalid_signed_byte_len, format::Kind::Int, Some(10))
-            .unwrap();
+        format::write_atom_header(&mut invalid_signed_byte_len, format::Kind::Int, 10).unwrap();
 
         assert!(matches!(
             from_slice::<i32>(&invalid_signed_byte_len),
@@ -669,8 +655,7 @@ mod tests {
 
         let mut invalid_unsigned_byte_len = Vec::new();
         format::write_header(&mut invalid_unsigned_byte_len, CURRENT_VERSION).unwrap();
-        format::write_atom_header(&mut invalid_unsigned_byte_len, format::Kind::UInt, Some(10))
-            .unwrap();
+        format::write_atom_header(&mut invalid_unsigned_byte_len, format::Kind::UInt, 10).unwrap();
 
         assert!(matches!(
             from_slice::<u32>(&invalid_unsigned_byte_len),
@@ -695,7 +680,7 @@ mod tests {
     fn unexpected_eof() {
         let mut invalid_bytes = Vec::new();
         format::write_header(&mut invalid_bytes, CURRENT_VERSION).unwrap();
-        format::write_atom_header(&mut invalid_bytes, format::Kind::Bytes, Some(10)).unwrap();
+        format::write_atom_header(&mut invalid_bytes, format::Kind::Bytes, 10).unwrap();
         assert!(matches!(
             from_slice::<Vec<u8>>(&invalid_bytes),
             Err(Error::Eof)
@@ -706,7 +691,7 @@ mod tests {
     fn too_big_read() {
         let mut invalid_bytes = Vec::new();
         format::write_header(&mut invalid_bytes, CURRENT_VERSION).unwrap();
-        format::write_atom_header(&mut invalid_bytes, format::Kind::Bytes, Some(10)).unwrap();
+        format::write_atom_header(&mut invalid_bytes, format::Kind::Bytes, 10).unwrap();
         assert!(matches!(
             Config::default()
                 .allocation_budget(9)

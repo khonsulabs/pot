@@ -1,5 +1,6 @@
 [workspace]
-members = ["xtask", "pot"]
+members = ["xtask", "pot", "benchmarks"]
 
 [profile.bench]
 # debug = true
+lto = true

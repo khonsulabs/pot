@@ -1,4 +1,3 @@
-use std::borrow::Cow;
 use std::fmt::Display;
 
 use byteorder::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
@@ -8,49 +7,122 @@ use serde::{Deserialize, Serialize};
 
 pub(crate) const CURRENT_VERSION: u8 = 0;
 
-use crate::reader::Reader;
+use crate::reader::{BufferedBytes, Reader};
 use crate::Error;
+/// Writes an atom header into `writer`.
+#[allow(clippy::cast_possible_truncation)]
+#[inline]
+fn write_tiny_atom_header<W: WriteBytesExt>(
+    mut writer: W,
+    kind: Kind,
+    arg: u8,
+) -> std::io::Result<usize> {
+    // Kind is the 3 bits.
+    let mut first_byte = (kind as u8) << 5;
+    if arg > 0 {
+        debug_assert!(arg < 0x10);
+        first_byte |= arg & 0b1111;
+    }
+
+    writer.write_all(&[first_byte])?;
+    Ok(1)
+}
 
 /// Writes an atom header into `writer`.
 #[allow(clippy::cast_possible_truncation)]
+#[inline]
 pub fn write_atom_header<W: WriteBytesExt>(
     mut writer: W,
     kind: Kind,
-    arg: Option<u64>,
+    mut arg: u64,
 ) -> std::io::Result<usize> {
-    // 8 + 64 total bits, with 4 in the first u8, and 7 in the remaining. Total
-    // of 10 bytes required. to store a u64::MAX.
-    let mut bytes = [0_u8; 10];
-    // Kind is the 3 bits.
-    let mut first_byte = (kind as u8) << 5;
-    let mut arg = arg.unwrap_or_default();
-    if arg > 0 {
-        // The last 4 bits are the first 4 bits of the arg
+    if arg < 0x10 {
+        write_tiny_atom_header(writer, kind, arg as u8)
+    } else {
+        // Kind is the 3 bits.
+        let mut first_byte = (kind as u8) << 5;
+        // The last 4 bits are the first 4 bits of the arg. We also know
+        // that we're longer than one byte, due to the original match.
         first_byte |= arg as u8 & 0b1111;
         arg >>= 4;
-        // If the arg requires more than 4 bits, set the 5th bit.
-        if arg > 0 {
-            first_byte |= 0b10000;
-        }
-    }
-    bytes[0] = first_byte;
-    let mut length = 1;
-    while arg > 0 {
-        let mut byte = arg as u8 & 0x7F;
+        first_byte |= 0b10000;
+
+        let mut second = arg as u8 & 0x7F;
         arg >>= 7;
-        if arg > 0 {
-            byte |= 0b1000_0000;
+        if arg == 0 {
+            writer.write_all(&[first_byte, second])?;
+            return Ok(2);
         }
-        bytes[length] = byte;
-        length += 1;
+
+        second |= 0b1000_0000;
+        let mut third = arg as u8 & 0x7F;
+        arg >>= 7;
+        if arg == 0 {
+            writer.write_all(&[first_byte, second, third])?;
+            return Ok(3);
+        }
+
+        third |= 0b1000_0000;
+        let mut fourth = arg as u8 & 0x7F;
+        arg >>= 7;
+        if arg == 0 {
+            writer.write_all(&[first_byte, second, third, fourth])?;
+            return Ok(4);
+        }
+
+        fourth |= 0b1000_0000;
+        let mut fifth = arg as u8 & 0x7F;
+        arg >>= 7;
+        if arg == 0 {
+            writer.write_all(&[first_byte, second, third, fourth, fifth])?;
+            return Ok(5);
+        }
+
+        fifth |= 0b1000_0000;
+        let mut sixth = arg as u8 & 0x7F;
+        arg >>= 7;
+        if arg == 0 {
+            writer.write_all(&[first_byte, second, third, fourth, fifth, sixth])?;
+            return Ok(6);
+        }
+        sixth |= 0b1000_0000;
+        let mut seventh = arg as u8 & 0x7F;
+        arg >>= 7;
+        if arg == 0 {
+            writer.write_all(&[first_byte, second, third, fourth, fifth, sixth, seventh])?;
+            return Ok(7);
+        }
+        seventh |= 0b1000_0000;
+        let mut eighth = arg as u8 & 0x7F;
+        arg >>= 7;
+        if arg == 0 {
+            writer.write_all(&[
+                first_byte, second, third, fourth, fifth, sixth, seventh, eighth,
+            ])?;
+            return Ok(8);
+        }
+
+        eighth |= 0b1000_0000;
+        let mut ninth = arg as u8 & 0x7F;
+        arg >>= 7;
+        if arg == 0 {
+            writer.write_all(&[
+                first_byte, second, third, fourth, fifth, sixth, seventh, eighth, ninth,
+            ])?;
+            return Ok(9);
+        }
+
+        ninth |= 0b1000_0000;
+        debug_assert!(arg <= 255);
+        writer.write_all(&[
+            first_byte, second, third, fourth, fifth, sixth, seventh, eighth, ninth, arg as u8,
+        ])?;
+        Ok(10)
     }
-
-    writer.write_all(&bytes[..length])?;
-
-    Ok(length)
 }
 
 /// Reads an atom header (kind and argument).
+#[inline]
 pub fn read_atom_header<R: ReadBytesExt>(reader: &mut R) -> Result<(Kind, u64), Error> {
     let first_byte = reader.read_u8()?;
     let kind = Kind::from_u8(first_byte >> 5)?;
@@ -63,7 +135,7 @@ pub fn read_atom_header<R: ReadBytesExt>(reader: &mut R) -> Result<(Kind, u64), 
             bytes_read += 1;
             arg |= u64::from(byte & 0x7f) << offset;
             offset += 7;
-            if byte & 0b1000_0000 == 0 || bytes_read == 10 {
+            if byte < 128 || bytes_read == 10 {
                 break;
             }
         }
@@ -147,6 +219,7 @@ pub(crate) const SPECIAL_COUNT: u64 = Special::Named as u64 + 1;
 impl TryFrom<u64> for Special {
     type Error = Error;
 
+    #[inline]
     fn try_from(value: u64) -> Result<Self, Self::Error> {
         match value {
             0 => Ok(Self::None),
@@ -164,6 +237,7 @@ impl TryFrom<u64> for Special {
 /// Writes the Pot header. A u32 written in big endian. The first three bytes
 /// are 'Pot' (`0x506F74`), and the fourth byte is the version. The first
 /// version of Pot is 0.
+#[inline]
 pub fn write_header<W: WriteBytesExt>(mut writer: W, version: u8) -> std::io::Result<usize> {
     writer.write_u32::<BigEndian>(0x506F_7400 | u32::from(version))?;
     Ok(4)
@@ -171,6 +245,7 @@ pub fn write_header<W: WriteBytesExt>(mut writer: W, version: u8) -> std::io::Re
 
 /// Reads a Pot header. See [`write_header`] for more information. Returns the version number contained within.
 #[allow(clippy::similar_names, clippy::cast_possible_truncation)]
+#[inline]
 pub fn read_header<R: ReadBytesExt>(reader: &mut R) -> Result<u8, Error> {
     let header = reader.read_u32::<BigEndian>()?;
     if header & 0x506F_7400 == 0x506F_7400 {
@@ -181,26 +256,31 @@ pub fn read_header<R: ReadBytesExt>(reader: &mut R) -> Result<u8, Error> {
     }
 }
 /// Writes a [`Kind::Special`] atom.
+#[inline]
 pub fn write_special<W: WriteBytesExt>(writer: W, special: Special) -> std::io::Result<usize> {
-    write_atom_header(writer, Kind::Special, Some(special as u64))
+    write_atom_header(writer, Kind::Special, special as u64)
 }
 
 /// Writes a [`Kind::Special`] atom with [`Special::None`].
+#[inline]
 pub fn write_none<W: WriteBytesExt>(writer: W) -> std::io::Result<usize> {
     write_special(writer, Special::None)
 }
 
 /// Writes a [`Kind::Special`] atom with [`Special::Unit`].
+#[inline]
 pub fn write_unit<W: WriteBytesExt>(writer: W) -> std::io::Result<usize> {
     write_special(writer, Special::Unit)
 }
 
 /// Writes a [`Kind::Special`] atom with [`Special::Named`].
+#[inline]
 pub fn write_named<W: WriteBytesExt>(writer: W) -> std::io::Result<usize> {
     write_special(writer, Special::Named)
 }
 
 /// Writes a [`Kind::Special`] atom with either [`Special::True`] or [`Special::False`].
+#[inline]
 pub fn write_bool<W: WriteBytesExt>(writer: W, boolean: bool) -> std::io::Result<usize> {
     write_special(
         writer,
@@ -213,23 +293,22 @@ pub fn write_bool<W: WriteBytesExt>(writer: W, boolean: bool) -> std::io::Result
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+#[inline]
 pub fn write_i8<W: WriteBytesExt>(mut writer: W, value: i8) -> std::io::Result<usize> {
-    let header_len = write_atom_header(
-        &mut writer,
-        Kind::Int,
-        Some(std::mem::size_of::<i8>() as u64 - 1),
-    )?;
+    let header_len =
+        write_atom_header(&mut writer, Kind::Int, std::mem::size_of::<i8>() as u64 - 1)?;
     writer
         .write_i8(value)
         .map(|_| std::mem::size_of::<i8>() + header_len)
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+#[inline]
 pub fn write_i16<W: WriteBytesExt>(mut writer: W, value: i16) -> std::io::Result<usize> {
     if let Ok(value) = i8::try_from(value) {
         write_i8(writer, value)
     } else {
-        let header_len = write_atom_header(&mut writer, Kind::Int, Some(2 - 1))?;
+        let header_len = write_tiny_atom_header(&mut writer, Kind::Int, 2 - 1)?;
         writer
             .write_i16::<LittleEndian>(value)
             .map(|_| 2 + header_len)
@@ -237,11 +316,12 @@ pub fn write_i16<W: WriteBytesExt>(mut writer: W, value: i16) -> std::io::Result
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+#[inline]
 pub fn write_i24<W: WriteBytesExt>(mut writer: W, value: i32) -> std::io::Result<usize> {
     if let Ok(value) = i16::try_from(value) {
         write_i16(writer, value)
     } else {
-        let header_len = write_atom_header(&mut writer, Kind::Int, Some(3 - 1))?;
+        let header_len = write_tiny_atom_header(&mut writer, Kind::Int, 3 - 1)?;
         writer
             .write_i24::<LittleEndian>(value)
             .map(|_| 3 + header_len)
@@ -249,11 +329,12 @@ pub fn write_i24<W: WriteBytesExt>(mut writer: W, value: i32) -> std::io::Result
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+#[inline]
 pub fn write_i32<W: WriteBytesExt>(mut writer: W, value: i32) -> std::io::Result<usize> {
     if value >= -(2_i32.pow(23)) && value < 2_i32.pow(23) {
         write_i24(writer, value)
     } else {
-        let header_len = write_atom_header(&mut writer, Kind::Int, Some(4 - 1))?;
+        let header_len = write_tiny_atom_header(&mut writer, Kind::Int, 4 - 1)?;
         writer
             .write_i32::<LittleEndian>(value)
             .map(|_| 4 + header_len)
@@ -261,11 +342,12 @@ pub fn write_i32<W: WriteBytesExt>(mut writer: W, value: i32) -> std::io::Result
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+#[inline]
 pub fn write_i48<W: WriteBytesExt>(mut writer: W, value: i64) -> std::io::Result<usize> {
     if let Ok(value) = i32::try_from(value) {
         write_i32(writer, value)
     } else {
-        let header_len = write_atom_header(&mut writer, Kind::Int, Some(6 - 1))?;
+        let header_len = write_tiny_atom_header(&mut writer, Kind::Int, 6 - 1)?;
         writer
             .write_i48::<LittleEndian>(value)
             .map(|_| 6 + header_len)
@@ -273,11 +355,12 @@ pub fn write_i48<W: WriteBytesExt>(mut writer: W, value: i64) -> std::io::Result
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+#[inline]
 pub fn write_i64<W: WriteBytesExt>(mut writer: W, value: i64) -> std::io::Result<usize> {
     if value >= -(2_i64.pow(47)) && value < 2_i64.pow(47) {
         write_i48(writer, value)
     } else {
-        let header_len = write_atom_header(&mut writer, Kind::Int, Some(8 - 1))?;
+        let header_len = write_tiny_atom_header(&mut writer, Kind::Int, 8 - 1)?;
         writer
             .write_i64::<LittleEndian>(value)
             .map(|_| 8 + header_len)
@@ -285,11 +368,12 @@ pub fn write_i64<W: WriteBytesExt>(mut writer: W, value: i64) -> std::io::Result
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+#[inline]
 pub fn write_i128<W: WriteBytesExt>(mut writer: W, value: i128) -> std::io::Result<usize> {
     if let Ok(value) = i64::try_from(value) {
         write_i64(writer, value)
     } else {
-        let header_len = write_atom_header(&mut writer, Kind::Int, Some(16 - 1))?;
+        let header_len = write_tiny_atom_header(&mut writer, Kind::Int, 16 - 1)?;
         writer
             .write_i128::<LittleEndian>(value)
             .map(|_| 16 + header_len)
@@ -297,27 +381,21 @@ pub fn write_i128<W: WriteBytesExt>(mut writer: W, value: i128) -> std::io::Resu
 }
 
 /// Writes an [`Kind::UInt`] atom with the given value.
+#[inline]
 pub fn write_u8<W: WriteBytesExt>(mut writer: W, value: u8) -> std::io::Result<usize> {
-    let header_len = write_atom_header(
-        &mut writer,
-        Kind::UInt,
-        Some(std::mem::size_of::<u8>() as u64 - 1),
-    )?;
+    let header_len = write_tiny_atom_header(&mut writer, Kind::UInt, 0)?;
     writer
         .write_u8(value)
         .map(|_| std::mem::size_of::<u8>() + header_len)
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+#[inline]
 pub fn write_u16<W: WriteBytesExt>(mut writer: W, value: u16) -> std::io::Result<usize> {
     if let Ok(value) = u8::try_from(value) {
         write_u8(writer, value)
     } else {
-        let header_len = write_atom_header(
-            &mut writer,
-            Kind::UInt,
-            Some(std::mem::size_of::<u16>() as u64 - 1),
-        )?;
+        let header_len = write_tiny_atom_header(&mut writer, Kind::UInt, 1)?;
         writer
             .write_u16::<LittleEndian>(value)
             .map(|_| std::mem::size_of::<u16>() + header_len)
@@ -325,11 +403,12 @@ pub fn write_u16<W: WriteBytesExt>(mut writer: W, value: u16) -> std::io::Result
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+#[inline]
 pub fn write_u24<W: WriteBytesExt>(mut writer: W, value: u32) -> std::io::Result<usize> {
     if let Ok(value) = u16::try_from(value) {
         write_u16(writer, value)
     } else {
-        let header_len = write_atom_header(&mut writer, Kind::UInt, Some(3 - 1))?;
+        let header_len = write_tiny_atom_header(&mut writer, Kind::UInt, 2)?;
         writer
             .write_u24::<LittleEndian>(value)
             .map(|_| 3 + header_len)
@@ -337,11 +416,12 @@ pub fn write_u24<W: WriteBytesExt>(mut writer: W, value: u32) -> std::io::Result
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+#[inline]
 pub fn write_u32<W: WriteBytesExt>(mut writer: W, value: u32) -> std::io::Result<usize> {
     if value < 2_u32.pow(24) {
         write_u24(writer, value)
     } else {
-        let header_len = write_atom_header(&mut writer, Kind::UInt, Some(4 - 1))?;
+        let header_len = write_tiny_atom_header(&mut writer, Kind::UInt, 3)?;
         writer
             .write_u32::<LittleEndian>(value)
             .map(|_| std::mem::size_of::<u32>() + header_len)
@@ -349,11 +429,12 @@ pub fn write_u32<W: WriteBytesExt>(mut writer: W, value: u32) -> std::io::Result
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+#[inline]
 pub fn write_u48<W: WriteBytesExt>(mut writer: W, value: u64) -> std::io::Result<usize> {
     if let Ok(value) = u32::try_from(value) {
         write_u32(writer, value)
     } else {
-        let header_len = write_atom_header(&mut writer, Kind::UInt, Some(6 - 1))?;
+        let header_len = write_tiny_atom_header(&mut writer, Kind::UInt, 5)?;
         writer
             .write_u48::<LittleEndian>(value)
             .map(|_| 6 + header_len)
@@ -361,11 +442,12 @@ pub fn write_u48<W: WriteBytesExt>(mut writer: W, value: u64) -> std::io::Result
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+#[inline]
 pub fn write_u64<W: WriteBytesExt>(mut writer: W, value: u64) -> std::io::Result<usize> {
     if value < 2_u64.pow(48) {
         write_u48(writer, value)
     } else {
-        let header_len = write_atom_header(&mut writer, Kind::UInt, Some(8 - 1))?;
+        let header_len = write_tiny_atom_header(&mut writer, Kind::UInt, 7)?;
         writer
             .write_u64::<LittleEndian>(value)
             .map(|_| std::mem::size_of::<u64>() + header_len)
@@ -373,11 +455,12 @@ pub fn write_u64<W: WriteBytesExt>(mut writer: W, value: u64) -> std::io::Result
 }
 
 /// Writes an [`Kind::Int`] atom with the given value. Will encode in a smaller format if possible.
+#[inline]
 pub fn write_u128<W: WriteBytesExt>(mut writer: W, value: u128) -> std::io::Result<usize> {
     if let Ok(value) = u64::try_from(value) {
         write_u64(writer, value)
     } else {
-        let header_len = write_atom_header(&mut writer, Kind::UInt, Some(16 - 1))?;
+        let header_len = write_tiny_atom_header(&mut writer, Kind::UInt, 15)?;
         writer
             .write_u128::<LittleEndian>(value)
             .map(|_| std::mem::size_of::<u128>() + header_len)
@@ -385,23 +468,24 @@ pub fn write_u128<W: WriteBytesExt>(mut writer: W, value: u128) -> std::io::Resu
 }
 
 /// Writes an [`Kind::Float`] atom with the given value.
+#[inline]
 #[allow(clippy::cast_possible_truncation, clippy::float_cmp)]
 pub fn write_f32<W: WriteBytesExt>(mut writer: W, value: f32) -> std::io::Result<usize> {
     let as_f16 = f16::from_f32(value);
     if as_f16.to_f32() == value {
-        let header_len = write_atom_header(
+        let header_len = write_tiny_atom_header(
             &mut writer,
             Kind::Float,
-            Some(std::mem::size_of::<u16>() as u64 - 1),
+            std::mem::size_of::<u16>() as u8 - 1,
         )?;
         writer
             .write_u16::<LittleEndian>(as_f16.to_bits())
             .map(|_| std::mem::size_of::<u16>() + header_len)
     } else {
-        let header_len = write_atom_header(
+        let header_len = write_tiny_atom_header(
             &mut writer,
             Kind::Float,
-            Some(std::mem::size_of::<f32>() as u64 - 1),
+            std::mem::size_of::<f32>() as u8 - 1,
         )?;
         writer
             .write_f32::<LittleEndian>(value)
@@ -416,16 +500,13 @@ fn read_f16<R: ReadBytesExt>(reader: &mut R) -> std::io::Result<f32> {
 
 /// Writes an [`Kind::Float`] atom with the given value.
 #[allow(clippy::cast_possible_truncation, clippy::float_cmp)]
+#[inline]
 pub fn write_f64<W: WriteBytesExt>(mut writer: W, value: f64) -> std::io::Result<usize> {
     let as_f32 = value as f32;
     if f64::from(as_f32) == value {
         write_f32(writer, as_f32)
     } else {
-        let header_len = write_atom_header(
-            &mut writer,
-            Kind::Float,
-            Some(std::mem::size_of::<f64>() as u64 - 1),
-        )?;
+        let header_len = write_tiny_atom_header(&mut writer, Kind::Float, 7)?;
         writer
             .write_f64::<LittleEndian>(value)
             .map(|_| std::mem::size_of::<f64>() + header_len)
@@ -433,13 +514,15 @@ pub fn write_f64<W: WriteBytesExt>(mut writer: W, value: f64) -> std::io::Result
 }
 
 /// Writes an [`Kind::Bytes`] atom with the bytes of the string.
+#[inline]
 pub fn write_str<W: WriteBytesExt>(writer: W, value: &str) -> std::io::Result<usize> {
     write_bytes(writer, value.as_bytes())
 }
 
 /// Writes an [`Kind::Bytes`] atom with the given value.
+#[inline]
 pub fn write_bytes<W: WriteBytesExt>(mut writer: W, value: &[u8]) -> std::io::Result<usize> {
-    let header_len = write_atom_header(&mut writer, Kind::Bytes, Some(value.len() as u64))?;
+    let header_len = write_atom_header(&mut writer, Kind::Bytes, value.len() as u64)?;
     writer.write_all(value)?;
     Ok(value.len() + header_len)
 }
@@ -493,6 +576,7 @@ impl Display for Integer {
 impl Integer {
     /// Returns true if the value contained is zero.
     #[must_use]
+    #[inline]
     pub const fn is_zero(&self) -> bool {
         match &self.0 {
             InnerInteger::I8(value) => *value == 0,
@@ -512,6 +596,7 @@ impl Integer {
     // clippy::checked_conversions: try_from isn't const, and it would demote this from a const fn.
     #[allow(clippy::cast_possible_wrap)]
     #[allow(clippy::checked_conversions)]
+    #[inline]
     pub const fn as_i8(&self) -> Result<i8, Error> {
         match &self.0 {
             InnerInteger::I8(value) => Ok(*value),
@@ -528,6 +613,7 @@ impl Integer {
 
     /// Returns the contained value as an u8, or an error if the value is unable to fit.
     #[allow(clippy::cast_sign_loss)]
+    #[inline]
     pub const fn as_u8(&self) -> Result<u8, Error> {
         match &self.0 {
             InnerInteger::U8(value) => Ok(*value),
@@ -545,6 +631,7 @@ impl Integer {
     /// Returns the contained value as an i16, or an error if the value is unable to fit.
     #[allow(clippy::cast_possible_wrap)]
     #[allow(clippy::checked_conversions)]
+    #[inline]
     pub const fn as_i16(&self) -> Result<i16, Error> {
         match &self.0 {
             InnerInteger::I8(value) => Ok(*value as i16),
@@ -568,6 +655,7 @@ impl Integer {
 
     /// Returns the contained value as an u16, or an error if the value is unable to fit.
     #[allow(clippy::cast_sign_loss)]
+    #[inline]
     pub const fn as_u16(&self) -> Result<u16, Error> {
         match &self.0 {
             InnerInteger::I8(value) => {
@@ -598,6 +686,7 @@ impl Integer {
     /// Returns the contained value as an i32, or an error if the value is unable to fit.
     #[allow(clippy::cast_possible_wrap)]
     #[allow(clippy::checked_conversions)]
+    #[inline]
     pub const fn as_i32(&self) -> Result<i32, Error> {
         match &self.0 {
             InnerInteger::I8(value) => Ok(*value as i32),
@@ -621,6 +710,7 @@ impl Integer {
 
     /// Returns the contained value as an u32, or an error if the value is unable to fit.
     #[allow(clippy::cast_sign_loss)]
+    #[inline]
     pub const fn as_u32(&self) -> Result<u32, Error> {
         match &self.0 {
             InnerInteger::I8(value) => {
@@ -657,6 +747,7 @@ impl Integer {
     /// Returns the contained value as an i64, or an error if the value is unable to fit.
     #[allow(clippy::cast_possible_wrap)]
     #[allow(clippy::checked_conversions)]
+    #[inline]
     pub const fn as_i64(&self) -> Result<i64, Error> {
         match &self.0 {
             InnerInteger::I8(value) => Ok(*value as i64),
@@ -679,6 +770,7 @@ impl Integer {
 
     /// Returns the contained value as an i64, or an error if the value is unable to fit.
     #[allow(clippy::cast_possible_wrap)]
+    #[inline]
     pub const fn as_i128(&self) -> Result<i128, Error> {
         match &self.0 {
             InnerInteger::I8(value) => Ok(*value as i128),
@@ -702,6 +794,7 @@ impl Integer {
 
     /// Returns the contained value as an u64, or an error if the value is unable to fit.
     #[allow(clippy::cast_sign_loss)]
+    #[inline]
     pub const fn as_u64(&self) -> Result<u64, Error> {
         match &self.0 {
             InnerInteger::I8(value) => {
@@ -742,6 +835,7 @@ impl Integer {
 
     /// Returns the contained value as an u64, or an error if the value is unable to fit.
     #[allow(clippy::cast_sign_loss)]
+    #[inline]
     pub const fn as_u128(&self) -> Result<u128, Error> {
         match &self.0 {
             InnerInteger::I8(value) => {
@@ -788,6 +882,7 @@ impl Integer {
     }
 
     /// Writes this value using the smallest form possible.
+    #[inline]
     pub fn write_to<W: WriteBytesExt>(&self, writer: W) -> std::io::Result<usize> {
         match self.0 {
             InnerInteger::I8(value) => write_i8(writer, value),
@@ -805,6 +900,7 @@ impl Integer {
 
     /// Reads an integer based on the atom header (`kind` and `byte_len`).
     /// `byte_len` should be the argument from the atom header directly.
+    #[inline]
     pub fn read_from<R: ReadBytesExt>(
         kind: Kind,
         byte_len: usize,
@@ -838,6 +934,7 @@ impl Integer {
 
     /// Converts this integer to an f32, but only if it can be done without losing precision.
     #[allow(clippy::cast_precision_loss)]
+    #[inline]
     pub fn as_f32(&self) -> Result<f32, Error> {
         let int = self.as_i32()?;
         if int < -(2_i32.pow(f32::MANTISSA_DIGITS)) || int >= 2_i32.pow(f32::MANTISSA_DIGITS) {
@@ -849,6 +946,7 @@ impl Integer {
 
     /// Converts this integer to an f64, but only if it can be done without losing precision.
     #[allow(clippy::cast_precision_loss)]
+    #[inline]
     pub fn as_f64(&self) -> Result<f64, Error> {
         let int = self.as_i64()?;
         if int < -(2_i64.pow(f64::MANTISSA_DIGITS)) || int >= 2_i64.pow(f64::MANTISSA_DIGITS) {
@@ -860,6 +958,7 @@ impl Integer {
 
     /// Converts this integer to an f64, but only if it can be done without losing precision.
     #[allow(clippy::cast_precision_loss)]
+    #[inline]
     pub fn as_float(&self) -> Result<Float, Error> {
         self.as_f32()
             .map(Float::from)
@@ -868,6 +967,7 @@ impl Integer {
 }
 
 impl From<u8> for Integer {
+    #[inline]
     fn from(value: u8) -> Self {
         Self(InnerInteger::U8(value))
     }
@@ -876,6 +976,7 @@ impl From<u8> for Integer {
 macro_rules! impl_from_unsigned_integer {
     ($primitive:ty, $smaller_primitive:ty, $variant:ident) => {
         impl From<$primitive> for Integer {
+            #[inline]
             fn from(value: $primitive) -> Self {
                 if let Ok(value) = <$smaller_primitive>::try_from(value) {
                     Self::from(value as $smaller_primitive)
@@ -893,6 +994,7 @@ impl_from_unsigned_integer!(u64, u32, U64);
 impl_from_unsigned_integer!(u128, u64, U128);
 
 impl From<i8> for Integer {
+    #[inline]
     fn from(value: i8) -> Self {
         Self(InnerInteger::I8(value))
     }
@@ -901,6 +1003,7 @@ impl From<i8> for Integer {
 macro_rules! impl_from_unsigned_integer {
     ($primitive:ty, $smaller_primitive:ty, $smaller_unsigned_primitive:ty, $variant:ident) => {
         impl From<$primitive> for Integer {
+            #[inline]
             fn from(value: $primitive) -> Self {
                 if let Ok(value) = <$smaller_primitive>::try_from(value) {
                     Self::from(value as $smaller_primitive)
@@ -921,9 +1024,11 @@ impl_from_unsigned_integer!(i128, i64, u64, I128);
 
 /// Reads an atom.
 #[allow(clippy::cast_possible_truncation)]
+#[inline]
 pub fn read_atom<'de, R: Reader<'de>>(
     reader: &mut R,
     remaining_budget: &mut usize,
+    scratch: &mut Vec<u8>,
 ) -> Result<Atom<'de>, Error> {
     let (kind, arg) = read_atom_header(reader)?;
     Ok(match kind {
@@ -966,7 +1071,7 @@ pub fn read_atom<'de, R: Reader<'de>>(
         Kind::Bytes => {
             let bytes = arg as usize;
             update_budget(remaining_budget, bytes)?;
-            let bytes = reader.buffered_read_bytes(bytes)?;
+            let bytes = reader.buffered_read_bytes(bytes, scratch)?;
             Atom {
                 kind,
                 arg,
@@ -976,6 +1081,7 @@ pub fn read_atom<'de, R: Reader<'de>>(
     })
 }
 
+#[inline]
 pub(crate) const fn in_memory_int_size(encoded_length: usize) -> usize {
     // Some integers are stored more compact than we can represent them in memory
     match encoded_length {
@@ -985,6 +1091,7 @@ pub(crate) const fn in_memory_int_size(encoded_length: usize) -> usize {
     }
 }
 
+#[inline]
 pub(crate) fn update_budget(budget: &mut usize, read_amount: usize) -> Result<(), Error> {
     if let Some(remaining) = budget.checked_sub(read_amount) {
         *budget = remaining;
@@ -1019,18 +1126,21 @@ pub(crate) enum InnerFloat {
 }
 
 impl From<f32> for Float {
+    #[inline]
     fn from(value: f32) -> Self {
         Self(InnerFloat::F32(value))
     }
 }
 
 impl From<f64> for Float {
+    #[inline]
     fn from(value: f64) -> Self {
         Self(InnerFloat::F64(value))
     }
 }
 
 impl PartialEq for InnerFloat {
+    #[inline]
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
             (InnerFloat::F64(left), InnerFloat::F64(right)) => left == right,
@@ -1053,6 +1163,7 @@ impl Display for Float {
 impl Float {
     /// Returns true if the value contained is zero.
     #[must_use]
+    #[inline]
     pub fn is_zero(&self) -> bool {
         match self.0 {
             InnerFloat::F32(value) => value.abs() <= f32::EPSILON,
@@ -1062,6 +1173,7 @@ impl Float {
 
     /// Returns this number as an f32, if it can be done without losing precision.
     #[allow(clippy::float_cmp, clippy::cast_possible_truncation)]
+    #[inline]
     pub fn as_f32(&self) -> Result<f32, Error> {
         match self.0 {
             InnerFloat::F32(value) => Ok(value),
@@ -1078,6 +1190,7 @@ impl Float {
 
     /// Returns this number as an f64.
     #[must_use]
+    #[inline]
     pub const fn as_f64(&self) -> f64 {
         match self.0 {
             InnerFloat::F64(value) => value,
@@ -1087,6 +1200,7 @@ impl Float {
 
     /// Returns this number as an [`Integer`], if the stored value has no fractional part.
     #[allow(clippy::cast_possible_truncation)]
+    #[inline]
     pub fn as_integer(&self) -> Result<Integer, Error> {
         match self.0 {
             InnerFloat::F64(value) => {
@@ -1108,6 +1222,7 @@ impl Float {
     }
 
     /// Writes this value using the smallest form possible.
+    #[inline]
     pub fn write_to<W: WriteBytesExt>(&self, writer: W) -> std::io::Result<usize> {
         match self.0 {
             InnerFloat::F64(float) => write_f64(writer, float),
@@ -1117,6 +1232,7 @@ impl Float {
 
     /// Reads a floating point number given the atom `kind` and `byte_len`.
     /// `byte_len` should be the exact argument from the atom header.
+    #[inline]
     pub fn read_from<R: ReadBytesExt>(
         kind: Kind,
         byte_len: usize,
@@ -1145,7 +1261,7 @@ pub enum Nucleus<'de> {
     /// A floating point value.
     Float(Float),
     /// A buffer of bytes.
-    Bytes(Cow<'de, [u8]>),
+    Bytes(BufferedBytes<'de>),
     /// A unit.
     Unit,
     /// A named value.
@@ -1203,14 +1319,14 @@ mod tests {
     fn atom_headers() {
         let mut out = Vec::new();
         {
-            write_atom_header(&mut out, Kind::Map, Some(32)).unwrap();
+            write_atom_header(&mut out, Kind::Map, 32).unwrap();
             let (kind, arg) = read_atom_header(&mut out.as_slice()).unwrap();
             assert_eq!(kind, Kind::Map);
             assert_eq!(arg, 32);
         }
         out.clear();
 
-        write_atom_header(&mut out, Kind::Map, Some(u64::MAX)).unwrap();
+        write_atom_header(&mut out, Kind::Map, u64::MAX).unwrap();
         println!("header: {out:?}");
         let (kind, arg) = read_atom_header(&mut out.as_slice()).unwrap();
         assert_eq!(kind, Kind::Map);

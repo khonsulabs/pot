@@ -1,6 +1,6 @@
-use std::borrow::Cow;
 use std::collections::VecDeque;
 use std::fmt::Debug;
+use std::ops::{Deref, Range};
 
 use byteorder::ReadBytesExt;
 use format::Kind;
@@ -13,7 +13,7 @@ use tracing::instrument;
 use crate::format::{
     self, Atom, Float, InnerFloat, InnerInteger, Integer, Nucleus, CURRENT_VERSION,
 };
-use crate::reader::{IoReader, Reader, SliceReader};
+use crate::reader::{BufferedBytes, IoReader, Reader, SliceReader};
 use crate::{Error, Result};
 
 /// Deserializer for the Pot format.
@@ -22,6 +22,7 @@ pub struct Deserializer<'s, 'de, R: Reader<'de>> {
     symbols: SymbolMap<'s, 'de>,
     peeked_atom: VecDeque<Atom<'de>>,
     remaining_budget: usize,
+    scratch: Vec<u8>,
 }
 
 impl<'s, 'de, R: Reader<'de>> Debug for Deserializer<'s, 'de, R> {
@@ -36,6 +37,7 @@ impl<'s, 'de, R: Reader<'de>> Debug for Deserializer<'s, 'de, R> {
 
 impl<'s, 'de> Deserializer<'s, 'de, SliceReader<'de>> {
     /// Returns a new deserializer for `input`.
+    #[inline]
     pub(crate) fn from_slice(input: &'de [u8], maximum_bytes_allocatable: usize) -> Result<Self> {
         Self::from_slice_with_symbols(input, SymbolMap::new(), maximum_bytes_allocatable)
     }
@@ -50,6 +52,7 @@ impl<'s, 'de> Deserializer<'s, 'de, SliceReader<'de>> {
 
     /// Returns `true` if the input has been consumed completely.
     #[must_use]
+    #[inline]
     pub fn end_of_input(&self) -> bool {
         self.input.data.is_empty() && self.peeked_atom.is_empty()
     }
@@ -57,32 +60,29 @@ impl<'s, 'de> Deserializer<'s, 'de, SliceReader<'de>> {
 
 impl<'s, 'de, R: ReadBytesExt> Deserializer<'s, 'de, IoReader<R>> {
     /// Returns a new deserializer for `input`.
+    #[inline]
     pub(crate) fn from_read(input: R, maximum_bytes_allocatable: usize) -> Result<Self> {
-        Self::from_read_with_symbols(input, SymbolMap::new(), maximum_bytes_allocatable)
-    }
-
-    fn from_read_with_symbols(
-        input: R,
-        symbols: SymbolMap<'s, 'de>,
-        maximum_bytes_allocatable: usize,
-    ) -> Result<Self> {
-        Self::new(IoReader::new(input), symbols, maximum_bytes_allocatable)
+        Self::new(
+            IoReader::new(input),
+            SymbolMap::new(),
+            maximum_bytes_allocatable,
+        )
     }
 }
 
 impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
+    #[inline]
     pub(crate) fn new(
         input: R,
-        mut symbols: SymbolMap<'s, 'de>,
+        symbols: SymbolMap<'s, 'de>,
         maximum_bytes_allocatable: usize,
     ) -> Result<Self> {
-        // TODO make this configurable
-        symbols.reserve(1024);
         let mut deserializer = Deserializer {
             input,
             symbols,
             peeked_atom: VecDeque::new(),
             remaining_budget: maximum_bytes_allocatable,
+            scratch: Vec::new(),
         };
         deserializer.read_header()?;
         Ok(deserializer)
@@ -101,7 +101,11 @@ impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
         if let Some(peeked) = self.peeked_atom.pop_front() {
             Ok(peeked)
         } else {
-            format::read_atom(&mut self.input, &mut self.remaining_budget)
+            format::read_atom(
+                &mut self.input,
+                &mut self.remaining_budget,
+                &mut self.scratch,
+            )
         }
     }
 
@@ -132,17 +136,19 @@ impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
             self.symbols.visit_symbol_id(arg, visitor)
         } else {
             // New symbol
-            let name = self.input.buffered_read_bytes(arg as usize)?;
+            let name = self
+                .input
+                .buffered_read_bytes(arg as usize, &mut self.scratch)?;
             match name {
-                Cow::Borrowed(name) => {
+                BufferedBytes::Data(name) => {
                     let name = std::str::from_utf8(name)?;
-                    self.symbols.push(Cow::Borrowed(name));
+                    self.symbols.push_borrowed(name);
                     visitor.visit_borrowed_str(name)
                 }
-                Cow::Owned(name) => {
-                    let name = String::from_utf8(name)?;
-                    let result = visitor.visit_str(&name);
-                    self.symbols.push(Cow::Owned(name));
+                BufferedBytes::Scratch => {
+                    let name = std::str::from_utf8(&self.scratch)?;
+                    let result = visitor.visit_str(name);
+                    self.symbols.push(name);
                     result
                 }
             }
@@ -153,6 +159,7 @@ impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
 impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer<'s, 'de, R> {
     type Error = Error;
 
+    #[inline]
     fn is_human_readable(&self) -> bool {
         false
     }
@@ -162,6 +169,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     // Formats that support `deserialize_any` are known as self-describing.
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
+    #[inline]
     fn deserialize_any<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -222,18 +230,18 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Symbol => self.visit_symbol(&atom, visitor),
             Kind::Bytes => match &atom.nucleus {
                 Some(Nucleus::Bytes(bytes)) => match bytes {
-                    Cow::Borrowed(bytes) => {
+                    BufferedBytes::Data(bytes) => {
                         if let Ok(as_str) = std::str::from_utf8(bytes) {
                             visitor.visit_borrowed_str(as_str)
                         } else {
                             visitor.visit_borrowed_bytes(bytes)
                         }
                     }
-                    Cow::Owned(bytes) => {
-                        if let Ok(as_str) = std::str::from_utf8(bytes) {
+                    BufferedBytes::Scratch => {
+                        if let Ok(as_str) = std::str::from_utf8(&self.scratch) {
                             visitor.visit_str(as_str)
                         } else {
-                            visitor.visit_bytes(bytes)
+                            visitor.visit_bytes(&self.scratch)
                         }
                     }
                 },
@@ -245,6 +253,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_bool<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -264,6 +273,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_i8<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -285,6 +295,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_i16<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -306,6 +317,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_i32<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -327,6 +339,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_i64<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -348,6 +361,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_i128<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -369,6 +383,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_u8<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -390,6 +405,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_u16<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -411,6 +427,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_u32<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -432,6 +449,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_u64<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -453,6 +471,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_u128<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -474,6 +493,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_f32<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -503,6 +523,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_f64<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -532,6 +553,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_char<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -556,6 +578,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_str<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -564,8 +587,12 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         match atom.kind {
             Kind::Bytes => match atom.nucleus {
                 Some(Nucleus::Bytes(bytes)) => match bytes {
-                    Cow::Borrowed(bytes) => visitor.visit_borrowed_str(std::str::from_utf8(bytes)?),
-                    Cow::Owned(bytes) => visitor.visit_str(std::str::from_utf8(&bytes)?),
+                    BufferedBytes::Data(bytes) => {
+                        visitor.visit_borrowed_str(std::str::from_utf8(bytes)?)
+                    }
+                    BufferedBytes::Scratch => {
+                        visitor.visit_str(std::str::from_utf8(&self.scratch)?)
+                    }
                 },
                 _ => unreachable!("read_atom should never return anything else"),
             },
@@ -585,6 +612,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_string<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -594,6 +622,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
+    #[inline]
     fn deserialize_bytes<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -602,8 +631,8 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         match atom.kind {
             Kind::Bytes => match atom.nucleus {
                 Some(Nucleus::Bytes(bytes)) => match bytes {
-                    Cow::Borrowed(bytes) => visitor.visit_borrowed_bytes(bytes),
-                    Cow::Owned(bytes) => visitor.visit_bytes(&bytes),
+                    BufferedBytes::Data(bytes) => visitor.visit_borrowed_bytes(bytes),
+                    BufferedBytes::Scratch => visitor.visit_bytes(&self.scratch),
                 },
                 _ => unreachable!("read_atom should never return anything else"),
             },
@@ -630,6 +659,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_byte_buf<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -638,6 +668,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_option<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -645,7 +676,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         let atom = self.peek_atom()?;
         if matches!(atom.kind, Kind::Special) && atom.nucleus.is_none() {
             // Consume the atom.
-            drop(self.read_atom()?);
+            self.read_atom()?;
             return visitor.visit_none();
         }
 
@@ -654,6 +685,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
 
     // In Serde, unit means an anonymous value containing no data.
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_unit<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -668,6 +700,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
 
     // Unit struct means a named value containing no data.
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_unit_struct<V>(self, _name: &'static str, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -679,6 +712,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     // insignificant wrappers around the data they contain. That means not
     // parsing anything other than the contained value.
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_newtype_struct<V>(self, _name: &'static str, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -688,6 +722,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
+    #[inline]
     fn deserialize_seq<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -706,6 +741,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_tuple<V>(self, _len: usize, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -713,6 +749,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         self.deserialize_seq(visitor)
     }
 
+    #[inline]
     fn deserialize_tuple_struct<V>(
         self,
         _name: &'static str,
@@ -727,6 +764,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
+    #[inline]
     fn deserialize_map<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -743,6 +781,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_struct<V>(
         self,
         _name: &'static str,
@@ -756,6 +795,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_enum<V>(
         self,
         _name: &'static str,
@@ -770,6 +810,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
+    #[inline]
     fn deserialize_identifier<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -779,7 +820,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Symbol => self.visit_symbol(&atom, visitor),
             Kind::Bytes => {
                 if let Some(Nucleus::Bytes(bytes)) = atom.nucleus {
-                    let as_str = std::str::from_utf8(&bytes)
+                    let as_str = std::str::from_utf8(bytes.as_slice(&self.scratch))
                         .map_err(|err| Error::InvalidUtf8(err.to_string()))?;
                     visitor.visit_str(as_str)
                 } else {
@@ -791,6 +832,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn deserialize_ignored_any<V>(self, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -804,6 +846,7 @@ struct EmptyList;
 impl<'de> MapAccess<'de> for EmptyList {
     type Error = Error;
 
+    #[inline]
     fn next_key_seed<K>(&mut self, _seed: K) -> Result<Option<K::Value>>
     where
         K: DeserializeSeed<'de>,
@@ -811,6 +854,7 @@ impl<'de> MapAccess<'de> for EmptyList {
         Ok(None)
     }
 
+    #[inline]
     fn next_value_seed<V>(&mut self, _seed: V) -> Result<V::Value>
     where
         V: DeserializeSeed<'de>,
@@ -822,6 +866,7 @@ impl<'de> MapAccess<'de> for EmptyList {
 impl<'de> SeqAccess<'de> for EmptyList {
     type Error = Error;
 
+    #[inline]
     fn next_element_seed<T>(&mut self, _seed: T) -> Result<Option<T::Value>>
     where
         T: DeserializeSeed<'de>,
@@ -861,7 +906,7 @@ impl<'a, 's, 'de, R: Reader<'de>> AtomList<'a, 's, 'de, R> {
                 && matches!(atom.nucleus, Some(Nucleus::DynamicEnd))
             {
                 self.eof = true;
-                drop(self.de.read_atom()?);
+                self.de.read_atom()?;
                 return Ok(true);
             }
         }
@@ -885,6 +930,7 @@ impl<'a, 's, 'de, R: Reader<'de>> SeqAccess<'de> for AtomList<'a, 's, 'de, R> {
     type Error = Error;
 
     #[cfg_attr(feature = "tracing", instrument(skip(seed)))]
+    #[inline]
     fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>>
     where
         T: DeserializeSeed<'de>,
@@ -897,6 +943,7 @@ impl<'a, 's, 'de, R: Reader<'de>> SeqAccess<'de> for AtomList<'a, 's, 'de, R> {
         }
     }
 
+    #[inline]
     fn size_hint(&self) -> Option<usize> {
         self.count
     }
@@ -906,6 +953,7 @@ impl<'a, 's, 'de, R: Reader<'de>> MapAccess<'de> for AtomList<'a, 's, 'de, R> {
     type Error = Error;
 
     #[cfg_attr(feature = "tracing", instrument(skip(seed)))]
+    #[inline]
     fn next_key_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>>
     where
         T: DeserializeSeed<'de>,
@@ -919,6 +967,7 @@ impl<'a, 's, 'de, R: Reader<'de>> MapAccess<'de> for AtomList<'a, 's, 'de, R> {
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(seed)))]
+    #[inline]
     fn next_value_seed<V>(&mut self, seed: V) -> Result<V::Value>
     where
         V: DeserializeSeed<'de>,
@@ -927,6 +976,7 @@ impl<'a, 's, 'de, R: Reader<'de>> MapAccess<'de> for AtomList<'a, 's, 'de, R> {
         seed.deserialize(&mut *self.de)
     }
 
+    #[inline]
     fn size_hint(&self) -> Option<usize> {
         self.count
     }
@@ -937,6 +987,7 @@ impl<'a, 's, 'de, R: Reader<'de>> EnumAccess<'de> for &'a mut Deserializer<'s, '
     type Variant = Self;
 
     #[cfg_attr(feature = "tracing", instrument(skip(seed)))]
+    #[inline]
     fn variant_seed<V>(self, seed: V) -> Result<(V::Value, Self::Variant)>
     where
         V: DeserializeSeed<'de>,
@@ -959,11 +1010,13 @@ impl<'a, 's, 'de, R: Reader<'de>> VariantAccess<'de> for &'a mut Deserializer<'s
     type Error = Error;
 
     #[cfg_attr(feature = "tracing", instrument)]
+    #[inline]
     fn unit_variant(self) -> Result<()> {
         Ok(())
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(seed)))]
+    #[inline]
     fn newtype_variant_seed<T>(self, seed: T) -> Result<T::Value>
     where
         T: DeserializeSeed<'de>,
@@ -972,6 +1025,7 @@ impl<'a, 's, 'de, R: Reader<'de>> VariantAccess<'de> for &'a mut Deserializer<'s
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn tuple_variant<V>(self, _len: usize, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -980,6 +1034,7 @@ impl<'a, 's, 'de, R: Reader<'de>> VariantAccess<'de> for &'a mut Deserializer<'s
     }
 
     #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[inline]
     fn struct_variant<V>(self, _fields: &'static [&'static str], visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
@@ -992,21 +1047,23 @@ impl<'a, 's, 'de, R: Reader<'de>> VariantAccess<'de> for &'a mut Deserializer<'s
 #[derive(Debug)]
 pub enum SymbolMap<'a, 'de> {
     /// An owned list of symbols.
-    Owned(Vec<String>),
+    Owned(SymbolList<'static>),
     /// A mutable reference to an owned list of symbols.
-    Persistent(&'a mut Vec<String>),
+    Persistent(&'a mut SymbolList<'static>),
     /// A list of borrowed symbols.
-    Borrowed(Vec<Cow<'de, str>>),
+    Borrowed(SymbolList<'de>),
 }
 
 impl<'de> SymbolMap<'static, 'de> {
     /// Returns a new symbol map that will persist symbols between payloads.
     #[must_use]
+    #[inline]
     pub const fn new() -> Self {
-        Self::Owned(Vec::new())
+        Self::Owned(SymbolList::new())
     }
 
     /// Returns a deserializer for `slice`.
+    #[inline]
     pub fn deserializer_for_slice<'a>(
         &'a mut self,
         slice: &'de [u8],
@@ -1035,39 +1092,107 @@ impl<'a, 'de> SymbolMap<'a, 'de> {
                 let symbol = vec
                     .get(symbol_id as usize)
                     .ok_or(Error::UnknownSymbol(symbol_id))?;
-                visitor.visit_str(symbol)
+                visitor.visit_str(&symbol)
             }
             Self::Persistent(vec) => {
                 let symbol = vec
                     .get(symbol_id as usize)
                     .ok_or(Error::UnknownSymbol(symbol_id))?;
-                visitor.visit_str(symbol)
+                visitor.visit_str(&symbol)
             }
             Self::Borrowed(vec) => {
                 let symbol = vec
                     .get(symbol_id as usize)
                     .ok_or(Error::UnknownSymbol(symbol_id))?;
                 match symbol {
-                    Cow::Borrowed(symbol) => visitor.visit_borrowed_str(symbol),
-                    Cow::Owned(symbol) => visitor.visit_str(symbol),
+                    SymbolStr::Data(symbol) => visitor.visit_borrowed_str(symbol),
+                    SymbolStr::InList(symbol) => visitor.visit_str(symbol),
                 }
             }
         }
     }
 
-    fn reserve(&mut self, amount: usize) {
+    fn push(&mut self, symbol: &str) {
+        #[allow(clippy::match_same_arms)] // false positive due to lifetimes
         match self {
-            Self::Owned(vec) => vec.reserve(amount),
-            Self::Persistent(vec) => vec.reserve(amount),
-            Self::Borrowed(vec) => vec.reserve(amount),
-        }
-    }
-
-    fn push(&mut self, symbol: Cow<'de, str>) {
-        match self {
-            Self::Owned(vec) => vec.push(symbol.to_string()),
-            Self::Persistent(vec) => vec.push(symbol.to_string()),
+            Self::Owned(vec) => vec.push(symbol),
+            Self::Persistent(vec) => vec.push(symbol),
             Self::Borrowed(vec) => vec.push(symbol),
         }
     }
+
+    fn push_borrowed(&mut self, symbol: &'de str) {
+        match self {
+            Self::Owned(vec) => vec.push(symbol),
+            Self::Persistent(vec) => vec.push(symbol),
+            Self::Borrowed(vec) => vec.push_borrowed(symbol),
+        }
+    }
+}
+
+/// A collection of symbols accumulated during deserialization.
+#[derive(Debug)]
+pub struct SymbolList<'de> {
+    buffer: String,
+    entries: Vec<SymbolListEntry<'de>>,
+}
+
+impl<'de> SymbolList<'de> {
+    const fn new() -> Self {
+        Self {
+            buffer: String::new(),
+            entries: Vec::new(),
+        }
+    }
+
+    /// Push a symbol that has been borrowed from the deserialization source.
+    #[inline]
+    pub fn push_borrowed(&mut self, borrowed: &'de str) {
+        self.entries.push(SymbolListEntry::Borrowed(borrowed));
+    }
+
+    /// Push a symbol that cannot be borrowed from the deserialization source.
+    #[inline]
+    pub fn push(&mut self, ephemeral: &str) {
+        let start = self.buffer.len();
+        self.buffer.push_str(ephemeral);
+        self.entries
+            .push(SymbolListEntry::Buffer(start..self.buffer.len()));
+    }
+
+    /// Return the symbol stored at `index`, or `None` if `index` is out of
+    /// bounds.
+    #[inline]
+    #[must_use]
+    pub fn get(&self, index: usize) -> Option<SymbolStr<'de, '_>> {
+        match self.entries.get(index)? {
+            SymbolListEntry::Buffer(range) => Some(SymbolStr::InList(&self.buffer[range.clone()])),
+            SymbolListEntry::Borrowed(str) => Some(SymbolStr::Data(str)),
+        }
+    }
+}
+
+/// A symbol stored in a [`SymbolList`].
+pub enum SymbolStr<'de, 'ephemeral> {
+    /// A symbol that has been borrowed from the data being deserialized.
+    Data(&'de str),
+    /// A symbol that is stored inside of the [`SymbolList`].
+    InList(&'ephemeral str),
+}
+
+impl Deref for SymbolStr<'_, '_> {
+    type Target = str;
+
+    #[inline]
+    fn deref(&self) -> &Self::Target {
+        match self {
+            SymbolStr::Data(str) | SymbolStr::InList(str) => str,
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+enum SymbolListEntry<'de> {
+    Buffer(Range<usize>),
+    Borrowed(&'de str),
 }

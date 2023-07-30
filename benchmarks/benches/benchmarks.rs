@@ -2,6 +2,7 @@
 //!
 //! Proper benchmarks will be coming.
 
+use std::env;
 use std::fmt::Display;
 
 use chrono::{DateTime, Utc};
@@ -10,7 +11,8 @@ use fake::faker::filesystem::en::FilePath;
 use fake::faker::internet::en::Username;
 use fake::faker::lorem::en::Sentence;
 use fake::Fake;
-use rand::{thread_rng, Rng};
+use rand::rngs::StdRng;
+use rand::{thread_rng, Rng, SeedableRng};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, PartialEq)]
@@ -107,8 +109,36 @@ fn bench_logs(c: &mut Criterion) {
     let mut logs = LogArchive {
         entries: Vec::with_capacity(LOG_ENTRIES),
     };
+    let random_seed = env::args().find(|arg| arg.starts_with("-s")).map_or_else(
+        || thread_rng().gen(),
+        |seed| {
+            let (_, seed) = seed.split_at(2);
+            let (upper, lower) = if seed.len() > 32 {
+                let (upper, lower) = seed.split_at(seed.len() - 32);
+                (
+                    u128::from_str_radix(upper, 16).expect("invalid hexadecimal seed"),
+                    u128::from_str_radix(lower, 16).expect("invalid hexadecimal seed"),
+                )
+            } else {
+                (
+                    0,
+                    u128::from_str_radix(seed, 16).expect("invalid hexadecimal seed"),
+                )
+            };
+            let mut seed = [0; 32];
+            seed[..16].copy_from_slice(&upper.to_be_bytes());
+            seed[16..].copy_from_slice(&lower.to_be_bytes());
+            seed
+        },
+    );
+    print!("Using random seed -s");
+    for b in random_seed {
+        print!("{b:02x}");
+    }
+    println!();
+    let mut rng = StdRng::from_seed(random_seed);
     for _ in 0..LOG_ENTRIES {
-        logs.entries.push(Log::generate(&mut thread_rng()));
+        logs.entries.push(Log::generate(&mut rng));
     }
 
     let mut serialize_group = c.benchmark_group("logs/serialize");

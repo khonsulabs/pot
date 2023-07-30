@@ -108,6 +108,7 @@ impl<'a> Value<'a> {
     /// # Ok(())
     /// # }
     /// ```
+    #[inline]
     pub fn from_serialize<T: Serialize>(value: T) -> Result<Self, ValueError> {
         value.serialize(Serializer)
     }
@@ -132,6 +133,7 @@ impl<'a> Value<'a> {
     /// # Ok(())
     /// # }
     /// ```
+    #[inline]
     pub fn deserialize_as<'de, T: Deserialize<'de>>(&'de self) -> Result<T, ValueError> {
         T::deserialize(Deserializer(self))
     }
@@ -143,6 +145,7 @@ impl<'a> Value<'a> {
     /// let mappings = Value::from_sequence(Vec::<String>::new());
     /// assert!(matches!(mappings, Value::Sequence(_)));
     /// ```
+    #[inline]
     pub fn from_sequence<IntoIter: IntoIterator<Item = T>, T: Into<Self>>(
         sequence: IntoIter,
     ) -> Self {
@@ -157,6 +160,7 @@ impl<'a> Value<'a> {
     /// let mappings = Value::from_mappings(HashMap::<String, u32>::new());
     /// assert!(matches!(mappings, Value::Mappings(_)));
     /// ```
+    #[inline]
     pub fn from_mappings<IntoIter: IntoIterator<Item = (K, V)>, K: Into<Self>, V: Into<Self>>(
         mappings: IntoIter,
     ) -> Self {
@@ -199,6 +203,7 @@ impl<'a> Value<'a> {
     /// );
     /// ```
     #[must_use]
+    #[inline]
     pub fn is_empty(&self) -> bool {
         match self {
             Value::None => true,
@@ -248,6 +253,7 @@ impl<'a> Value<'a> {
     /// );
     /// ```
     #[must_use]
+    #[inline]
     pub fn as_bool(&self) -> bool {
         match self {
             Value::None => false,
@@ -266,6 +272,7 @@ impl<'a> Value<'a> {
     /// [`Self::Float`] or [`Self::Integer`]. Also returns `None` if the value is
     /// a float, but cannot be losslessly converted to an integer.
     #[must_use]
+    #[inline]
     pub fn as_integer(&self) -> Option<Integer> {
         match self {
             Value::Integer(value) => Some(*value),
@@ -278,6 +285,7 @@ impl<'a> Value<'a> {
     /// [`Self::Float`] or [`Self::Integer`]. Also returns `None` if the value is
     /// an integer, but cannot be losslessly converted to a float.
     #[must_use]
+    #[inline]
     pub fn as_float(&self) -> Option<Float> {
         match self {
             Value::Integer(value) => value.as_float().ok(),
@@ -291,6 +299,7 @@ impl<'a> Value<'a> {
     /// [`Self::String`] and [`Self::Bytes`]. Bytes will only be returned if the
     /// contained bytes can be safely interpretted as UTF-8.
     #[must_use]
+    #[inline]
     pub fn as_str(&self) -> Option<&str> {
         match self {
             Self::Bytes(bytes) => std::str::from_utf8(bytes).ok(),
@@ -303,6 +312,7 @@ impl<'a> Value<'a> {
     /// representation of bytes. This will only return a value with variants
     /// [`Self::String`] and [`Self::Bytes`].
     #[must_use]
+    #[inline]
     pub fn as_bytes(&self) -> Option<&[u8]> {
         match self {
             Self::Bytes(bytes) => Some(bytes),
@@ -316,6 +326,7 @@ impl<'a> Value<'a> {
     /// [`Self::Mappings`]. If a [`Self::Mappings`], only the value portion of
     /// the mapping is returned.
     #[must_use]
+    #[inline]
     pub fn values(&self) -> SequenceIter<'_> {
         match self {
             Self::Sequence(sequence) => SequenceIter::Sequence(sequence.iter()),
@@ -329,6 +340,7 @@ impl<'a> Value<'a> {
     /// this value. Returns an empty iterator if not a [`Self::Sequence`] or
     /// [`Self::Mappings`]. If a [`Self::Sequence`], the key will always be
     /// `Self::None`.
+    #[inline]
     pub fn mappings(&self) -> std::slice::Iter<'_, (Self, Self)> {
         match self {
             Self::Mappings(mappings) => mappings.iter(),
@@ -384,6 +396,7 @@ impl<'a> Value<'a> {
 }
 
 impl<'a> Serialize for Value<'a> {
+    #[inline]
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
@@ -429,6 +442,7 @@ impl<'a> Serialize for Value<'a> {
 }
 
 impl<'de: 'a, 'a> Deserialize<'de> for Value<'a> {
+    #[inline]
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -451,18 +465,21 @@ pub struct OwnedValue(pub Value<'static>);
 impl Deref for OwnedValue {
     type Target = Value<'static>;
 
+    #[inline]
     fn deref(&self) -> &Self::Target {
         &self.0
     }
 }
 
 impl DerefMut for OwnedValue {
+    #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.0
     }
 }
 
 impl Serialize for OwnedValue {
+    #[inline]
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
@@ -472,6 +489,7 @@ impl Serialize for OwnedValue {
 }
 
 impl<'de> Deserialize<'de> for OwnedValue {
+    #[inline]
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -492,6 +510,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         formatter.write_str("any value")
     }
 
+    #[inline]
     fn visit_none<E>(self) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -499,6 +518,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::None)
     }
 
+    #[inline]
     fn visit_bool<E>(self, v: bool) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -506,6 +526,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::Bool(v))
     }
 
+    #[inline]
     fn visit_i8<E>(self, v: i8) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -513,6 +534,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::Integer(Integer::from(v)))
     }
 
+    #[inline]
     fn visit_i32<E>(self, v: i32) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -520,6 +542,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::Integer(Integer::from(v)))
     }
 
+    #[inline]
     fn visit_i16<E>(self, v: i16) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -527,6 +550,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::Integer(Integer::from(v)))
     }
 
+    #[inline]
     fn visit_i64<E>(self, v: i64) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -534,6 +558,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::Integer(Integer::from(v)))
     }
 
+    #[inline]
     fn visit_i128<E>(self, v: i128) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -541,6 +566,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::Integer(Integer::from(v)))
     }
 
+    #[inline]
     fn visit_u8<E>(self, v: u8) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -548,6 +574,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::Integer(Integer::from(v)))
     }
 
+    #[inline]
     fn visit_u16<E>(self, v: u16) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -555,6 +582,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::Integer(Integer::from(v)))
     }
 
+    #[inline]
     fn visit_u32<E>(self, v: u32) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -562,6 +590,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::Integer(Integer::from(v)))
     }
 
+    #[inline]
     fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -569,6 +598,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::Integer(Integer::from(v)))
     }
 
+    #[inline]
     fn visit_u128<E>(self, v: u128) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -576,6 +606,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::Integer(Integer::from(v)))
     }
 
+    #[inline]
     fn visit_f32<E>(self, v: f32) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -583,6 +614,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::Float(Float::from(v)))
     }
 
+    #[inline]
     fn visit_f64<E>(self, v: f64) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -590,6 +622,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::Float(Float::from(v)))
     }
 
+    #[inline]
     fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -597,6 +630,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::String(Cow::Owned(v.to_string())))
     }
 
+    #[inline]
     fn visit_borrowed_str<E>(self, v: &'a str) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -604,6 +638,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::String(Cow::Borrowed(v)))
     }
 
+    #[inline]
     fn visit_string<E>(self, v: String) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -611,6 +646,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::String(Cow::Owned(v)))
     }
 
+    #[inline]
     fn visit_bytes<E>(self, v: &[u8]) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -618,6 +654,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::Bytes(Cow::Owned(v.to_vec())))
     }
 
+    #[inline]
     fn visit_borrowed_bytes<E>(self, v: &'a [u8]) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -625,6 +662,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::Bytes(Cow::Borrowed(v)))
     }
 
+    #[inline]
     fn visit_byte_buf<E>(self, v: Vec<u8>) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -632,6 +670,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::Bytes(Cow::Owned(v)))
     }
 
+    #[inline]
     fn visit_some<D>(self, deserializer: D) -> Result<Self::Value, D::Error>
     where
         D: serde::Deserializer<'de>,
@@ -639,6 +678,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         deserializer.deserialize_any(Self::default())
     }
 
+    #[inline]
     fn visit_unit<E>(self) -> Result<Self::Value, E>
     where
         E: serde::de::Error,
@@ -646,6 +686,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::Unit)
     }
 
+    #[inline]
     fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
     where
         A: serde::de::SeqAccess<'de>,
@@ -661,6 +702,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
         Ok(Value::Sequence(values))
     }
 
+    #[inline]
     fn visit_map<A>(self, mut map: A) -> Result<Self::Value, A::Error>
     where
         A: serde::de::MapAccess<'de>,
@@ -678,6 +720,7 @@ impl<'de: 'a, 'a> Visitor<'de> for ValueVisitor<'a> {
 }
 
 impl<'a> From<Option<Value<'a>>> for Value<'a> {
+    #[inline]
     fn from(value: Option<Value<'a>>) -> Self {
         if let Some(value) = value {
             value
@@ -688,12 +731,14 @@ impl<'a> From<Option<Value<'a>>> for Value<'a> {
 }
 
 impl<'a> From<()> for Value<'a> {
+    #[inline]
     fn from(_: ()) -> Self {
         Value::Unit
     }
 }
 
 impl<'a> From<bool> for Value<'a> {
+    #[inline]
     fn from(value: bool) -> Self {
         Value::Bool(value)
     }
@@ -702,6 +747,7 @@ impl<'a> From<bool> for Value<'a> {
 macro_rules! define_value_from_primitive {
     ($container:ident, $variant:ident, $primitive:ty) => {
         impl<'a> From<$primitive> for Value<'a> {
+            #[inline]
             fn from(value: $primitive) -> Self {
                 Self::$container($container::from(value))
             }
@@ -725,42 +771,49 @@ define_value_from_primitive!(Float, F32, f32);
 define_value_from_primitive!(Float, F64, f64);
 
 impl<'a> From<&'a [u8]> for Value<'a> {
+    #[inline]
     fn from(bytes: &'a [u8]) -> Self {
         Self::Bytes(Cow::Borrowed(bytes))
     }
 }
 
 impl<'a> From<Vec<u8>> for Value<'a> {
+    #[inline]
     fn from(bytes: Vec<u8>) -> Self {
         Self::Bytes(Cow::Owned(bytes))
     }
 }
 
 impl<'a, const N: usize> From<&'a [u8; N]> for Value<'a> {
+    #[inline]
     fn from(bytes: &'a [u8; N]) -> Self {
         Self::Bytes(Cow::Borrowed(bytes))
     }
 }
 
 impl<'a> From<&'a str> for Value<'a> {
+    #[inline]
     fn from(string: &'a str) -> Self {
         Self::String(Cow::Borrowed(string))
     }
 }
 
 impl<'a> From<String> for Value<'a> {
+    #[inline]
     fn from(string: String) -> Self {
         Self::String(Cow::Owned(string))
     }
 }
 
 impl<'a> From<Vec<Value<'a>>> for Value<'a> {
+    #[inline]
     fn from(value: Vec<Value<'a>>) -> Self {
         Self::Sequence(value)
     }
 }
 
 impl<'a> From<Vec<(Value<'a>, Value<'a>)>> for Value<'a> {
+    #[inline]
     fn from(value: Vec<(Value<'a>, Value<'a>)>) -> Self {
         Self::Mappings(value)
     }
@@ -774,6 +827,7 @@ pub enum SequenceIter<'a> {
 impl<'a> Iterator for SequenceIter<'a> {
     type Item = &'a Value<'a>;
 
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         match self {
             SequenceIter::Sequence(sequence) => sequence.next(),
