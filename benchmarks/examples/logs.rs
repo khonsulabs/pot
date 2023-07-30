@@ -68,7 +68,7 @@ fn main() -> anyhow::Result<()> {
     // In this situation, the payloads across a network are generally smaller,
     // so let's show the benefits by just encoding a single log entry.
     let mut sender_state = pot::ser::SymbolMap::default();
-    let mut receiver_state = pot::de::SymbolMap::new();
+    let mut receiver_state = pot::de::SymbolMap::default();
     let mut payload_buffer = Vec::new();
     logs.entries[0].serialize(&mut sender_state.serializer_for(&mut payload_buffer)?)?;
     let first_transmission_length = payload_buffer.len();

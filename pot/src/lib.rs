@@ -36,6 +36,7 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 
+use crate::de::SymbolMapRef;
 use crate::reader::IoReader;
 
 /// Serialize `value` using Pot into a `Vec<u8>`.
@@ -154,8 +155,11 @@ impl Config {
     where
         T: DeserializeOwned,
     {
-        let mut deserializer =
-            de::Deserializer::from_read(IoReader::new(reader), self.allocation_budget)?;
+        let mut deserializer = de::Deserializer::from_read(
+            IoReader::new(reader),
+            SymbolMapRef::temporary(),
+            self.allocation_budget,
+        )?;
         T::deserialize(&mut deserializer)
     }
 
@@ -779,5 +783,67 @@ mod tests {
             Value::from_serialize(Fallible),
             Err(ValueError::Custom(String::from("oh no!")))
         );
+    }
+
+    #[test]
+    fn persistent_symbols_slice() {
+        let mut sender = ser::SymbolMap::default();
+        let mut receiver = de::SymbolList::default();
+
+        let mut bytes = Vec::new();
+        NumbersStruct::default()
+            .serialize(&mut sender.serializer_for(&mut bytes).unwrap())
+            .unwrap();
+        let _result =
+            NumbersStruct::deserialize(&mut receiver.deserializer_for_slice(&bytes).unwrap())
+                .unwrap();
+        let symbol_count_after_first_send = receiver.len();
+        let first_payload_len = bytes.len();
+
+        // Send again, confirm the symbol list didn't grow.
+        bytes.clear();
+        NumbersStruct::default()
+            .serialize(&mut sender.serializer_for(&mut bytes).unwrap())
+            .unwrap();
+        let _result =
+            NumbersStruct::deserialize(&mut receiver.deserializer_for_slice(&bytes).unwrap())
+                .unwrap();
+        assert_eq!(symbol_count_after_first_send, receiver.len());
+        println!(
+            "First: {first_payload_len} bytes; Second: {} bytes",
+            bytes.len()
+        );
+        assert!(first_payload_len > bytes.len());
+    }
+
+    #[test]
+    fn persistent_symbols_read() {
+        let mut sender = ser::SymbolMap::default();
+        let mut receiver = de::SymbolList::default();
+
+        let mut bytes = Vec::new();
+        NumbersStruct::default()
+            .serialize(&mut sender.serializer_for(&mut bytes).unwrap())
+            .unwrap();
+        let _result =
+            NumbersStruct::deserialize(&mut receiver.deserializer_for(&bytes[..]).unwrap())
+                .unwrap();
+        let symbol_count_after_first_send = receiver.len();
+        let first_payload_len = bytes.len();
+
+        // Send again, confirm the symbol list didn't grow.
+        bytes.clear();
+        NumbersStruct::default()
+            .serialize(&mut sender.serializer_for(&mut bytes).unwrap())
+            .unwrap();
+        let _result =
+            NumbersStruct::deserialize(&mut receiver.deserializer_for(&bytes[..]).unwrap())
+                .unwrap();
+        assert_eq!(symbol_count_after_first_send, receiver.len());
+        println!(
+            "First: {first_payload_len} bytes; Second: {} bytes",
+            bytes.len()
+        );
+        assert!(first_payload_len > bytes.len());
     }
 }

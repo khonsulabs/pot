@@ -1,5 +1,6 @@
 use std::collections::VecDeque;
 use std::fmt::Debug;
+use std::io::Read;
 use std::ops::{Deref, Range};
 
 use byteorder::ReadBytesExt;
@@ -19,7 +20,7 @@ use crate::{Error, Result};
 /// Deserializer for the Pot format.
 pub struct Deserializer<'s, 'de, R: Reader<'de>> {
     input: R,
-    symbols: SymbolMap<'s, 'de>,
+    symbols: SymbolMapRef<'s, 'de>,
     peeked_atom: VecDeque<Atom<'de>>,
     remaining_budget: usize,
     scratch: Vec<u8>,
@@ -39,16 +40,12 @@ impl<'s, 'de> Deserializer<'s, 'de, SliceReader<'de>> {
     /// Returns a new deserializer for `input`.
     #[inline]
     pub(crate) fn from_slice(input: &'de [u8], maximum_bytes_allocatable: usize) -> Result<Self> {
-        Self::from_slice_with_symbols(
-            input,
-            SymbolMap::Borrowed(SymbolList::new()),
-            maximum_bytes_allocatable,
-        )
+        Self::from_slice_with_symbols(input, SymbolMapRef::temporary(), maximum_bytes_allocatable)
     }
 
     fn from_slice_with_symbols(
         input: &'de [u8],
-        symbols: SymbolMap<'s, 'de>,
+        symbols: SymbolMapRef<'s, 'de>,
         maximum_bytes_allocatable: usize,
     ) -> Result<Self> {
         Self::new(SliceReader::from(input), symbols, maximum_bytes_allocatable)
@@ -65,12 +62,12 @@ impl<'s, 'de> Deserializer<'s, 'de, SliceReader<'de>> {
 impl<'s, 'de, R: ReadBytesExt> Deserializer<'s, 'de, IoReader<R>> {
     /// Returns a new deserializer for `input`.
     #[inline]
-    pub(crate) fn from_read(input: R, maximum_bytes_allocatable: usize) -> Result<Self> {
-        Self::new(
-            IoReader::new(input),
-            SymbolMap::Borrowed(SymbolList::new()),
-            maximum_bytes_allocatable,
-        )
+    pub(crate) fn from_read(
+        input: R,
+        symbols: SymbolMapRef<'s, 'de>,
+        maximum_bytes_allocatable: usize,
+    ) -> Result<Self> {
+        Self::new(IoReader::new(input), symbols, maximum_bytes_allocatable)
     }
 }
 
@@ -78,7 +75,7 @@ impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
     #[inline]
     pub(crate) fn new(
         input: R,
-        symbols: SymbolMap<'s, 'de>,
+        symbols: SymbolMapRef<'s, 'de>,
         maximum_bytes_allocatable: usize,
     ) -> Result<Self> {
         let mut deserializer = Deserializer {
@@ -1047,64 +1044,32 @@ impl<'a, 's, 'de, R: Reader<'de>> VariantAccess<'de> for &'a mut Deserializer<'s
     }
 }
 
-/// A collection of deserialized symbols.
+/// A reference to a [`SymbolList`].
 #[derive(Debug)]
-pub enum SymbolMap<'a, 'de> {
-    /// An owned list of symbols.
-    Owned(SymbolList<'static>),
-    /// A mutable reference to an owned list of symbols.
-    Persistent(&'a mut SymbolList<'static>),
-    /// A list of borrowed symbols.
-    Borrowed(SymbolList<'de>),
+pub struct SymbolMapRef<'a, 'de>(SymbolMapRefPrivate<'a, 'de>);
+
+#[derive(Debug)]
+enum SymbolMapRefPrivate<'a, 'de> {
+    /// A reference to a temporary symbol list, which is able to borrow from the
+    /// source data.
+    Temporary(SymbolList<'de>),
+    /// A reference to a persistent symbol list that retains symbols across
+    /// multiple deserialization sessions.
+    Persistent(&'a mut SymbolMap),
 }
 
-impl<'de> SymbolMap<'static, 'de> {
-    /// Returns a new symbol map that will persist symbols between payloads.
-    #[must_use]
-    #[inline]
-    pub const fn new() -> Self {
-        Self::Owned(SymbolList::new())
+impl<'a, 'de> SymbolMapRef<'a, 'de> {
+    pub(crate) const fn temporary() -> Self {
+        Self(SymbolMapRefPrivate::Temporary(SymbolList::new()))
     }
 
-    /// Returns a deserializer for `slice`.
-    #[inline]
-    pub fn deserializer_for_slice<'a>(
-        &'a mut self,
-        slice: &'de [u8],
-    ) -> Result<Deserializer<'a, 'de, SliceReader<'de>>> {
-        Deserializer::from_slice_with_symbols(slice, self.persistent(), usize::MAX)
-    }
-
-    #[must_use]
-    fn persistent(&mut self) -> SymbolMap<'_, 'de> {
-        match self {
-            Self::Owned(vec) => SymbolMap::Persistent(vec),
-            Self::Persistent(vec) => SymbolMap::Persistent(vec),
-            Self::Borrowed(_) => unreachable!(),
-        }
-    }
-}
-
-impl<'a, 'de> SymbolMap<'a, 'de> {
     #[allow(clippy::cast_possible_truncation)]
     fn visit_symbol_id<V>(&self, symbol_id: u64, visitor: V) -> Result<V::Value>
     where
         V: Visitor<'de>,
     {
-        match self {
-            Self::Owned(vec) => {
-                let symbol = vec
-                    .get(symbol_id as usize)
-                    .ok_or(Error::UnknownSymbol(symbol_id))?;
-                visitor.visit_str(&symbol)
-            }
-            Self::Persistent(vec) => {
-                let symbol = vec
-                    .get(symbol_id as usize)
-                    .ok_or(Error::UnknownSymbol(symbol_id))?;
-                visitor.visit_str(&symbol)
-            }
-            Self::Borrowed(vec) => {
+        match &self.0 {
+            SymbolMapRefPrivate::Temporary(vec) => {
                 let symbol = vec
                     .get(symbol_id as usize)
                     .ok_or(Error::UnknownSymbol(symbol_id))?;
@@ -1113,23 +1078,27 @@ impl<'a, 'de> SymbolMap<'a, 'de> {
                     SymbolStr::InList(symbol) => visitor.visit_str(symbol),
                 }
             }
+            SymbolMapRefPrivate::Persistent(vec) => {
+                let symbol = vec
+                    .get(symbol_id as usize)
+                    .ok_or(Error::UnknownSymbol(symbol_id))?;
+                visitor.visit_str(&symbol)
+            }
         }
     }
 
     fn push(&mut self, symbol: &str) {
         #[allow(clippy::match_same_arms)] // false positive due to lifetimes
-        match self {
-            Self::Owned(vec) => vec.push(symbol),
-            Self::Persistent(vec) => vec.push(symbol),
-            Self::Borrowed(vec) => vec.push(symbol),
+        match &mut self.0 {
+            SymbolMapRefPrivate::Temporary(vec) => vec.push(symbol),
+            SymbolMapRefPrivate::Persistent(vec) => vec.push(symbol),
         }
     }
 
     fn push_borrowed(&mut self, symbol: &'de str) {
-        match self {
-            Self::Owned(vec) => vec.push(symbol),
-            Self::Persistent(vec) => vec.push(symbol),
-            Self::Borrowed(vec) => vec.push_borrowed(symbol),
+        match &mut self.0 {
+            SymbolMapRefPrivate::Temporary(vec) => vec.push_borrowed(symbol),
+            SymbolMapRefPrivate::Persistent(vec) => vec.push(symbol),
         }
     }
 }
@@ -1141,8 +1110,17 @@ pub struct SymbolList<'de> {
     entries: Vec<SymbolListEntry<'de>>,
 }
 
+impl Default for SymbolList<'_> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<'de> SymbolList<'de> {
-    const fn new() -> Self {
+    /// Returns a new, empty symbol list.
+    #[inline]
+    #[must_use]
+    pub const fn new() -> Self {
         Self {
             buffer: String::new(),
             entries: Vec::new(),
@@ -1173,6 +1151,58 @@ impl<'de> SymbolList<'de> {
             SymbolListEntry::Buffer(range) => Some(SymbolStr::InList(&self.buffer[range.clone()])),
             SymbolListEntry::Borrowed(str) => Some(SymbolStr::Data(str)),
         }
+    }
+
+    /// Returns the number of entries in the symbol list.
+    #[inline]
+    #[must_use]
+    pub fn len(&self) -> usize {
+        self.entries.len()
+    }
+
+    /// Returns true if there are no symbols in this list.
+    #[inline]
+    #[must_use]
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+}
+
+/// An alias to a [`SymbolList`] with a static lifetime. This type persists
+/// symbols referenced across multiple deserialization sessions.
+pub type SymbolMap = SymbolList<'static>;
+
+impl SymbolMap {
+    /// Returns a deserializer for `slice` that reuses symbol ids.
+    ///
+    /// This should only be used with data generated by using a persistent
+    /// [`ser::SymbolMap`](crate::ser::SymbolMap).
+    #[inline]
+    pub fn deserializer_for_slice<'a, 'de>(
+        &'a mut self,
+        slice: &'de [u8],
+    ) -> Result<Deserializer<'a, 'de, SliceReader<'de>>> {
+        Deserializer::from_slice_with_symbols(slice, self.persistent(), usize::MAX)
+    }
+
+    /// Returns a deserializer for `reader`.
+    ///
+    /// This should only be used with data generated by using a persistent
+    /// [`ser::SymbolMap`](crate::ser::SymbolMap).
+    #[inline]
+    pub fn deserializer_for<'de, R>(
+        &mut self,
+        reader: R,
+    ) -> Result<Deserializer<'_, 'de, IoReader<R>>>
+    where
+        R: Read,
+    {
+        Deserializer::from_read(reader, self.persistent(), usize::MAX)
+    }
+
+    #[must_use]
+    fn persistent<'de>(&mut self) -> SymbolMapRef<'_, 'de> {
+        SymbolMapRef(SymbolMapRefPrivate::Persistent(self))
     }
 }
 

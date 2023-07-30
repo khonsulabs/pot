@@ -16,7 +16,7 @@ provide an encoding format for [`serde`](https://serde.rs) that:
 * Is compact. While still being self-describing, Pot's main space-saving feature
   is not repeating symbols/identifiers more than one time while serializing.
   When serializing arrays of structures, this can make a major difference. The
-  [logs.rs](https://github.com/khonsulabs/pot/blob/main/pot/examples/logs.rs)
+  [logs.rs](https://github.com/khonsulabs/pot/blob/main/benchmarks/examples/logs.rs)
   example demonstrates this:
 
   ```sh
