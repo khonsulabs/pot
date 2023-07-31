@@ -211,8 +211,7 @@ fn bench_logs(c: &mut Criterion) {
 }
 
 fn pot_serialize_into(logs: &LogArchive, buffer: &mut Vec<u8>) {
-    logs.serialize(&mut pot::ser::Serializer::new(buffer).unwrap())
-        .unwrap();
+    pot::to_writer(logs, buffer).unwrap();
 }
 
 fn cbor_serialize_into(logs: &LogArchive, buffer: &mut Vec<u8>) {

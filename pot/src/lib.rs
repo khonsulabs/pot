@@ -164,11 +164,10 @@ impl Config {
     }
 
     /// Serializes a value to a `Vec` using the configured options.
-    #[allow(clippy::unused_self)]
+    #[inline]
     pub fn serialize<T: Serialize>(&self, value: &T) -> Result<Vec<u8>> {
-        let mut output = Vec::default();
-        let mut serializer = ser::Serializer::new(&mut output)?;
-        value.serialize(&mut serializer)?;
+        let mut output = Vec::new();
+        self.serialize_into(value, &mut output)?;
         Ok(output)
     }
 

@@ -127,15 +127,16 @@ pub fn read_atom_header<R: ReadBytesExt>(reader: &mut R) -> Result<(Kind, u64), 
     let first_byte = reader.read_u8()?;
     let kind = Kind::from_u8(first_byte >> 5)?;
     let mut arg = u64::from(first_byte & 0b1111);
-    if first_byte & 0b10000 > 0 {
-        let mut bytes_read = 1;
+    if first_byte & 0b10000 != 0 {
+        let mut bytes_remaining = 9;
         let mut offset = 4;
         loop {
             let byte = reader.read_u8()?;
-            bytes_read += 1;
-            arg |= u64::from(byte & 0x7f) << offset;
+            let data = byte & 0x7f;
+            arg |= u64::from(data) << offset;
             offset += 7;
-            if byte < 128 || bytes_read == 10 {
+            bytes_remaining -= 1;
+            if data == byte || bytes_remaining == 0 {
                 break;
             }
         }

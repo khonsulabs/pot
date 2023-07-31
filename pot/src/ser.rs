@@ -495,19 +495,9 @@ impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::SerializeStructVariant
 }
 
 /// A list of previously serialized symbols.
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct SymbolMap {
     symbols: Vec<(usize, u32)>,
-}
-
-impl Default for SymbolMap {
-    #[inline]
-    fn default() -> Self {
-        let mut symbols = Vec::default();
-        // TODO make this configurable
-        symbols.reserve(1024);
-        Self { symbols }
-    }
 }
 
 struct RegisteredSymbol {
