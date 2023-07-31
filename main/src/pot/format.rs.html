@@ -1840,6 +1840,7 @@
 <a href="#1840" id="1840">1840</a>
 <a href="#1841" id="1841">1841</a>
 <a href="#1842" id="1842">1842</a>
+<a href="#1843" id="1843">1843</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::fmt::Display;
 
 <span class="kw">use </span>byteorder::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
@@ -1969,15 +1970,16 @@
     <span class="kw">let </span>first_byte = reader.read_u8()<span class="question-mark">?</span>;
     <span class="kw">let </span>kind = Kind::from_u8(first_byte &gt;&gt; <span class="number">5</span>)<span class="question-mark">?</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>arg = u64::from(first_byte &amp; <span class="number">0b1111</span>);
-    <span class="kw">if </span>first_byte &amp; <span class="number">0b10000 </span>&gt; <span class="number">0 </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>bytes_read = <span class="number">1</span>;
+    <span class="kw">if </span>first_byte &amp; <span class="number">0b10000 </span>!= <span class="number">0 </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>bytes_remaining = <span class="number">9</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>offset = <span class="number">4</span>;
         <span class="kw">loop </span>{
             <span class="kw">let </span>byte = reader.read_u8()<span class="question-mark">?</span>;
-            bytes_read += <span class="number">1</span>;
-            arg |= u64::from(byte &amp; <span class="number">0x7f</span>) &lt;&lt; offset;
+            <span class="kw">let </span>data = byte &amp; <span class="number">0x7f</span>;
+            arg |= u64::from(data) &lt;&lt; offset;
             offset += <span class="number">7</span>;
-            <span class="kw">if </span>byte &lt; <span class="number">128 </span>|| bytes_read == <span class="number">10 </span>{
+            bytes_remaining -= <span class="number">1</span>;
+            <span class="kw">if </span>data == byte || bytes_remaining == <span class="number">0 </span>{
                 <span class="kw">break</span>;
             }
         }
