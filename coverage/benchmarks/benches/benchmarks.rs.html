@@ -15,7 +15,7 @@
         <div>
             <p class="heading">Lines</p>
             <p class="title has-text-warning">
-                <abbr title="133 / 149">89.26 %</abbr></p>
+                <abbr title="132 / 148">89.19 %</abbr></p>
         </div>
     </div>
 
@@ -720,7 +720,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                4894
+                4965
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">                Some(Sentence(3..100).fake_with_rng(rand))</pre>
@@ -746,7 +746,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                5106
+                5035
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">                None</pre>
@@ -863,7 +863,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1990
+                2033
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            0 =&gt; Level::Trace,</pre>
@@ -876,7 +876,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1966
+                2037
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            1 =&gt; Level::Debug,</pre>
@@ -889,7 +889,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2019
+                1952
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            2 =&gt; Level::Info,</pre>
@@ -902,7 +902,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                2057
+                1998
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            3 =&gt; Level::Warn,</pre>
@@ -915,7 +915,7 @@
             </div>
             <div
                 class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1968
+                1980
             </div>
             <div class="column has-background-success-light p-0">
                 <pre class="has-background-success-light py-0 px-2">            4 =&gt; Level::Error,</pre>
@@ -2816,7 +2816,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    logs.serialize(&amp;mut pot::ser::Serializer::new(buffer).unwrap())</pre>
+                <pre class="has-background-success-light py-0 px-2">    pot::to_writer(logs, buffer).unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -2829,7 +2829,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">        .unwrap();</pre>
+                <pre class="has-background-success-light py-0 px-2">}</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -2838,11 +2838,11 @@
                 <a href="#216">216</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">}</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2"></pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -2851,11 +2851,11 @@
                 <a href="#217">217</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2"></pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">fn cbor_serialize_into(logs: &amp;LogArchive, buffer: &amp;mut Vec&lt;u8&gt;) {</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -2868,7 +2868,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">fn cbor_serialize_into(logs: &amp;LogArchive, buffer: &amp;mut Vec&lt;u8&gt;) {</pre>
+                <pre class="has-background-success-light py-0 px-2">    ciborium::ser::into_writer(logs, buffer).unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -2881,7 +2881,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    ciborium::ser::into_writer(logs, buffer).unwrap();</pre>
+                <pre class="has-background-success-light py-0 px-2">}</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -2890,11 +2890,11 @@
                 <a href="#220">220</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">}</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2"></pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -2903,11 +2903,11 @@
                 <a href="#221">221</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2"></pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">fn bincode_serialize_into(logs: &amp;LogArchive, buffer: &amp;mut Vec&lt;u8&gt;) {</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -2920,7 +2920,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">fn bincode_serialize_into(logs: &amp;LogArchive, buffer: &amp;mut Vec&lt;u8&gt;) {</pre>
+                <pre class="has-background-success-light py-0 px-2">    bincode::serialize_into(buffer, logs).unwrap();</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -2933,7 +2933,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    bincode::serialize_into(buffer, logs).unwrap();</pre>
+                <pre class="has-background-success-light py-0 px-2">}</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -2942,11 +2942,11 @@
                 <a href="#224">224</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">}</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2"></pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -2955,11 +2955,11 @@
                 <a href="#225">225</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2"></pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">fn msgpack_serialize_into(logs: &amp;LogArchive, buffer: &amp;mut Vec&lt;u8&gt;) {</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -2972,7 +2972,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">fn msgpack_serialize_into(logs: &amp;LogArchive, buffer: &amp;mut Vec&lt;u8&gt;) {</pre>
+                <pre class="has-background-success-light py-0 px-2">    rmp_serde::encode::write(buffer, logs).unwrap()</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -2985,7 +2985,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    rmp_serde::encode::write(buffer, logs).unwrap()</pre>
+                <pre class="has-background-success-light py-0 px-2">}</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -2994,11 +2994,11 @@
                 <a href="#228">228</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">}</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2"></pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -3007,11 +3007,11 @@
                 <a href="#229">229</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2"></pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">fn msgpack_serialize_into_named(logs: &amp;LogArchive, buffer: &amp;mut Vec&lt;u8&gt;) {</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -3024,7 +3024,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">fn msgpack_serialize_into_named(logs: &amp;LogArchive, buffer: &amp;mut Vec&lt;u8&gt;) {</pre>
+                <pre class="has-background-success-light py-0 px-2">    rmp_serde::encode::write_named(buffer, logs).unwrap()</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -3037,7 +3037,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    rmp_serde::encode::write_named(buffer, logs).unwrap()</pre>
+                <pre class="has-background-success-light py-0 px-2">}</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -3046,11 +3046,11 @@
                 <a href="#232">232</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">}</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2"></pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -3059,11 +3059,11 @@
                 <a href="#233">233</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
+                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
+                1
             </div>
-            <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2"></pre>
+            <div class="column has-background-success-light p-0">
+                <pre class="has-background-success-light py-0 px-2">fn criterion_benchmark(c: &amp;mut Criterion) {</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -3076,7 +3076,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">fn criterion_benchmark(c: &amp;mut Criterion) {</pre>
+                <pre class="has-background-success-light py-0 px-2">    bench_logs(c)</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -3089,7 +3089,7 @@
                 1
             </div>
             <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">    bench_logs(c)</pre>
+                <pre class="has-background-success-light py-0 px-2">}</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -3098,11 +3098,11 @@
                 <a href="#236">236</a>
             </div>
             <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-success-light has-background-success">
-                1
+                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
+                
             </div>
-            <div class="column has-background-success-light p-0">
-                <pre class="has-background-success-light py-0 px-2">}</pre>
+            <div class="column has-background-white p-0">
+                <pre class="has-background-white py-0 px-2"></pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -3115,7 +3115,7 @@
                 
             </div>
             <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2"></pre>
+                <pre class="has-background-white py-0 px-2">criterion_group!(benches, criterion_benchmark);</pre>
             </div>
         </div><div class="columns p-0 m-0">
             <div
@@ -3128,25 +3128,12 @@
                 
             </div>
             <div class="column has-background-white p-0">
-                <pre class="has-background-white py-0 px-2">criterion_group!(benches, criterion_benchmark);</pre>
-            </div>
-        </div><div class="columns p-0 m-0">
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered"
-                id="239">
-                <a href="#239">239</a>
-            </div>
-            <div
-                class="column is-1 is-narrow p-0 has-text-centered has-text-white has-background-white">
-                
-            </div>
-            <div class="column has-background-white p-0">
                 <pre class="has-background-white py-0 px-2">criterion_main!(benches);</pre>
             </div>
         </div></div>
         <footer class="footer">
             <div class="content has-text-centered">
-                <p class="heading">Date: 2023-07-31 02:49</p>
+                <p class="heading">Date: 2023-07-31 14:44</p>
             </div>
         </footer>
     </body>
