@@ -1833,6 +1833,13 @@
 <a href="#1833" id="1833">1833</a>
 <a href="#1834" id="1834">1834</a>
 <a href="#1835" id="1835">1835</a>
+<a href="#1836" id="1836">1836</a>
+<a href="#1837" id="1837">1837</a>
+<a href="#1838" id="1838">1838</a>
+<a href="#1839" id="1839">1839</a>
+<a href="#1840" id="1840">1840</a>
+<a href="#1841" id="1841">1841</a>
+<a href="#1842" id="1842">1842</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::fmt::Display;
 
 <span class="kw">use </span>byteorder::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
@@ -2031,6 +2038,7 @@
 }
 
 <span class="doccomment">/// A special value type.
+</span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub enum </span>Special {
     <span class="doccomment">/// A None value.
     </span><span class="prelude-val">None </span>= <span class="number">0</span>,
@@ -2071,14 +2079,13 @@
 
 <span class="attr">#[test]
 </span><span class="kw">fn </span>unknown_special() {
-    <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-        Special::try_from(u64::MAX),
-        <span class="prelude-val">Err</span>(UnknownSpecial(u64::MAX))
-    ));
+    <span class="kw">let </span>err = Special::try_from(u64::MAX).unwrap_err();
+    <span class="macro">assert_eq!</span>(err, UnknownSpecial(u64::MAX));
+    <span class="macro">assert!</span>(err.to_string().contains(<span class="string">&quot;unknown special&quot;</span>));
 }
 
 <span class="doccomment">/// An unknown [`Special`] was encountered.
-</span><span class="attr">#[derive(Debug, Clone, Copy)]
+</span><span class="attr">#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 </span><span class="kw">pub struct </span>UnknownSpecial(<span class="kw">pub </span>u64);
 
 <span class="kw">impl </span>Display <span class="kw">for </span>UnknownSpecial {
@@ -3638,6 +3645,13 @@
         <span class="macro">test_conversion_succeeds!</span>(Integer, <span class="number">2_i64</span>.pow(f64::MANTISSA_DIGITS) - <span class="number">1</span>, as_f64);
         <span class="macro">test_conversion_fails!</span>(Integer, i64::MIN, as_f64);
         <span class="macro">test_conversion_fails!</span>(Integer, i64::MAX, as_f64);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>float_partial_eqs() {
+        <span class="macro">assert_eq!</span>(Float::from(<span class="number">0_f32</span>), Float::from(<span class="number">0_f32</span>));
+        <span class="macro">assert_eq!</span>(Float::from(<span class="number">0_f32</span>), Float::from(<span class="number">0_f64</span>));
+        <span class="macro">assert_eq!</span>(Float::from(<span class="number">0_f64</span>), Float::from(<span class="number">0_f32</span>));
     }
 
     <span class="attr">#[test]

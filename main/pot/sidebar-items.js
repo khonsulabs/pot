@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Error","Value","ValueError"],"fn":["from_reader","from_slice","to_vec","to_writer"],"mod":["de","format","reader","ser"],"struct":["Config","OwnedValue"],"type":["Result"]};
+window.SIDEBAR_ITEMS = {"enum":["Error","Value","ValueError"],"fn":["from_reader","from_slice","to_vec","to_writer"],"mod":["de","format","reader","ser"],"struct":["Config","OwnedValue","ValueIter"],"type":["Result"]};
