@@ -39,7 +39,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `pot::Result<T>` is now `pot::Result<T,E = pot::Error>`. This avoids issues
   with other code when `pot::Result` is imported.
+- `ValueIter` is now exported. This is the type returned from `Value::values()`.
+
+### Added
+
 - `OwnedValue` now implements `From` for `Value<'_>` and `&Value<'_>`.
+- `Value` now implements `FromIterator<T>` where `T: Into<Value<'a>>`. The
+  result will be the variant `Value::Sequence`.
+- `Value` now implements `FromIterator<(K, V)>` where `K: Into<Value<'a>>, V:
+  Into<Value<'a>>`. The result will be the variant `Value::Mappings`.
 
 [9]: https://github.com/khonsulabs/pot/issues/9
 

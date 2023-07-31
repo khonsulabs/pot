@@ -196,6 +196,7 @@ impl Kind {
 }
 
 /// A special value type.
+#[derive(Debug)]
 pub enum Special {
     /// A None value.
     None = 0,
@@ -236,14 +237,13 @@ impl TryFrom<u64> for Special {
 
 #[test]
 fn unknown_special() {
-    assert!(matches!(
-        Special::try_from(u64::MAX),
-        Err(UnknownSpecial(u64::MAX))
-    ));
+    let err = Special::try_from(u64::MAX).unwrap_err();
+    assert_eq!(err, UnknownSpecial(u64::MAX));
+    assert!(err.to_string().contains("unknown special"));
 }
 
 /// An unknown [`Special`] was encountered.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub struct UnknownSpecial(pub u64);
 
 impl Display for UnknownSpecial {
@@ -1803,6 +1803,13 @@ mod tests {
         test_conversion_succeeds!(Integer, 2_i64.pow(f64::MANTISSA_DIGITS) - 1, as_f64);
         test_conversion_fails!(Integer, i64::MIN, as_f64);
         test_conversion_fails!(Integer, i64::MAX, as_f64);
+    }
+
+    #[test]
+    fn float_partial_eqs() {
+        assert_eq!(Float::from(0_f32), Float::from(0_f32));
+        assert_eq!(Float::from(0_f32), Float::from(0_f64));
+        assert_eq!(Float::from(0_f64), Float::from(0_f32));
     }
 
     #[test]

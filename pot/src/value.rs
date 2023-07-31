@@ -103,7 +103,7 @@ impl<'a> Value<'a> {
     pub fn from_sequence<IntoIter: IntoIterator<Item = T>, T: Into<Self>>(
         sequence: IntoIter,
     ) -> Self {
-        Self::Sequence(sequence.into_iter().map(T::into).collect())
+        Self::from_iter(sequence)
     }
 
     /// Returns a new value from an iterator of 2-element tuples representing key-value pairs.
@@ -118,12 +118,7 @@ impl<'a> Value<'a> {
     pub fn from_mappings<IntoIter: IntoIterator<Item = (K, V)>, K: Into<Self>, V: Into<Self>>(
         mappings: IntoIter,
     ) -> Self {
-        Self::Mappings(
-            mappings
-                .into_iter()
-                .map(|(k, v)| (k.into(), v.into()))
-                .collect(),
-        )
+        Self::from_iter(mappings)
     }
 
     /// Returns `true` if the value contained is considered empty.
@@ -281,12 +276,11 @@ impl<'a> Value<'a> {
     /// the mapping is returned.
     #[must_use]
     #[inline]
-    pub fn values(&self) -> SequenceIter<'_> {
+    pub fn values(&self) -> ValueIter<'_> {
         match self {
-            Self::Sequence(sequence) => SequenceIter::Sequence(sequence.iter()),
-            Self::Mappings(mappings) => SequenceIter::Mappings(mappings.iter()),
-
-            _ => SequenceIter::Sequence([].iter()),
+            Self::Sequence(sequence) => ValueIter(SequenceIterState::Sequence(sequence.iter())),
+            Self::Mappings(mappings) => ValueIter(SequenceIterState::Mappings(mappings.iter())),
+            _ => ValueIter(SequenceIterState::Sequence([].iter())),
         }
     }
 
@@ -851,19 +845,65 @@ impl<'a> From<Vec<(Value<'a>, Value<'a>)>> for Value<'a> {
     }
 }
 
-pub enum SequenceIter<'a> {
+impl<'a, A> FromIterator<A> for Value<'a>
+where
+    A: Into<Value<'a>>,
+{
+    #[inline]
+    fn from_iter<T: IntoIterator<Item = A>>(iter: T) -> Self {
+        Self::from(iter.into_iter().map(A::into).collect::<Vec<_>>())
+    }
+}
+
+impl<'a, K, V> FromIterator<(K, V)> for Value<'a>
+where
+    K: Into<Value<'a>>,
+    V: Into<Value<'a>>,
+{
+    #[inline]
+    fn from_iter<T: IntoIterator<Item = (K, V)>>(iter: T) -> Self {
+        Self::from(
+            iter.into_iter()
+                .map(|(k, v)| (k.into(), v.into()))
+                .collect::<Vec<_>>(),
+        )
+    }
+}
+
+/// An iterator over values contained within a [`Value`].
+pub struct ValueIter<'a>(SequenceIterState<'a>);
+
+enum SequenceIterState<'a> {
     Sequence(std::slice::Iter<'a, Value<'a>>),
     Mappings(std::slice::Iter<'a, (Value<'a>, Value<'a>)>),
 }
 
-impl<'a> Iterator for SequenceIter<'a> {
+impl<'a> Iterator for ValueIter<'a> {
     type Item = &'a Value<'a>;
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        match self {
-            SequenceIter::Sequence(sequence) => sequence.next(),
-            SequenceIter::Mappings(mappings) => mappings.next().map(|(_k, v)| v),
+        match &mut self.0 {
+            SequenceIterState::Sequence(sequence) => sequence.next(),
+            SequenceIterState::Mappings(mappings) => mappings.next().map(|(_k, v)| v),
+        }
+    }
+}
+
+impl<'a> ExactSizeIterator for ValueIter<'a> {
+    fn len(&self) -> usize {
+        match &self.0 {
+            SequenceIterState::Sequence(iter) => iter.len(),
+            SequenceIterState::Mappings(iter) => iter.len(),
+        }
+    }
+}
+
+impl<'a> DoubleEndedIterator for ValueIter<'a> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        match &mut self.0 {
+            SequenceIterState::Sequence(iter) => iter.next_back(),
+            SequenceIterState::Mappings(iter) => iter.next_back().map(|(_k, v)| v),
         }
     }
 }
@@ -2158,7 +2198,7 @@ fn as_str() {
 fn as_bytes() {
     assert_eq!(Value::from(b"asdf").as_bytes(), Some(&b"asdf"[..]));
     assert_eq!(Value::from("asdf").as_bytes(), Some(&b"asdf"[..]));
-    assert_eq!(Value::from(false).as_str(), None);
+    assert_eq!(Value::from(false).as_bytes(), None);
 }
 
 #[test]
@@ -2175,6 +2215,7 @@ fn values() {
             .collect::<Vec<_>>(),
         &[&Value::Bool(true), &Value::Bool(false)]
     );
+    assert_eq!(Value::from(None).values().count(), 0);
 }
 
 #[test]
@@ -2195,30 +2236,37 @@ fn mappings() {
             &(Value::from(1), Value::Bool(false))
         ]
     );
+    assert!(Value::from(false).mappings().collect::<Vec<_>>().is_empty());
 }
 
 #[test]
 fn into_static() {
     for borrowed in [
-        Value::None,
-        Value::Unit,
-        Value::Bool(true),
+        Value::from(None),
+        Value::from(Some(Value::from(()))),
+        Value::from(true),
         Value::from(1_i32),
         Value::from(1_f32),
-        Value::from(b"hi"),
+        Value::from(&b"hi"[..]),
         Value::from("hi"),
         Value::from_sequence([1]),
         Value::from_mappings([(1, 2)]),
     ] {
         let cloned = borrowed.clone();
+        let s = borrowed.to_static();
         assert_eq!(borrowed.to_static(), borrowed);
+        // The first pass had borrowed strings/bytes. The static version has
+        // owned values, so these invocations take a slightly different path.
+        assert_eq!(borrowed, s.to_static());
+
         assert_eq!(borrowed.into_static(), cloned);
+        assert_eq!(cloned, s.into_static());
     }
 }
 
 #[test]
 fn owned_deref() {
-    let mut owned_value = OwnedValue::from(&Value::from("hello"));
+    let mut owned_value = OwnedValue::from(&Value::from("hello".to_string()));
     assert_eq!(owned_value.as_str(), Some("hello"));
     let Value::String(Cow::Owned(str)) = &mut *owned_value else { unreachable!() };
     str.push_str(", world");
@@ -2227,7 +2275,7 @@ fn owned_deref() {
 
 #[test]
 fn owned_serialization() {
-    let owned_value = OwnedValue::from(Value::from(b"asdf"));
+    let owned_value = OwnedValue::from(Value::from(b"asdf".to_vec()));
     let serialized = crate::to_vec(&owned_value).unwrap();
     let deserialized_owned: OwnedValue = crate::from_slice(&serialized).unwrap();
     assert_eq!(deserialized_owned, owned_value);

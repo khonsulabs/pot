@@ -30,7 +30,7 @@ use std::io::Read;
 use byteorder::WriteBytesExt;
 
 pub use self::error::Error;
-pub use self::value::{OwnedValue, Value, ValueError};
+pub use self::value::{OwnedValue, Value, ValueError, ValueIter};
 /// A result alias that returns [`Error`].
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 use serde::de::DeserializeOwned;
@@ -764,6 +764,26 @@ mod tests {
         roundtrip(&EnumVariants::Tuple(1));
         roundtrip(&EnumVariants::TupleTwoArgs(1, 2));
         roundtrip(&EnumVariants::Unit);
+        roundtrip(&Some(1_u32));
+        roundtrip(&"hello".to_string());
+        roundtrip(&b"hello".to_vec());
+    }
+
+    #[test]
+    fn borrowed_value_serialization() {
+        #[track_caller]
+        fn check<T, U>(value: &T)
+        where
+            T: Serialize + Debug,
+            U: Debug + PartialEq<T> + for<'de> Deserialize<'de>,
+        {
+            let as_value = Value::from_serialize(value).unwrap();
+            let deserialized = as_value.deserialize_as::<U>().unwrap();
+            assert_eq!(&deserialized, value);
+        }
+
+        check::<_, Vec<u8>>(&b"hello");
+        check::<_, String>(&"hello");
     }
 
     #[test]
