@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["MapSerializer","Serializer","SymbolMap"]};
+window.SIDEBAR_ITEMS = {"struct":["MapSerializer","Serializer","SymbolMap","SymbolMapPopulationError"]};

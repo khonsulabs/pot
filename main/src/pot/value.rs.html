@@ -2280,6 +2280,8 @@
 <a href="#2280" id="2280">2280</a>
 <a href="#2281" id="2281">2281</a>
 <a href="#2282" id="2282">2282</a>
+<a href="#2283" id="2283">2283</a>
+<a href="#2284" id="2284">2284</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::borrow::Cow;
 <span class="kw">use </span>std::fmt::{Display, Write};
 <span class="kw">use </span>std::marker::PhantomData;
@@ -4550,7 +4552,9 @@
 </span><span class="kw">fn </span>owned_deref() {
     <span class="kw">let </span><span class="kw-2">mut </span>owned_value = OwnedValue::from(<span class="kw-2">&amp;</span>Value::from(<span class="string">&quot;hello&quot;</span>.to_string()));
     <span class="macro">assert_eq!</span>(owned_value.as_str(), <span class="prelude-val">Some</span>(<span class="string">&quot;hello&quot;</span>));
-    <span class="kw">let </span>Value::String(Cow::Owned(str)) = <span class="kw-2">&amp;mut *</span>owned_value <span class="kw">else </span>{ <span class="macro">unreachable!</span>() };
+    <span class="kw">let </span>Value::String(Cow::Owned(str)) = <span class="kw-2">&amp;mut *</span>owned_value <span class="kw">else </span>{
+        <span class="macro">unreachable!</span>()
+    };
     str.push_str(<span class="string">&quot;, world&quot;</span>);
     <span class="macro">assert_eq!</span>(owned_value.as_str(), <span class="prelude-val">Some</span>(<span class="string">&quot;hello, world&quot;</span>));
 }
