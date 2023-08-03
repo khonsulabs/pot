@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::collections::VecDeque;
 use std::fmt::Debug;
 use std::io::Read;
@@ -8,6 +9,8 @@ use format::Kind;
 use serde::de::{
     self, DeserializeSeed, EnumAccess, Error as _, MapAccess, SeqAccess, VariantAccess, Visitor,
 };
+use serde::ser::SerializeSeq;
+use serde::{Deserialize, Serialize};
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
@@ -1142,15 +1145,22 @@ impl<'de> SymbolList<'de> {
             .push(SymbolListEntry::Buffer(start..self.buffer.len()));
     }
 
+    #[inline]
+    fn resolve_entry(&self, entry: &SymbolListEntry<'de>) -> SymbolStr<'de, '_> {
+        match entry {
+            SymbolListEntry::Buffer(range) => SymbolStr::InList(&self.buffer[range.clone()]),
+            SymbolListEntry::Borrowed(str) => SymbolStr::Data(str),
+        }
+    }
+
     /// Return the symbol stored at `index`, or `None` if `index` is out of
     /// bounds.
     #[inline]
     #[must_use]
     pub fn get(&self, index: usize) -> Option<SymbolStr<'de, '_>> {
-        match self.entries.get(index)? {
-            SymbolListEntry::Buffer(range) => Some(SymbolStr::InList(&self.buffer[range.clone()])),
-            SymbolListEntry::Borrowed(str) => Some(SymbolStr::Data(str)),
-        }
+        self.entries
+            .get(index)
+            .map(|entry| self.resolve_entry(entry))
     }
 
     /// Returns the number of entries in the symbol list.
@@ -1203,6 +1213,52 @@ impl SymbolMap {
     #[must_use]
     fn persistent<'de>(&mut self) -> SymbolMapRef<'_, 'de> {
         SymbolMapRef(SymbolMapRefPrivate::Persistent(self))
+    }
+}
+
+impl Serialize for SymbolMap {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut seq = serializer.serialize_seq(Some(self.len()))?;
+        for entry in &self.entries {
+            seq.serialize_element(&*self.resolve_entry(entry))?;
+        }
+        seq.end()
+    }
+}
+
+impl<'de> Deserialize<'de> for SymbolMap {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        deserializer.deserialize_seq(SymbolMapVisitor)
+    }
+}
+
+struct SymbolMapVisitor;
+
+impl<'de> Visitor<'de> for SymbolMapVisitor {
+    type Value = SymbolMap;
+
+    fn expecting(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        formatter.write_str("symbol map")
+    }
+
+    fn visit_seq<A>(self, mut seq: A) -> std::result::Result<Self::Value, A::Error>
+    where
+        A: SeqAccess<'de>,
+    {
+        let mut map = SymbolMap::new();
+        if let Some(hint) = seq.size_hint() {
+            map.entries.reserve(hint);
+        }
+        while let Some(element) = seq.next_element::<Cow<'_, str>>()? {
+            map.push(&element);
+        }
+        Ok(map)
     }
 }
 

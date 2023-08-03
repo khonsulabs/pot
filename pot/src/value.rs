@@ -2268,7 +2268,9 @@ fn into_static() {
 fn owned_deref() {
     let mut owned_value = OwnedValue::from(&Value::from("hello".to_string()));
     assert_eq!(owned_value.as_str(), Some("hello"));
-    let Value::String(Cow::Owned(str)) = &mut *owned_value else { unreachable!() };
+    let Value::String(Cow::Owned(str)) = &mut *owned_value else {
+        unreachable!()
+    };
     str.push_str(", world");
     assert_eq!(owned_value.as_str(), Some("hello, world"));
 }

@@ -866,4 +866,88 @@ mod tests {
         );
         assert!(first_payload_len > bytes.len());
     }
+
+    #[test]
+    fn symbol_map_serialization() {
+        #[derive(Serialize, Deserialize, Default, Eq, PartialEq, Debug)]
+        struct Payload {
+            a: usize,
+            b: usize,
+        }
+
+        let mut sender = crate::ser::SymbolMap::default();
+        assert!(sender.is_empty());
+        let mut receiver = crate::de::SymbolMap::new();
+        assert!(receiver.is_empty());
+        let mut bytes = Vec::new();
+
+        // Send the first payload, populating the map.
+        Payload::default()
+            .serialize(&mut sender.serializer_for(&mut bytes).unwrap())
+            .unwrap();
+        assert_eq!(sender.len(), 2);
+
+        assert_eq!(
+            Payload::deserialize(&mut receiver.deserializer_for_slice(&bytes).unwrap()).unwrap(),
+            Payload::default()
+        );
+        assert_eq!(receiver.len(), 2);
+
+        // Serialize the maps.
+        let serialized_sender = crate::to_vec(&sender).unwrap();
+        let serialized_receiver = crate::to_vec(&receiver).unwrap();
+        // The serialization formats are the same despite using different
+        // in-memory representations. This allows pre-serializing a dictionary
+        // before starting the intial payload.
+        assert_eq!(serialized_sender, serialized_receiver);
+        let mut deserialized_sender =
+            crate::from_slice::<crate::ser::SymbolMap>(&serialized_sender).unwrap();
+        let mut deserialized_receiver =
+            crate::from_slice::<crate::de::SymbolMap>(&serialized_receiver).unwrap();
+
+        // Create a new payload and serialize it. Ensure the payloads produced
+        // by the serialized map and the original map are identical.
+        let new_payload = Payload { a: 1, b: 2 };
+        bytes.clear();
+        new_payload
+            .serialize(&mut sender.serializer_for(&mut bytes).unwrap())
+            .unwrap();
+        let mut from_serialized_sender = Vec::new();
+        new_payload
+            .serialize(
+                &mut deserialized_sender
+                    .serializer_for(&mut from_serialized_sender)
+                    .unwrap(),
+            )
+            .unwrap();
+        assert_eq!(bytes, from_serialized_sender);
+
+        // Deserialize the payload
+        assert_eq!(
+            Payload::deserialize(&mut receiver.deserializer_for_slice(&bytes).unwrap()).unwrap(),
+            new_payload
+        );
+        assert_eq!(
+            Payload::deserialize(
+                &mut deserialized_receiver
+                    .deserializer_for_slice(&bytes)
+                    .unwrap()
+            )
+            .unwrap(),
+            new_payload
+        );
+    }
+
+    #[test]
+    fn symbol_map_population() {
+        let mut map = crate::ser::SymbolMap::default();
+        map.populate_from(&NumbersStruct::default()).unwrap();
+        map.populate_from(&EnumVariants::Struct { arg: 1 }).unwrap();
+        map.populate_from(&EnumVariants::Tuple(0)).unwrap();
+        map.populate_from(&EnumVariants::TupleTwoArgs(0, 1))
+            .unwrap();
+        assert_eq!(map.populate_from(&EnumVariants::Unit).unwrap(), 1);
+        assert_eq!(map.populate_from(&EnumVariants::Unit).unwrap(), 0);
+        dbg!(map);
+    }
 }

@@ -48,6 +48,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   result will be the variant `Value::Sequence`.
 - `Value` now implements `FromIterator<(K, V)>` where `K: Into<Value<'a>>, V:
   Into<Value<'a>>`. The result will be the variant `Value::Mappings`.
+- `de::SymbolMap` and `ser::SymbolMap` now both implement `Serialize` and
+  `Deserialize` using the same serialization strategy. This allows preshared
+  dictionaries to be used, and for state to be saved and restored.
 
 [9]: https://github.com/khonsulabs/pot/issues/9
 
