@@ -1840,7 +1840,6 @@
 <a href="#1840" id="1840">1840</a>
 <a href="#1841" id="1841">1841</a>
 <a href="#1842" id="1842">1842</a>
-<a href="#1843" id="1843">1843</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::fmt::Display;
 
 <span class="kw">use </span>byteorder::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
@@ -1849,7 +1848,6 @@
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const </span>CURRENT_VERSION: u8 = <span class="number">0</span>;
 
-<span class="kw">use </span><span class="kw">crate</span>::error::KindOrClass;
 <span class="kw">use </span><span class="kw">crate</span>::reader::{BufferedBytes, Reader};
 <span class="kw">use </span><span class="kw">crate</span>::Error;
 <span class="doccomment">/// Writes an atom header into `writer`.
@@ -2777,7 +2775,7 @@
                 <span class="number">6 </span>=&gt; <span class="prelude-val">Ok</span>(InnerInteger::I64(reader.read_i48::&lt;LittleEndian&gt;()<span class="question-mark">?</span>)),
                 <span class="number">8 </span>=&gt; <span class="prelude-val">Ok</span>(InnerInteger::I64(reader.read_i64::&lt;LittleEndian&gt;()<span class="question-mark">?</span>)),
                 <span class="number">16 </span>=&gt; <span class="prelude-val">Ok</span>(InnerInteger::I128(reader.read_i128::&lt;LittleEndian&gt;()<span class="question-mark">?</span>)),
-                count =&gt; <span class="prelude-val">Err</span>(Error::UnsupportedByteCount(KindOrClass::Integer, count)),
+                count =&gt; <span class="prelude-val">Err</span>(Error::UnsupportedByteCount(kind, count)),
             },
             Kind::UInt =&gt; <span class="kw">match </span>byte_len {
                 <span class="number">1 </span>=&gt; <span class="prelude-val">Ok</span>(InnerInteger::U8(reader.read_u8()<span class="question-mark">?</span>)),
@@ -2787,9 +2785,9 @@
                 <span class="number">6 </span>=&gt; <span class="prelude-val">Ok</span>(InnerInteger::U64(reader.read_u48::&lt;LittleEndian&gt;()<span class="question-mark">?</span>)),
                 <span class="number">8 </span>=&gt; <span class="prelude-val">Ok</span>(InnerInteger::U64(reader.read_u64::&lt;LittleEndian&gt;()<span class="question-mark">?</span>)),
                 <span class="number">16 </span>=&gt; <span class="prelude-val">Ok</span>(InnerInteger::U128(reader.read_u128::&lt;LittleEndian&gt;()<span class="question-mark">?</span>)),
-                count =&gt; <span class="prelude-val">Err</span>(Error::UnsupportedByteCount(KindOrClass::Integer, count)),
+                count =&gt; <span class="prelude-val">Err</span>(Error::UnsupportedByteCount(kind, count)),
             },
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(Error::UnexpectedKind(kind, KindOrClass::Integer)),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(Error::UnexpectedKind(kind, Kind::Int)),
         }
         .map(Integer)
     }
@@ -3105,10 +3103,10 @@
                 <span class="number">2 </span>=&gt; <span class="prelude-val">Ok</span>(<span class="self">Self</span>::from(read_f16(reader)<span class="question-mark">?</span>)),
                 <span class="number">4 </span>=&gt; <span class="prelude-val">Ok</span>(<span class="self">Self</span>::from(reader.read_f32::&lt;LittleEndian&gt;()<span class="question-mark">?</span>)),
                 <span class="number">8 </span>=&gt; <span class="prelude-val">Ok</span>(<span class="self">Self</span>::from(reader.read_f64::&lt;LittleEndian&gt;()<span class="question-mark">?</span>)),
-                count =&gt; <span class="prelude-val">Err</span>(Error::UnsupportedByteCount(KindOrClass::Float, count)),
+                count =&gt; <span class="prelude-val">Err</span>(Error::UnsupportedByteCount(Kind::Float, count)),
             }
         } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(Error::UnexpectedKind(kind, KindOrClass::Float))
+            <span class="prelude-val">Err</span>(Error::UnexpectedKind(kind, Kind::Float))
         }
     }
 }
