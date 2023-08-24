@@ -954,4 +954,28 @@ mod tests {
         assert_eq!(map.populate_from(&EnumVariants::Unit).unwrap(), 0);
         dbg!(map);
     }
+
+    #[test]
+    fn backwards_compatible() {
+        #[derive(Debug, Serialize, Deserialize, Eq, PartialEq)]
+        struct Canary {
+            name: String,
+            id: u64,
+        }
+
+        let canary = Canary {
+            name: String::from("coalmine"),
+            id: 0xfeed_d0d0_dead_beef,
+        };
+
+        // This payload was generated with pot 1.0 using the same structure.
+        // This structure should be updated to be more encompassing, but this at
+        // least tests for basic compatibility.
+        let v1_canary = [
+            80, 111, 116, 0, 162, 200, 110, 97, 109, 101, 232, 99, 111, 97, 108, 109, 105, 110,
+            101, 196, 105, 100, 71, 239, 190, 173, 222, 208, 208, 237, 254,
+        ];
+        let parsed: Canary = crate::from_slice(&v1_canary).unwrap();
+        assert_eq!(canary, parsed);
+    }
 }
