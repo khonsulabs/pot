@@ -16,6 +16,10 @@ jobs:
         run: |
           cargo clippy
 
-      - name: Run unit tests
+      - name: Run unit tests (Pot)
+        run: |
+          cargo test -p pot
+
+      - name: Run unit tests (Workspace)
         run: |
           cargo test --all-features

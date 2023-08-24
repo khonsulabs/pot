@@ -42,7 +42,7 @@ impl<'a> Value<'a> {
     /// ```rust
     /// # fn test() -> Result<(), pot::ValueError> {
     /// use pot::Value;
-    /// use serde::Serialize;
+    /// use serde_derive::Serialize;
     ///
     /// #[derive(Serialize, Debug)]
     /// enum Example {
@@ -72,7 +72,7 @@ impl<'a> Value<'a> {
     /// ```rust
     /// # fn test() -> Result<(), pot::ValueError> {
     /// use pot::Value;
-    /// use serde::{Deserialize, Serialize};
+    /// use serde_derive::{Deserialize, Serialize};
     ///
     /// #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
     /// enum Example {

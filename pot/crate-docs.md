@@ -14,7 +14,7 @@ provide an encoding format for [`serde`](https://serde.rs) that:
 * Is compact. While still being self-describing, Pot's main space-saving feature
   is not repeating symbols/identifiers more than one time while serializing.
   When serializing arrays of structures, this can make a major difference. The
-  [logs.rs](https://github.com/khonsulabs/pot/blob/main/pot/examples/logs.rs)
+  [logs.rs](https://github.com/khonsulabs/pot/blob/main/benchmarks/examples/logs.rs)
   example demonstrates this:
 
   ```sh
@@ -40,8 +40,7 @@ provide an encoding format for [`serde`](https://serde.rs) that:
 ## Example
 
 ```rust
-use serde::{Deserialize, Serialize};
-
+use serde_derive::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct User {
     id: u64,

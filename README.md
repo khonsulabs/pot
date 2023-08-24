@@ -42,8 +42,7 @@ provide an encoding format for [`serde`](https://serde.rs) that:
 ## Example
 
 ```rust
-use serde::{Deserialize, Serialize};
-
+use serde_derive::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct User {
     id: u64,
@@ -102,8 +101,8 @@ is only aimed at comparing the default performance for each library.
 
 ## Open-source Licenses
 
-This project, like all projects from [Khonsu Labs](https://khonsulabs.com/), are
-open-source. This repository is available under the [MIT License](./LICENSE-MIT)
-or the [Apache License 2.0](./LICENSE-APACHE).
+This project, like all projects from [Khonsu Labs](https://khonsulabs.com/), is open-source.
+This repository is available under the [MIT License](./LICENSE-MIT) or the
+[Apache License 2.0](./LICENSE-APACHE).
 
 To learn more about contributing, please see [CONTRIBUTING.md](./CONTRIBUTING.md).
