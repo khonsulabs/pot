@@ -3368,7 +3368,7 @@
 
     <span class="macro">macro_rules! </span>test_conversion_succeeds {
         (<span class="macro-nonterminal">$host</span>:ty, <span class="macro-nonterminal">$value</span>:expr, <span class="macro-nonterminal">$method</span>:ident) =&gt; {{
-            <span class="macro">assert!</span>(<span class="macro">matches!</span>(&lt;<span class="macro-nonterminal">$host</span>&gt;::from(<span class="macro-nonterminal">$value</span>).<span class="macro-nonterminal">$method</span>(), <span class="prelude-val">Ok</span>(<span class="kw">_</span>)))
+            <span class="macro">assert!</span>(&lt;<span class="macro-nonterminal">$host</span>&gt;::from(<span class="macro-nonterminal">$value</span>).<span class="macro-nonterminal">$method</span>().is_ok())
         }};
     }
     <span class="macro">macro_rules! </span>test_conversion_fails {

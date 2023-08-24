@@ -951,6 +951,10 @@
 <a href="#951" id="951">951</a>
 <a href="#952" id="952">952</a>
 <a href="#953" id="953">953</a>
+<a href="#954" id="954">954</a>
+<a href="#955" id="955">955</a>
+<a href="#956" id="956">956</a>
+<a href="#957" id="957">957</a>
 </pre></div><pre class="rust"><code><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">&quot;../crate-docs.md&quot;</span>)]
 #![forbid(unsafe_code)]
 #![warn(
@@ -1141,6 +1145,7 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>std::borrow::Cow;
     <span class="kw">use </span>std::marker::PhantomData;
+    <span class="kw">use </span>std::sync::OnceLock;
 
     <span class="kw">use </span>serde::{Deserializer, Serializer};
 
@@ -1149,15 +1154,20 @@
     <span class="kw">use </span><span class="kw">crate</span>::value::Value;
 
     <span class="kw">fn </span>init_tracing() {
-        drop(
+        <span class="kw">static </span>INITIALIZED: OnceLock&lt;()&gt; = OnceLock::new();
+
+        INITIALIZED.get_or_init(|| {
+            <span class="attr">#[cfg(not(feature = <span class="string">&quot;tracing&quot;</span>))]
+            </span><span class="macro">println!</span>(<span class="string">&quot;To see additional logs, run tests with the `tracing` feature enabled&quot;</span>);
+
             tracing_subscriber::fmt()
                 .pretty()
                 <span class="comment">// Enable everything.
                 </span>.with_max_level(tracing::Level::TRACE)
                 .with_span_events(tracing_subscriber::fmt::format::FmtSpan::ENTER)
                 <span class="comment">// Set this to be the default, global collector for this application.
-                </span>.try_init(),
-        );
+                </span>.init();
+        });
     }
 
     <span class="kw">fn </span>test_serialization&lt;S: Serialize + <span class="kw">for</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; + PartialEq + Debug&gt;(
@@ -1531,7 +1541,7 @@
         )
         .unwrap();
 
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(from_slice::&lt;()&gt;(<span class="kw-2">&amp;</span>invalid_bytes), <span class="prelude-val">Err</span>(<span class="kw">_</span>)));
+        <span class="macro">assert!</span>(from_slice::&lt;()&gt;(<span class="kw-2">&amp;</span>invalid_bytes).is_err());
     }
 
     <span class="doccomment">/// In `BonsaiDb`, sometimes it&#39;s nice to use a `()` as an associated type
@@ -1594,35 +1604,33 @@
         format::write_header(<span class="kw-2">&amp;mut </span>invalid_float_byte_len, CURRENT_VERSION).unwrap();
         format::write_atom_header(<span class="kw-2">&amp;mut </span>invalid_float_byte_len, format::Kind::Float, <span class="number">0</span>).unwrap();
 
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(from_slice::&lt;f32&gt;(<span class="kw-2">&amp;</span>invalid_float_byte_len), <span class="prelude-val">Err</span>(<span class="kw">_</span>)));
+        <span class="macro">assert!</span>(from_slice::&lt;f32&gt;(<span class="kw-2">&amp;</span>invalid_float_byte_len).is_err());
 
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            format::Float::read_from(format::Kind::Symbol, <span class="number">0</span>, <span class="kw-2">&amp;mut &amp;</span>invalid_float_byte_len[..]),
-            <span class="prelude-val">Err</span>(<span class="kw">_</span>)
-        ));
+        <span class="macro">assert!</span>(format::Float::read_from(
+            format::Kind::Symbol,
+            <span class="number">0</span>,
+            <span class="kw-2">&amp;mut &amp;</span>invalid_float_byte_len[..]
+        )
+        .is_err(),);
 
         <span class="kw">let </span><span class="kw-2">mut </span>invalid_signed_byte_len = Vec::new();
         format::write_header(<span class="kw-2">&amp;mut </span>invalid_signed_byte_len, CURRENT_VERSION).unwrap();
         format::write_atom_header(<span class="kw-2">&amp;mut </span>invalid_signed_byte_len, format::Kind::Int, <span class="number">10</span>).unwrap();
 
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            from_slice::&lt;i32&gt;(<span class="kw-2">&amp;</span>invalid_signed_byte_len),
-            <span class="prelude-val">Err</span>(<span class="kw">_</span>)
-        ));
+        <span class="macro">assert!</span>(from_slice::&lt;i32&gt;(<span class="kw-2">&amp;</span>invalid_signed_byte_len).is_err());
 
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            format::Integer::read_from(format::Kind::Symbol, <span class="number">0</span>, <span class="kw-2">&amp;mut &amp;</span>invalid_signed_byte_len[..]),
-            <span class="prelude-val">Err</span>(<span class="kw">_</span>)
-        ));
+        <span class="macro">assert!</span>(format::Integer::read_from(
+            format::Kind::Symbol,
+            <span class="number">0</span>,
+            <span class="kw-2">&amp;mut &amp;</span>invalid_signed_byte_len[..]
+        )
+        .is_err(),);
 
         <span class="kw">let </span><span class="kw-2">mut </span>invalid_unsigned_byte_len = Vec::new();
         format::write_header(<span class="kw-2">&amp;mut </span>invalid_unsigned_byte_len, CURRENT_VERSION).unwrap();
         format::write_atom_header(<span class="kw-2">&amp;mut </span>invalid_unsigned_byte_len, format::Kind::UInt, <span class="number">10</span>).unwrap();
 
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            from_slice::&lt;u32&gt;(<span class="kw-2">&amp;</span>invalid_unsigned_byte_len),
-            <span class="prelude-val">Err</span>(<span class="kw">_</span>)
-        ));
+        <span class="macro">assert!</span>(from_slice::&lt;u32&gt;(<span class="kw-2">&amp;</span>invalid_unsigned_byte_len).is_err());
     }
 
     <span class="attr">#[test]

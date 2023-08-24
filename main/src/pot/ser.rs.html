@@ -1407,7 +1407,7 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(value)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(value)))]
     #[inline]
     </span><span class="kw">fn </span>serialize_some&lt;T&gt;(<span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
@@ -1442,7 +1442,7 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(value)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(value)))]
     #[inline]
     </span><span class="kw">fn </span>serialize_newtype_struct&lt;T&gt;(<span class="self">self</span>, _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
@@ -1451,7 +1451,7 @@
         value.serialize(<span class="self">self</span>)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(value)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(value)))]
     #[inline]
     </span><span class="kw">fn </span>serialize_newtype_variant&lt;T&gt;(
         <span class="self">self</span>,

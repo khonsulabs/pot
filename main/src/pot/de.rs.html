@@ -1291,6 +1291,7 @@
 <span class="kw">use </span>std::fmt::Debug;
 <span class="kw">use </span>std::io::Read;
 <span class="kw">use </span>std::ops::{Deref, Range};
+<span class="kw">use </span>std::str;
 
 <span class="kw">use </span>byteorder::ReadBytesExt;
 <span class="kw">use </span>format::Kind;
@@ -1416,7 +1417,7 @@
         <span class="self">self</span>.peek_atom_at(<span class="number">0</span>)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     </span><span class="kw">fn </span>visit_symbol&lt;V&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, atom: <span class="kw-2">&amp;</span>Atom&lt;<span class="lifetime">&#39;_</span>&gt;, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1433,12 +1434,12 @@
                 .buffered_read_bytes(arg <span class="kw">as </span>usize, <span class="kw-2">&amp;mut </span><span class="self">self</span>.scratch)<span class="question-mark">?</span>;
             <span class="kw">match </span>name {
                 BufferedBytes::Data(name) =&gt; {
-                    <span class="kw">let </span>name = std::str::from_utf8(name)<span class="question-mark">?</span>;
+                    <span class="kw">let </span>name = str::from_utf8(name)<span class="question-mark">?</span>;
                     <span class="self">self</span>.symbols.push_borrowed(name);
                     visitor.visit_borrowed_str(name)
                 }
                 BufferedBytes::Scratch =&gt; {
-                    <span class="kw">let </span>name = std::str::from_utf8(<span class="kw-2">&amp;</span><span class="self">self</span>.scratch)<span class="question-mark">?</span>;
+                    <span class="kw">let </span>name = str::from_utf8(<span class="kw-2">&amp;</span><span class="self">self</span>.scratch)<span class="question-mark">?</span>;
                     <span class="kw">let </span>result = visitor.visit_str(name);
                     <span class="self">self</span>.symbols.push(name);
                     result
@@ -1459,7 +1460,7 @@
     <span class="comment">// Look at the input data to decide what Serde data model type to
     // deserialize as. Not all data formats are able to support this operation.
     // Formats that support `deserialize_any` are known as self-describing.
-    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
     </span><span class="kw">fn </span>deserialize_any&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
@@ -1523,14 +1524,14 @@
             Kind::Bytes =&gt; <span class="kw">match </span><span class="kw-2">&amp;</span>atom.nucleus {
                 <span class="prelude-val">Some</span>(Nucleus::Bytes(bytes)) =&gt; <span class="kw">match </span>bytes {
                     BufferedBytes::Data(bytes) =&gt; {
-                        <span class="kw">if let </span><span class="prelude-val">Ok</span>(as_str) = std::str::from_utf8(bytes) {
+                        <span class="kw">if let </span><span class="prelude-val">Ok</span>(as_str) = str::from_utf8(bytes) {
                             visitor.visit_borrowed_str(as_str)
                         } <span class="kw">else </span>{
                             visitor.visit_borrowed_bytes(bytes)
                         }
                     }
                     BufferedBytes::Scratch =&gt; {
-                        <span class="kw">if let </span><span class="prelude-val">Ok</span>(as_str) = std::str::from_utf8(<span class="kw-2">&amp;</span><span class="self">self</span>.scratch) {
+                        <span class="kw">if let </span><span class="prelude-val">Ok</span>(as_str) = str::from_utf8(<span class="kw-2">&amp;</span><span class="self">self</span>.scratch) {
                             visitor.visit_str(as_str)
                         } <span class="kw">else </span>{
                             visitor.visit_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>.scratch)
@@ -1544,7 +1545,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_bool&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1564,7 +1565,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_i8&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1586,7 +1587,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_i16&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1608,7 +1609,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_i32&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1630,7 +1631,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_i64&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1652,7 +1653,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_i128&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1674,7 +1675,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_u8&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1696,7 +1697,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_u16&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1718,7 +1719,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_u32&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1740,7 +1741,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_u64&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1762,7 +1763,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_u128&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1784,7 +1785,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_f32&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1814,7 +1815,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_f64&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1844,7 +1845,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_char&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1869,7 +1870,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_str&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1880,11 +1881,9 @@
             Kind::Bytes =&gt; <span class="kw">match </span>atom.nucleus {
                 <span class="prelude-val">Some</span>(Nucleus::Bytes(bytes)) =&gt; <span class="kw">match </span>bytes {
                     BufferedBytes::Data(bytes) =&gt; {
-                        visitor.visit_borrowed_str(std::str::from_utf8(bytes)<span class="question-mark">?</span>)
+                        visitor.visit_borrowed_str(str::from_utf8(bytes)<span class="question-mark">?</span>)
                     }
-                    BufferedBytes::Scratch =&gt; {
-                        visitor.visit_str(std::str::from_utf8(<span class="kw-2">&amp;</span><span class="self">self</span>.scratch)<span class="question-mark">?</span>)
-                    }
+                    BufferedBytes::Scratch =&gt; visitor.visit_str(str::from_utf8(<span class="kw-2">&amp;</span><span class="self">self</span>.scratch)<span class="question-mark">?</span>),
                 },
                 <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>),
             },
@@ -1903,7 +1902,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_string&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1912,7 +1911,7 @@
         <span class="self">self</span>.deserialize_str(visitor)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
     </span><span class="kw">fn </span>deserialize_bytes&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
@@ -1950,7 +1949,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_byte_buf&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1959,7 +1958,7 @@
         <span class="self">self</span>.deserialize_bytes(visitor)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_option&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1976,7 +1975,7 @@
     }
 
     <span class="comment">// In Serde, unit means an anonymous value containing no data.
-    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_unit&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -1991,7 +1990,7 @@
     }
 
     <span class="comment">// Unit struct means a named value containing no data.
-    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_unit_struct&lt;V&gt;(<span class="self">self</span>, _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -2003,7 +2002,7 @@
     <span class="comment">// As is done here, serializers are encouraged to treat newtype structs as
     // insignificant wrappers around the data they contain. That means not
     // parsing anything other than the contained value.
-    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_newtype_struct&lt;V&gt;(<span class="self">self</span>, _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -2012,7 +2011,7 @@
         visitor.visit_newtype_struct(<span class="self">self</span>)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
     </span><span class="kw">fn </span>deserialize_seq&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
@@ -2032,7 +2031,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_tuple&lt;V&gt;(<span class="self">self</span>, _len: usize, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -2054,7 +2053,7 @@
         <span class="self">self</span>.deserialize_seq(visitor)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
     </span><span class="kw">fn </span>deserialize_map&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
@@ -2072,7 +2071,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_struct&lt;V&gt;(
         <span class="self">self</span>,
@@ -2086,7 +2085,7 @@
         <span class="self">self</span>.deserialize_map(visitor)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_enum&lt;V&gt;(
         <span class="self">self</span>,
@@ -2100,7 +2099,7 @@
         visitor.visit_enum(<span class="self">self</span>)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
     </span><span class="kw">fn </span>deserialize_identifier&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
@@ -2112,7 +2111,7 @@
             Kind::Symbol =&gt; <span class="self">self</span>.visit_symbol(<span class="kw-2">&amp;</span>atom, visitor),
             Kind::Bytes =&gt; {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(Nucleus::Bytes(bytes)) = atom.nucleus {
-                    <span class="kw">let </span>as_str = std::str::from_utf8(bytes.as_slice(<span class="kw-2">&amp;</span><span class="self">self</span>.scratch))
+                    <span class="kw">let </span>as_str = str::from_utf8(bytes.as_slice(<span class="kw-2">&amp;</span><span class="self">self</span>.scratch))
                         .map_err(|err| Error::InvalidUtf8(err.to_string()))<span class="question-mark">?</span>;
                     visitor.visit_str(as_str)
                 } <span class="kw">else </span>{
@@ -2123,7 +2122,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_ignored_any&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -2221,7 +2220,7 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; SeqAccess&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>AtomList&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R&gt; {
     <span class="kw">type </span>Error = Error;
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(seed)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(seed)))]
     #[inline]
     </span><span class="kw">fn </span>next_element_seed&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, seed: T) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;T::Value&gt;&gt;
     <span class="kw">where
@@ -2244,7 +2243,7 @@
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; MapAccess&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>AtomList&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R&gt; {
     <span class="kw">type </span>Error = Error;
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(seed)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(seed)))]
     #[inline]
     </span><span class="kw">fn </span>next_key_seed&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, seed: T) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;T::Value&gt;&gt;
     <span class="kw">where
@@ -2258,7 +2257,7 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(seed)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(seed)))]
     #[inline]
     </span><span class="kw">fn </span>next_value_seed&lt;V&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, seed: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -2278,7 +2277,7 @@
     <span class="kw">type </span>Error = Error;
     <span class="kw">type </span>Variant = <span class="self">Self</span>;
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(seed)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(seed)))]
     #[inline]
     </span><span class="kw">fn </span>variant_seed&lt;V&gt;(<span class="self">self</span>, seed: V) -&gt; <span class="prelude-ty">Result</span>&lt;(V::Value, <span class="self">Self</span>::Variant)&gt;
     <span class="kw">where
@@ -2307,7 +2306,7 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(seed)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(seed)))]
     #[inline]
     </span><span class="kw">fn </span>newtype_variant_seed&lt;T&gt;(<span class="self">self</span>, seed: T) -&gt; <span class="prelude-ty">Result</span>&lt;T::Value&gt;
     <span class="kw">where
@@ -2316,7 +2315,7 @@
         seed.deserialize(<span class="self">self</span>)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>tuple_variant&lt;V&gt;(<span class="self">self</span>, _len: usize, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -2325,7 +2324,7 @@
         de::Deserializer::deserialize_seq(<span class="self">self</span>, visitor)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>struct_variant&lt;V&gt;(<span class="self">self</span>, _fields: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str], visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
@@ -2402,7 +2401,8 @@
 }
 
 <span class="kw">impl </span>Default <span class="kw">for </span>SymbolList&lt;<span class="lifetime">&#39;_</span>&gt; {
-    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new()
     }
 }
