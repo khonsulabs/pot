@@ -1114,6 +1114,7 @@ pub struct SymbolList<'de> {
 }
 
 impl Default for SymbolList<'_> {
+    #[inline]
     fn default() -> Self {
         Self::new()
     }

@@ -578,7 +578,7 @@ mod tests {
         )
         .unwrap();
 
-        assert!(matches!(from_slice::<()>(&invalid_bytes), Err(_)));
+        assert!(from_slice::<()>(&invalid_bytes).is_err());
     }
 
     /// In `BonsaiDb`, sometimes it's nice to use a `()` as an associated type
@@ -641,35 +641,33 @@ mod tests {
         format::write_header(&mut invalid_float_byte_len, CURRENT_VERSION).unwrap();
         format::write_atom_header(&mut invalid_float_byte_len, format::Kind::Float, 0).unwrap();
 
-        assert!(matches!(from_slice::<f32>(&invalid_float_byte_len), Err(_)));
+        assert!(from_slice::<f32>(&invalid_float_byte_len).is_err());
 
-        assert!(matches!(
-            format::Float::read_from(format::Kind::Symbol, 0, &mut &invalid_float_byte_len[..]),
-            Err(_)
-        ));
+        assert!(format::Float::read_from(
+            format::Kind::Symbol,
+            0,
+            &mut &invalid_float_byte_len[..]
+        )
+        .is_err(),);
 
         let mut invalid_signed_byte_len = Vec::new();
         format::write_header(&mut invalid_signed_byte_len, CURRENT_VERSION).unwrap();
         format::write_atom_header(&mut invalid_signed_byte_len, format::Kind::Int, 10).unwrap();
 
-        assert!(matches!(
-            from_slice::<i32>(&invalid_signed_byte_len),
-            Err(_)
-        ));
+        assert!(from_slice::<i32>(&invalid_signed_byte_len).is_err());
 
-        assert!(matches!(
-            format::Integer::read_from(format::Kind::Symbol, 0, &mut &invalid_signed_byte_len[..]),
-            Err(_)
-        ));
+        assert!(format::Integer::read_from(
+            format::Kind::Symbol,
+            0,
+            &mut &invalid_signed_byte_len[..]
+        )
+        .is_err(),);
 
         let mut invalid_unsigned_byte_len = Vec::new();
         format::write_header(&mut invalid_unsigned_byte_len, CURRENT_VERSION).unwrap();
         format::write_atom_header(&mut invalid_unsigned_byte_len, format::Kind::UInt, 10).unwrap();
 
-        assert!(matches!(
-            from_slice::<u32>(&invalid_unsigned_byte_len),
-            Err(_)
-        ));
+        assert!(from_slice::<u32>(&invalid_unsigned_byte_len).is_err());
     }
 
     #[test]

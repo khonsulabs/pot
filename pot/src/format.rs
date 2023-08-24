@@ -1525,7 +1525,7 @@ mod tests {
 
     macro_rules! test_conversion_succeeds {
         ($host:ty, $value:expr, $method:ident) => {{
-            assert!(matches!(<$host>::from($value).$method(), Ok(_)))
+            assert!(<$host>::from($value).$method().is_ok())
         }};
     }
     macro_rules! test_conversion_fails {
