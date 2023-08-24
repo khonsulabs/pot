@@ -1,6 +1,5 @@
 // begin rustme snippet: example
-use serde::{Deserialize, Serialize};
-
+use serde_derive::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 pub struct User {
     id: u64,

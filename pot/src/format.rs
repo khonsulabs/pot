@@ -2,7 +2,6 @@ use std::fmt::Display;
 
 use byteorder::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
 use half::f16;
-use serde::{Deserialize, Serialize};
 
 pub(crate) const CURRENT_VERSION: u8 = 0;
 
@@ -546,11 +545,10 @@ pub fn write_bytes<W: WriteBytesExt>(mut writer: W, value: &[u8]) -> std::io::Re
 }
 
 /// An integer type that can safely convert between other number types using compile-time evaluation.
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(transparent)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Integer(pub(crate) InnerInteger);
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(crate) enum InnerInteger {
     /// An i8 value.
     I8(i8),
@@ -1131,11 +1129,10 @@ pub struct Atom<'de> {
 }
 
 /// A floating point number that can safely convert between other number types using compile-time evaluation when possible.
-#[derive(Debug, Serialize, Deserialize, Copy, Clone, PartialEq)]
-#[serde(transparent)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Float(pub(crate) InnerFloat);
 
-#[derive(Debug, Serialize, Deserialize, Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub(crate) enum InnerFloat {
     /// An f64 value.
     F64(f64),

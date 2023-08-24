@@ -34,6 +34,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   in the atom.
 - `SymbolMapRef` is now a struct with private contents.
 - `Error` is now `#[non_exhaustive]`.
+- `format::Float` and `format::Integer` no longer implement
+  `Serialize`/`Deserialize`. These implementations were derived but never
+  actually used. To improve this crate's build parallelization, a decision was
+  made to remove these usages of serde's derive macro. Implementing these traits
+  would be trivial, but the crate maintainer doesn't believe anyone is actually
+  using these implementations, so they were intentionally skipped. Please file
+  an issue if this affected you and you would like to see these implementations
+  added again.
 
 ### Changed
 
@@ -44,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   chosen at the time due to dependencies also requiring this MSRV.
 - Tracing instrumentation has been changed from the default level of INFO to
   TRACE.
+- This crate no longer activates the `derive` feature of `serde`.
 
 ### Added
 
@@ -55,6 +64,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `de::SymbolMap` and `ser::SymbolMap` now both implement `Serialize` and
   `Deserialize` using the same serialization strategy. This allows preshared
   dictionaries to be used, and for state to be saved and restored.
+- `de::SymbolMap` and `ser::SymbolMap` have new convenience methods that allow
+  serializing and deserializing values directly:
+
+  - `de::SymbolMap::deserialize_slice`
+  - `de::SymbolMap::deserialize_from`
+  - `ser::SymbolMap::serialize_to_vec`
+  - `ser::SymbolMap::serialize_to`
 
 [9]: https://github.com/khonsulabs/pot/issues/9
 

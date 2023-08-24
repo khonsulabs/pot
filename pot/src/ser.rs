@@ -1,6 +1,7 @@
 use std::borrow::Cow;
 use std::cmp::Ordering;
 use std::fmt::{Debug, Display};
+use std::io::Write;
 use std::ops::Range;
 use std::usize;
 
@@ -585,6 +586,26 @@ impl SymbolMap {
     #[inline]
     pub fn serializer_for<W: WriteBytesExt>(&mut self, output: W) -> Result<Serializer<'_, W>> {
         Serializer::new_with_symbol_map(output, SymbolMapRef::Persistent(self))
+    }
+
+    /// Serializes `value` into `writer` while persisting symbols into `self`.
+    pub fn serialize_to<T, W>(&mut self, writer: W, value: &T) -> Result<()>
+    where
+        W: Write,
+        T: Serialize,
+    {
+        value.serialize(&mut self.serializer_for(writer)?)
+    }
+
+    /// Serializes `value` into a new `Vec<u8>` while persisting symbols into
+    /// `self`.
+    pub fn serialize_to_vec<T>(&mut self, value: &T) -> Result<Vec<u8>>
+    where
+        T: Serialize,
+    {
+        let mut output = Vec::new();
+        self.serialize_to(&mut output, value)?;
+        Ok(output)
     }
 
     fn find_or_add(&mut self, symbol: &'static str) -> RegisteredSymbol {

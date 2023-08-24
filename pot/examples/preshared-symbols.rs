@@ -1,6 +1,5 @@
 // begin rustme snippet: example
-use serde::{Deserialize, Serialize};
-
+use serde_derive::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Default)]
 pub struct User {
     id: u64,
@@ -22,10 +21,7 @@ fn main() {
         name: String::from("ecton"),
     };
     let encoded_without_map = pot::to_vec(&original_user).unwrap();
-    let mut encoded_with_map = Vec::new();
-    original_user
-        .serialize(&mut preshared_map.serializer_for(&mut encoded_with_map).unwrap())
-        .unwrap();
+    let encoded_with_map = preshared_map.serialize_to_vec(&original_user).unwrap();
     println!(
         "Default User encoded without map: {} bytes",
         encoded_without_map.len()
@@ -42,12 +38,9 @@ fn main() {
     // Deserialize the symbol map.
     let mut deserializer_map: pot::de::SymbolMap = pot::from_slice(&preshared_map_bytes).unwrap();
     // Deserialize the payload using the map.
-    let user = User::deserialize(
-        &mut deserializer_map
-            .deserializer_for_slice(&encoded_with_map)
-            .unwrap(),
-    )
-    .unwrap();
+    let user: User = deserializer_map
+        .deserialize_slice(&encoded_with_map)
+        .unwrap();
     assert_eq!(user, original_user);
 }
 

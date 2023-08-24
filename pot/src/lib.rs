@@ -191,6 +191,7 @@ mod tests {
     use std::sync::OnceLock;
 
     use serde::{Deserializer, Serializer};
+    use serde_derive::{Deserialize, Serialize};
 
     use super::*;
     use crate::format::{Float, Integer, CURRENT_VERSION};
@@ -814,24 +815,17 @@ mod tests {
         let mut sender = ser::SymbolMap::default();
         let mut receiver = de::SymbolList::default();
 
-        let mut bytes = Vec::new();
-        NumbersStruct::default()
-            .serialize(&mut sender.serializer_for(&mut bytes).unwrap())
-            .unwrap();
-        let _result =
-            NumbersStruct::deserialize(&mut receiver.deserializer_for_slice(&bytes).unwrap())
-                .unwrap();
+        let mut bytes = sender.serialize_to_vec(&NumbersStruct::default()).unwrap();
+        let _result = receiver.deserialize_slice::<NumbersStruct>(&bytes).unwrap();
         let symbol_count_after_first_send = receiver.len();
         let first_payload_len = bytes.len();
 
         // Send again, confirm the symbol list didn't grow.
         bytes.clear();
-        NumbersStruct::default()
-            .serialize(&mut sender.serializer_for(&mut bytes).unwrap())
+        sender
+            .serialize_to(&mut bytes, &NumbersStruct::default())
             .unwrap();
-        let _result =
-            NumbersStruct::deserialize(&mut receiver.deserializer_for_slice(&bytes).unwrap())
-                .unwrap();
+        let _result = receiver.deserialize_slice::<NumbersStruct>(&bytes).unwrap();
         assert_eq!(symbol_count_after_first_send, receiver.len());
         println!(
             "First: {first_payload_len} bytes; Second: {} bytes",
@@ -845,24 +839,21 @@ mod tests {
         let mut sender = ser::SymbolMap::default();
         let mut receiver = de::SymbolList::default();
 
-        let mut bytes = Vec::new();
-        NumbersStruct::default()
-            .serialize(&mut sender.serializer_for(&mut bytes).unwrap())
+        let mut bytes = sender.serialize_to_vec(&NumbersStruct::default()).unwrap();
+        let _result = receiver
+            .deserialize_from::<NumbersStruct>(&bytes[..])
             .unwrap();
-        let _result =
-            NumbersStruct::deserialize(&mut receiver.deserializer_for(&bytes[..]).unwrap())
-                .unwrap();
         let symbol_count_after_first_send = receiver.len();
         let first_payload_len = bytes.len();
 
         // Send again, confirm the symbol list didn't grow.
         bytes.clear();
-        NumbersStruct::default()
-            .serialize(&mut sender.serializer_for(&mut bytes).unwrap())
+        sender
+            .serialize_to(&mut bytes, &NumbersStruct::default())
             .unwrap();
-        let _result =
-            NumbersStruct::deserialize(&mut receiver.deserializer_for(&bytes[..]).unwrap())
-                .unwrap();
+        let _result = receiver
+            .deserialize_from::<NumbersStruct>(&bytes[..])
+            .unwrap();
         assert_eq!(symbol_count_after_first_send, receiver.len());
         println!(
             "First: {first_payload_len} bytes; Second: {} bytes",
@@ -883,16 +874,13 @@ mod tests {
         assert!(sender.is_empty());
         let mut receiver = crate::de::SymbolMap::new();
         assert!(receiver.is_empty());
-        let mut bytes = Vec::new();
 
         // Send the first payload, populating the map.
-        Payload::default()
-            .serialize(&mut sender.serializer_for(&mut bytes).unwrap())
-            .unwrap();
+        let mut bytes = sender.serialize_to_vec(&Payload::default()).unwrap();
         assert_eq!(sender.len(), 2);
 
         assert_eq!(
-            Payload::deserialize(&mut receiver.deserializer_for_slice(&bytes).unwrap()).unwrap(),
+            receiver.deserialize_slice::<Payload>(&bytes).unwrap(),
             Payload::default()
         );
         assert_eq!(receiver.len(), 2);
@@ -913,31 +901,19 @@ mod tests {
         // by the serialized map and the original map are identical.
         let new_payload = Payload { a: 1, b: 2 };
         bytes.clear();
-        new_payload
-            .serialize(&mut sender.serializer_for(&mut bytes).unwrap())
-            .unwrap();
-        let mut from_serialized_sender = Vec::new();
-        new_payload
-            .serialize(
-                &mut deserialized_sender
-                    .serializer_for(&mut from_serialized_sender)
-                    .unwrap(),
-            )
-            .unwrap();
+        sender.serialize_to(&mut bytes, &new_payload).unwrap();
+        let from_serialized_sender = deserialized_sender.serialize_to_vec(&new_payload).unwrap();
         assert_eq!(bytes, from_serialized_sender);
 
         // Deserialize the payload
         assert_eq!(
-            Payload::deserialize(&mut receiver.deserializer_for_slice(&bytes).unwrap()).unwrap(),
+            receiver.deserialize_slice::<Payload>(&bytes).unwrap(),
             new_payload
         );
         assert_eq!(
-            Payload::deserialize(
-                &mut deserialized_receiver
-                    .deserializer_for_slice(&bytes)
-                    .unwrap()
-            )
-            .unwrap(),
+            deserialized_receiver
+                .deserialize_slice::<Payload>(&bytes)
+                .unwrap(),
             new_payload
         );
     }
