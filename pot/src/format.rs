@@ -6,7 +6,6 @@ use serde::{Deserialize, Serialize};
 
 pub(crate) const CURRENT_VERSION: u8 = 0;
 
-use crate::error::KindOrClass;
 use crate::reader::{BufferedBytes, Reader};
 use crate::Error;
 /// Writes an atom header into `writer`.
@@ -934,7 +933,7 @@ impl Integer {
                 6 => Ok(InnerInteger::I64(reader.read_i48::<LittleEndian>()?)),
                 8 => Ok(InnerInteger::I64(reader.read_i64::<LittleEndian>()?)),
                 16 => Ok(InnerInteger::I128(reader.read_i128::<LittleEndian>()?)),
-                count => Err(Error::UnsupportedByteCount(KindOrClass::Integer, count)),
+                count => Err(Error::UnsupportedByteCount(kind, count)),
             },
             Kind::UInt => match byte_len {
                 1 => Ok(InnerInteger::U8(reader.read_u8()?)),
@@ -944,9 +943,9 @@ impl Integer {
                 6 => Ok(InnerInteger::U64(reader.read_u48::<LittleEndian>()?)),
                 8 => Ok(InnerInteger::U64(reader.read_u64::<LittleEndian>()?)),
                 16 => Ok(InnerInteger::U128(reader.read_u128::<LittleEndian>()?)),
-                count => Err(Error::UnsupportedByteCount(KindOrClass::Integer, count)),
+                count => Err(Error::UnsupportedByteCount(kind, count)),
             },
-            _ => Err(Error::UnexpectedKind(kind, KindOrClass::Integer)),
+            _ => Err(Error::UnexpectedKind(kind, Kind::Int)),
         }
         .map(Integer)
     }
@@ -1262,10 +1261,10 @@ impl Float {
                 2 => Ok(Self::from(read_f16(reader)?)),
                 4 => Ok(Self::from(reader.read_f32::<LittleEndian>()?)),
                 8 => Ok(Self::from(reader.read_f64::<LittleEndian>()?)),
-                count => Err(Error::UnsupportedByteCount(KindOrClass::Float, count)),
+                count => Err(Error::UnsupportedByteCount(Kind::Float, count)),
             }
         } else {
-            Err(Error::UnexpectedKind(kind, KindOrClass::Float))
+            Err(Error::UnexpectedKind(kind, Kind::Float))
         }
     }
 }

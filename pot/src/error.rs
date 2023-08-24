@@ -32,11 +32,11 @@ pub enum Error {
     /// An unknown kind was encountered. Generally a sign that something else has been parsed incorrectly.
     InvalidKind(u8),
     /// Encountered an unexpected atom kind.
-    UnexpectedKind(Kind, KindOrClass),
+    UnexpectedKind(Kind, Kind),
     /// A requested symbol id was not found.
     UnknownSymbol(u64),
     /// An unsupported byte count for a numeric type was encountered.
-    UnsupportedByteCount(KindOrClass, usize),
+    UnsupportedByteCount(Kind, usize),
     /// An atom header was incorrectly formatted.
     InvalidAtomHeader,
     /// The amount of data read exceeds the configured maximum number of bytes.
@@ -70,26 +70,9 @@ impl Display for Error {
                 f.write_str("the deserialized value is larger than the allowed allocation limit")
             }
             Error::UnsupportedByteCount(kind, count) => {
-                write!(f, "unexpected {kind} byte count ({count})")
+                write!(f, "unexpected {kind:?} byte count ({count})")
             }
             Error::UnknownSpecial(err) => Display::fmt(err, f),
-        }
-    }
-}
-
-#[derive(Debug)]
-pub enum KindOrClass {
-    Kind(Kind),
-    Float,
-    Integer,
-}
-
-impl Display for KindOrClass {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            KindOrClass::Kind(kind) => Debug::fmt(kind, f),
-            KindOrClass::Float => f.write_str("float"),
-            KindOrClass::Integer => f.write_str("integer"),
         }
     }
 }
