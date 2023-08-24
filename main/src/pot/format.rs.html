@@ -1837,14 +1837,10 @@
 <a href="#1837" id="1837">1837</a>
 <a href="#1838" id="1838">1838</a>
 <a href="#1839" id="1839">1839</a>
-<a href="#1840" id="1840">1840</a>
-<a href="#1841" id="1841">1841</a>
-<a href="#1842" id="1842">1842</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::fmt::Display;
 
 <span class="kw">use </span>byteorder::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
 <span class="kw">use </span>half::f16;
-<span class="kw">use </span>serde::{Deserialize, Serialize};
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const </span>CURRENT_VERSION: u8 = <span class="number">0</span>;
 
@@ -2388,11 +2384,10 @@
 }
 
 <span class="doccomment">/// An integer type that can safely convert between other number types using compile-time evaluation.
-</span><span class="attr">#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(transparent)]
+</span><span class="attr">#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 </span><span class="kw">pub struct </span>Integer(<span class="kw">pub</span>(<span class="kw">crate</span>) InnerInteger);
 
-<span class="attr">#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+<span class="attr">#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum </span>InnerInteger {
     <span class="doccomment">/// An i8 value.
     </span>I8(i8),
@@ -2973,11 +2968,10 @@
 }
 
 <span class="doccomment">/// A floating point number that can safely convert between other number types using compile-time evaluation when possible.
-</span><span class="attr">#[derive(Debug, Serialize, Deserialize, Copy, Clone, PartialEq)]
-#[serde(transparent)]
+</span><span class="attr">#[derive(Debug, Copy, Clone, PartialEq)]
 </span><span class="kw">pub struct </span>Float(<span class="kw">pub</span>(<span class="kw">crate</span>) InnerFloat);
 
-<span class="attr">#[derive(Debug, Serialize, Deserialize, Copy, Clone)]
+<span class="attr">#[derive(Debug, Copy, Clone)]
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">enum </span>InnerFloat {
     <span class="doccomment">/// An f64 value.
     </span>F64(f64),

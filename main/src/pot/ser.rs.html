@@ -1201,9 +1201,31 @@
 <a href="#1201" id="1201">1201</a>
 <a href="#1202" id="1202">1202</a>
 <a href="#1203" id="1203">1203</a>
+<a href="#1204" id="1204">1204</a>
+<a href="#1205" id="1205">1205</a>
+<a href="#1206" id="1206">1206</a>
+<a href="#1207" id="1207">1207</a>
+<a href="#1208" id="1208">1208</a>
+<a href="#1209" id="1209">1209</a>
+<a href="#1210" id="1210">1210</a>
+<a href="#1211" id="1211">1211</a>
+<a href="#1212" id="1212">1212</a>
+<a href="#1213" id="1213">1213</a>
+<a href="#1214" id="1214">1214</a>
+<a href="#1215" id="1215">1215</a>
+<a href="#1216" id="1216">1216</a>
+<a href="#1217" id="1217">1217</a>
+<a href="#1218" id="1218">1218</a>
+<a href="#1219" id="1219">1219</a>
+<a href="#1220" id="1220">1220</a>
+<a href="#1221" id="1221">1221</a>
+<a href="#1222" id="1222">1222</a>
+<a href="#1223" id="1223">1223</a>
+<a href="#1224" id="1224">1224</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::borrow::Cow;
 <span class="kw">use </span>std::cmp::Ordering;
 <span class="kw">use </span>std::fmt::{Debug, Display};
+<span class="kw">use </span>std::io::Write;
 <span class="kw">use </span>std::ops::Range;
 <span class="kw">use </span>std::usize;
 
@@ -1788,6 +1810,26 @@
     </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>serializer_for&lt;W: WriteBytesExt&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, output: W) -&gt; <span class="prelude-ty">Result</span>&lt;Serializer&lt;<span class="lifetime">&#39;_</span>, W&gt;&gt; {
         Serializer::new_with_symbol_map(output, SymbolMapRef::Persistent(<span class="self">self</span>))
+    }
+
+    <span class="doccomment">/// Serializes `value` into `writer` while persisting symbols into `self`.
+    </span><span class="kw">pub fn </span>serialize_to&lt;T, W&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, writer: W, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    <span class="kw">where
+        </span>W: Write,
+        T: Serialize,
+    {
+        value.serialize(<span class="kw-2">&amp;mut </span><span class="self">self</span>.serializer_for(writer)<span class="question-mark">?</span>)
+    }
+
+    <span class="doccomment">/// Serializes `value` into a new `Vec&lt;u8&gt;` while persisting symbols into
+    /// `self`.
+    </span><span class="kw">pub fn </span>serialize_to_vec&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;u8&gt;&gt;
+    <span class="kw">where
+        </span>T: Serialize,
+    {
+        <span class="kw">let </span><span class="kw-2">mut </span>output = Vec::new();
+        <span class="self">self</span>.serialize_to(<span class="kw-2">&amp;mut </span>output, value)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(output)
     }
 
     <span class="kw">fn </span>find_or_add(<span class="kw-2">&amp;mut </span><span class="self">self</span>, symbol: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) -&gt; RegisteredSymbol {

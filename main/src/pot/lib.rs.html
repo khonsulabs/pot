@@ -955,30 +955,6 @@
 <a href="#955" id="955">955</a>
 <a href="#956" id="956">956</a>
 <a href="#957" id="957">957</a>
-<a href="#958" id="958">958</a>
-<a href="#959" id="959">959</a>
-<a href="#960" id="960">960</a>
-<a href="#961" id="961">961</a>
-<a href="#962" id="962">962</a>
-<a href="#963" id="963">963</a>
-<a href="#964" id="964">964</a>
-<a href="#965" id="965">965</a>
-<a href="#966" id="966">966</a>
-<a href="#967" id="967">967</a>
-<a href="#968" id="968">968</a>
-<a href="#969" id="969">969</a>
-<a href="#970" id="970">970</a>
-<a href="#971" id="971">971</a>
-<a href="#972" id="972">972</a>
-<a href="#973" id="973">973</a>
-<a href="#974" id="974">974</a>
-<a href="#975" id="975">975</a>
-<a href="#976" id="976">976</a>
-<a href="#977" id="977">977</a>
-<a href="#978" id="978">978</a>
-<a href="#979" id="979">979</a>
-<a href="#980" id="980">980</a>
-<a href="#981" id="981">981</a>
 </pre></div><pre class="rust"><code><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">&quot;../crate-docs.md&quot;</span>)]
 #![forbid(unsafe_code)]
 #![warn(
@@ -1172,6 +1148,7 @@
     <span class="kw">use </span>std::sync::OnceLock;
 
     <span class="kw">use </span>serde::{Deserializer, Serializer};
+    <span class="kw">use </span>serde_derive::{Deserialize, Serialize};
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::format::{Float, Integer, CURRENT_VERSION};
@@ -1795,24 +1772,17 @@
         <span class="kw">let </span><span class="kw-2">mut </span>sender = ser::SymbolMap::default();
         <span class="kw">let </span><span class="kw-2">mut </span>receiver = de::SymbolList::default();
 
-        <span class="kw">let </span><span class="kw-2">mut </span>bytes = Vec::new();
-        NumbersStruct::default()
-            .serialize(<span class="kw-2">&amp;mut </span>sender.serializer_for(<span class="kw-2">&amp;mut </span>bytes).unwrap())
-            .unwrap();
-        <span class="kw">let </span>_result =
-            NumbersStruct::deserialize(<span class="kw-2">&amp;mut </span>receiver.deserializer_for_slice(<span class="kw-2">&amp;</span>bytes).unwrap())
-                .unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>bytes = sender.serialize_to_vec(<span class="kw-2">&amp;</span>NumbersStruct::default()).unwrap();
+        <span class="kw">let </span>_result = receiver.deserialize_slice::&lt;NumbersStruct&gt;(<span class="kw-2">&amp;</span>bytes).unwrap();
         <span class="kw">let </span>symbol_count_after_first_send = receiver.len();
         <span class="kw">let </span>first_payload_len = bytes.len();
 
         <span class="comment">// Send again, confirm the symbol list didn&#39;t grow.
         </span>bytes.clear();
-        NumbersStruct::default()
-            .serialize(<span class="kw-2">&amp;mut </span>sender.serializer_for(<span class="kw-2">&amp;mut </span>bytes).unwrap())
+        sender
+            .serialize_to(<span class="kw-2">&amp;mut </span>bytes, <span class="kw-2">&amp;</span>NumbersStruct::default())
             .unwrap();
-        <span class="kw">let </span>_result =
-            NumbersStruct::deserialize(<span class="kw-2">&amp;mut </span>receiver.deserializer_for_slice(<span class="kw-2">&amp;</span>bytes).unwrap())
-                .unwrap();
+        <span class="kw">let </span>_result = receiver.deserialize_slice::&lt;NumbersStruct&gt;(<span class="kw-2">&amp;</span>bytes).unwrap();
         <span class="macro">assert_eq!</span>(symbol_count_after_first_send, receiver.len());
         <span class="macro">println!</span>(
             <span class="string">&quot;First: {first_payload_len} bytes; Second: {} bytes&quot;</span>,
@@ -1826,24 +1796,21 @@
         <span class="kw">let </span><span class="kw-2">mut </span>sender = ser::SymbolMap::default();
         <span class="kw">let </span><span class="kw-2">mut </span>receiver = de::SymbolList::default();
 
-        <span class="kw">let </span><span class="kw-2">mut </span>bytes = Vec::new();
-        NumbersStruct::default()
-            .serialize(<span class="kw-2">&amp;mut </span>sender.serializer_for(<span class="kw-2">&amp;mut </span>bytes).unwrap())
+        <span class="kw">let </span><span class="kw-2">mut </span>bytes = sender.serialize_to_vec(<span class="kw-2">&amp;</span>NumbersStruct::default()).unwrap();
+        <span class="kw">let </span>_result = receiver
+            .deserialize_from::&lt;NumbersStruct&gt;(<span class="kw-2">&amp;</span>bytes[..])
             .unwrap();
-        <span class="kw">let </span>_result =
-            NumbersStruct::deserialize(<span class="kw-2">&amp;mut </span>receiver.deserializer_for(<span class="kw-2">&amp;</span>bytes[..]).unwrap())
-                .unwrap();
         <span class="kw">let </span>symbol_count_after_first_send = receiver.len();
         <span class="kw">let </span>first_payload_len = bytes.len();
 
         <span class="comment">// Send again, confirm the symbol list didn&#39;t grow.
         </span>bytes.clear();
-        NumbersStruct::default()
-            .serialize(<span class="kw-2">&amp;mut </span>sender.serializer_for(<span class="kw-2">&amp;mut </span>bytes).unwrap())
+        sender
+            .serialize_to(<span class="kw-2">&amp;mut </span>bytes, <span class="kw-2">&amp;</span>NumbersStruct::default())
             .unwrap();
-        <span class="kw">let </span>_result =
-            NumbersStruct::deserialize(<span class="kw-2">&amp;mut </span>receiver.deserializer_for(<span class="kw-2">&amp;</span>bytes[..]).unwrap())
-                .unwrap();
+        <span class="kw">let </span>_result = receiver
+            .deserialize_from::&lt;NumbersStruct&gt;(<span class="kw-2">&amp;</span>bytes[..])
+            .unwrap();
         <span class="macro">assert_eq!</span>(symbol_count_after_first_send, receiver.len());
         <span class="macro">println!</span>(
             <span class="string">&quot;First: {first_payload_len} bytes; Second: {} bytes&quot;</span>,
@@ -1864,16 +1831,13 @@
         <span class="macro">assert!</span>(sender.is_empty());
         <span class="kw">let </span><span class="kw-2">mut </span>receiver = <span class="kw">crate</span>::de::SymbolMap::new();
         <span class="macro">assert!</span>(receiver.is_empty());
-        <span class="kw">let </span><span class="kw-2">mut </span>bytes = Vec::new();
 
         <span class="comment">// Send the first payload, populating the map.
-        </span>Payload::default()
-            .serialize(<span class="kw-2">&amp;mut </span>sender.serializer_for(<span class="kw-2">&amp;mut </span>bytes).unwrap())
-            .unwrap();
+        </span><span class="kw">let </span><span class="kw-2">mut </span>bytes = sender.serialize_to_vec(<span class="kw-2">&amp;</span>Payload::default()).unwrap();
         <span class="macro">assert_eq!</span>(sender.len(), <span class="number">2</span>);
 
         <span class="macro">assert_eq!</span>(
-            Payload::deserialize(<span class="kw-2">&amp;mut </span>receiver.deserializer_for_slice(<span class="kw-2">&amp;</span>bytes).unwrap()).unwrap(),
+            receiver.deserialize_slice::&lt;Payload&gt;(<span class="kw-2">&amp;</span>bytes).unwrap(),
             Payload::default()
         );
         <span class="macro">assert_eq!</span>(receiver.len(), <span class="number">2</span>);
@@ -1894,31 +1858,19 @@
         // by the serialized map and the original map are identical.
         </span><span class="kw">let </span>new_payload = Payload { a: <span class="number">1</span>, b: <span class="number">2 </span>};
         bytes.clear();
-        new_payload
-            .serialize(<span class="kw-2">&amp;mut </span>sender.serializer_for(<span class="kw-2">&amp;mut </span>bytes).unwrap())
-            .unwrap();
-        <span class="kw">let </span><span class="kw-2">mut </span>from_serialized_sender = Vec::new();
-        new_payload
-            .serialize(
-                <span class="kw-2">&amp;mut </span>deserialized_sender
-                    .serializer_for(<span class="kw-2">&amp;mut </span>from_serialized_sender)
-                    .unwrap(),
-            )
-            .unwrap();
+        sender.serialize_to(<span class="kw-2">&amp;mut </span>bytes, <span class="kw-2">&amp;</span>new_payload).unwrap();
+        <span class="kw">let </span>from_serialized_sender = deserialized_sender.serialize_to_vec(<span class="kw-2">&amp;</span>new_payload).unwrap();
         <span class="macro">assert_eq!</span>(bytes, from_serialized_sender);
 
         <span class="comment">// Deserialize the payload
         </span><span class="macro">assert_eq!</span>(
-            Payload::deserialize(<span class="kw-2">&amp;mut </span>receiver.deserializer_for_slice(<span class="kw-2">&amp;</span>bytes).unwrap()).unwrap(),
+            receiver.deserialize_slice::&lt;Payload&gt;(<span class="kw-2">&amp;</span>bytes).unwrap(),
             new_payload
         );
         <span class="macro">assert_eq!</span>(
-            Payload::deserialize(
-                <span class="kw-2">&amp;mut </span>deserialized_receiver
-                    .deserializer_for_slice(<span class="kw-2">&amp;</span>bytes)
-                    .unwrap()
-            )
-            .unwrap(),
+            deserialized_receiver
+                .deserialize_slice::&lt;Payload&gt;(<span class="kw-2">&amp;</span>bytes)
+                .unwrap(),
             new_payload
         );
     }
