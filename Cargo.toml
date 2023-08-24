@@ -1,5 +1,6 @@
 [workspace]
 members = ["xtask", "pot", "benchmarks"]
+resolver = "2"
 
 [profile.bench]
 # debug = true

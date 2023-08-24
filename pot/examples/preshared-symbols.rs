@@ -53,5 +53,5 @@ fn main() {
 
 #[test]
 fn runs() {
-    main().unwrap();
+    main();
 }
