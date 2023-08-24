@@ -955,6 +955,30 @@
 <a href="#955" id="955">955</a>
 <a href="#956" id="956">956</a>
 <a href="#957" id="957">957</a>
+<a href="#958" id="958">958</a>
+<a href="#959" id="959">959</a>
+<a href="#960" id="960">960</a>
+<a href="#961" id="961">961</a>
+<a href="#962" id="962">962</a>
+<a href="#963" id="963">963</a>
+<a href="#964" id="964">964</a>
+<a href="#965" id="965">965</a>
+<a href="#966" id="966">966</a>
+<a href="#967" id="967">967</a>
+<a href="#968" id="968">968</a>
+<a href="#969" id="969">969</a>
+<a href="#970" id="970">970</a>
+<a href="#971" id="971">971</a>
+<a href="#972" id="972">972</a>
+<a href="#973" id="973">973</a>
+<a href="#974" id="974">974</a>
+<a href="#975" id="975">975</a>
+<a href="#976" id="976">976</a>
+<a href="#977" id="977">977</a>
+<a href="#978" id="978">978</a>
+<a href="#979" id="979">979</a>
+<a href="#980" id="980">980</a>
+<a href="#981" id="981">981</a>
 </pre></div><pre class="rust"><code><span class="attr">#![doc = <span class="macro">include_str!</span>(<span class="string">&quot;../crate-docs.md&quot;</span>)]
 #![forbid(unsafe_code)]
 #![warn(
@@ -1910,6 +1934,30 @@
         <span class="macro">assert_eq!</span>(map.populate_from(<span class="kw-2">&amp;</span>EnumVariants::Unit).unwrap(), <span class="number">1</span>);
         <span class="macro">assert_eq!</span>(map.populate_from(<span class="kw-2">&amp;</span>EnumVariants::Unit).unwrap(), <span class="number">0</span>);
         <span class="macro">dbg!</span>(map);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>backwards_compatible() {
+        <span class="attr">#[derive(Debug, Serialize, Deserialize, Eq, PartialEq)]
+        </span><span class="kw">struct </span>Canary {
+            name: String,
+            id: u64,
+        }
+
+        <span class="kw">let </span>canary = Canary {
+            name: String::from(<span class="string">&quot;coalmine&quot;</span>),
+            id: <span class="number">0xfeed_d0d0_dead_beef</span>,
+        };
+
+        <span class="comment">// This payload was generated with pot 1.0 using the same structure.
+        // This structure should be updated to be more encompassing, but this at
+        // least tests for basic compatibility.
+        </span><span class="kw">let </span>v1_canary = [
+            <span class="number">80</span>, <span class="number">111</span>, <span class="number">116</span>, <span class="number">0</span>, <span class="number">162</span>, <span class="number">200</span>, <span class="number">110</span>, <span class="number">97</span>, <span class="number">109</span>, <span class="number">101</span>, <span class="number">232</span>, <span class="number">99</span>, <span class="number">111</span>, <span class="number">97</span>, <span class="number">108</span>, <span class="number">109</span>, <span class="number">105</span>, <span class="number">110</span>,
+            <span class="number">101</span>, <span class="number">196</span>, <span class="number">105</span>, <span class="number">100</span>, <span class="number">71</span>, <span class="number">239</span>, <span class="number">190</span>, <span class="number">173</span>, <span class="number">222</span>, <span class="number">208</span>, <span class="number">208</span>, <span class="number">237</span>, <span class="number">254</span>,
+        ];
+        <span class="kw">let </span>parsed: Canary = <span class="kw">crate</span>::from_slice(<span class="kw-2">&amp;</span>v1_canary).unwrap();
+        <span class="macro">assert_eq!</span>(canary, parsed);
     }
 }
 </code></pre></div></section></main></body></html>
