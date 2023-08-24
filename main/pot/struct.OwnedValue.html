@@ -10,7 +10,7 @@ to owned data.</p>
 ) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.72.0/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;T, <a class="enum" href="enum.ValueError.html" title="enum pot::ValueError">ValueError</a>&gt;</h4></section></summary><div class="docblock"><p>Attempts to create an instance of <code>T</code> from this value.</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>pot::Value;
-<span class="kw">use </span>serde::{Deserialize, Serialize};
+<span class="kw">use </span>serde_derive::{Deserialize, Serialize};
 
 <span class="attr">#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 </span><span class="kw">enum </span>Example {

@@ -17,7 +17,7 @@ provide an encoding format for <a href="https://serde.rs"><code>serde</code></a>
 <p>Is compact. While still being self-describing, Pot’s main space-saving feature
 is not repeating symbols/identifiers more than one time while serializing.
 When serializing arrays of structures, this can make a major difference. The
-<a href="https://github.com/khonsulabs/pot/blob/main/pot/examples/logs.rs">logs.rs</a>
+<a href="https://github.com/khonsulabs/pot/blob/main/benchmarks/examples/logs.rs">logs.rs</a>
 example demonstrates this:</p>
 <div class="example-wrap"><pre class="language-sh"><code>$ cargo test --example logs -- average_sizes --nocapture
 Generating 1000 LogArchives with 100 entries.
@@ -39,8 +39,7 @@ Generating 1000 LogArchives with 100 entries.
 </code></pre></div></li>
 </ul>
 <h3 id="example"><a href="#example">Example</a></h3>
-<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>serde::{Deserialize, Serialize};
-
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>serde_derive::{Deserialize, Serialize};
 <span class="attr">#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 </span><span class="kw">pub struct </span>User {
     id: u64,

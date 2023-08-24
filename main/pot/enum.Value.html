@@ -22,7 +22,7 @@ without knowing the original data structure.</p>
 </div></div><h2 id="implementations" class="small-section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-Value%3C'a%3E" class="impl"><a class="srclink rightside" href="../src/pot/value.rs.html#39-344">source</a><a href="#impl-Value%3C'a%3E" class="anchor">§</a><h3 class="code-header">impl&lt;'a&gt; <a class="enum" href="enum.Value.html" title="enum pot::Value">Value</a>&lt;'a&gt;</h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.from_serialize" class="method"><a class="srclink rightside" href="../src/pot/value.rs.html#66-68">source</a><h4 class="code-header">pub fn <a href="#method.from_serialize" class="fn">from_serialize</a>&lt;T: <a class="trait" href="https://docs.rs/serde/1.0.186/serde/ser/trait.Serialize.html" title="trait serde::ser::Serialize">Serialize</a>&gt;(value: T) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.72.0/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;Self, <a class="enum" href="enum.ValueError.html" title="enum pot::ValueError">ValueError</a>&gt;</h4></section></summary><div class="docblock"><p>Creates a <code>Value</code> from the given Serde-compatible type.</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>pot::Value;
-<span class="kw">use </span>serde::Serialize;
+<span class="kw">use </span>serde_derive::Serialize;
 
 <span class="attr">#[derive(Serialize, Debug)]
 </span><span class="kw">enum </span>Example {
@@ -44,7 +44,7 @@ without knowing the original data structure.</p>
 ) -&gt; <a class="enum" href="https://doc.rust-lang.org/1.72.0/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;T, <a class="enum" href="enum.ValueError.html" title="enum pot::ValueError">ValueError</a>&gt;</h4></section></summary><div class="docblock"><p>Attempts to create an instance of <code>T</code> from this value.</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>pot::Value;
-<span class="kw">use </span>serde::{Deserialize, Serialize};
+<span class="kw">use </span>serde_derive::{Deserialize, Serialize};
 
 <span class="attr">#[derive(Serialize, Deserialize, Debug, Eq, PartialEq)]
 </span><span class="kw">enum </span>Example {
