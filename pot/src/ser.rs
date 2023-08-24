@@ -204,7 +204,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::Serializer for &'de mut Serialize
         Ok(())
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(value)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(value)))]
     #[inline]
     fn serialize_some<T>(self, value: &T) -> Result<()>
     where
@@ -239,7 +239,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::Serializer for &'de mut Serialize
         Ok(())
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(value)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(value)))]
     #[inline]
     fn serialize_newtype_struct<T>(self, _name: &'static str, value: &T) -> Result<()>
     where
@@ -248,7 +248,7 @@ impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::Serializer for &'de mut Serialize
         value.serialize(self)
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(value)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(value)))]
     #[inline]
     fn serialize_newtype_variant<T>(
         self,

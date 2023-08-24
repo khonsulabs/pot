@@ -40,6 +40,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `pot::Result<T>` is now `pot::Result<T,E = pot::Error>`. This avoids issues
   with other code when `pot::Result` is imported.
 - `ValueIter` is now exported. This is the type returned from `Value::values()`.
+- The Minimum Supported Rust Version (MSRV) has been set to 1.70. This MSRV was
+  chosen at the time due to dependencies also requiring this MSRV.
+- Tracing instrumentation has been changed from the default level of INFO to
+  TRACE.
 
 ### Added
 

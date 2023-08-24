@@ -188,6 +188,7 @@ impl Config {
 mod tests {
     use std::borrow::Cow;
     use std::marker::PhantomData;
+    use std::sync::OnceLock;
 
     use serde::{Deserializer, Serializer};
 
@@ -196,15 +197,20 @@ mod tests {
     use crate::value::Value;
 
     fn init_tracing() {
-        drop(
+        static INITIALIZED: OnceLock<()> = OnceLock::new();
+
+        INITIALIZED.get_or_init(|| {
+            #[cfg(not(feature = "tracing"))]
+            println!("To see additional logs, run tests with the `tracing` feature enabled");
+
             tracing_subscriber::fmt()
                 .pretty()
                 // Enable everything.
                 .with_max_level(tracing::Level::TRACE)
                 .with_span_events(tracing_subscriber::fmt::format::FmtSpan::ENTER)
                 // Set this to be the default, global collector for this application.
-                .try_init(),
-        );
+                .init();
+        });
     }
 
     fn test_serialization<S: Serialize + for<'de> Deserialize<'de> + PartialEq + Debug>(

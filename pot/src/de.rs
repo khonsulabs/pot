@@ -3,6 +3,7 @@ use std::collections::VecDeque;
 use std::fmt::Debug;
 use std::io::Read;
 use std::ops::{Deref, Range};
+use std::str;
 
 use byteorder::ReadBytesExt;
 use format::Kind;
@@ -128,7 +129,7 @@ impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
         self.peek_atom_at(0)
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     fn visit_symbol<V>(&mut self, atom: &Atom<'_>, visitor: V) -> Result<V::Value>
     where
@@ -145,12 +146,12 @@ impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
                 .buffered_read_bytes(arg as usize, &mut self.scratch)?;
             match name {
                 BufferedBytes::Data(name) => {
-                    let name = std::str::from_utf8(name)?;
+                    let name = str::from_utf8(name)?;
                     self.symbols.push_borrowed(name);
                     visitor.visit_borrowed_str(name)
                 }
                 BufferedBytes::Scratch => {
-                    let name = std::str::from_utf8(&self.scratch)?;
+                    let name = str::from_utf8(&self.scratch)?;
                     let result = visitor.visit_str(name);
                     self.symbols.push(name);
                     result
@@ -171,7 +172,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     // Look at the input data to decide what Serde data model type to
     // deserialize as. Not all data formats are able to support this operation.
     // Formats that support `deserialize_any` are known as self-describing.
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
     fn deserialize_any<V>(self, visitor: V) -> Result<V::Value>
@@ -235,14 +236,14 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Bytes => match &atom.nucleus {
                 Some(Nucleus::Bytes(bytes)) => match bytes {
                     BufferedBytes::Data(bytes) => {
-                        if let Ok(as_str) = std::str::from_utf8(bytes) {
+                        if let Ok(as_str) = str::from_utf8(bytes) {
                             visitor.visit_borrowed_str(as_str)
                         } else {
                             visitor.visit_borrowed_bytes(bytes)
                         }
                     }
                     BufferedBytes::Scratch => {
-                        if let Ok(as_str) = std::str::from_utf8(&self.scratch) {
+                        if let Ok(as_str) = str::from_utf8(&self.scratch) {
                             visitor.visit_str(as_str)
                         } else {
                             visitor.visit_bytes(&self.scratch)
@@ -256,7 +257,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_bool<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -276,7 +277,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_i8<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -298,7 +299,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_i16<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -320,7 +321,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_i32<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -342,7 +343,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_i64<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -364,7 +365,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_i128<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -386,7 +387,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_u8<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -408,7 +409,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_u16<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -430,7 +431,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_u32<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -452,7 +453,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_u64<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -474,7 +475,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_u128<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -496,7 +497,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_f32<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -526,7 +527,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_f64<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -556,7 +557,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_char<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -581,7 +582,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_str<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -592,11 +593,9 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Bytes => match atom.nucleus {
                 Some(Nucleus::Bytes(bytes)) => match bytes {
                     BufferedBytes::Data(bytes) => {
-                        visitor.visit_borrowed_str(std::str::from_utf8(bytes)?)
+                        visitor.visit_borrowed_str(str::from_utf8(bytes)?)
                     }
-                    BufferedBytes::Scratch => {
-                        visitor.visit_str(std::str::from_utf8(&self.scratch)?)
-                    }
+                    BufferedBytes::Scratch => visitor.visit_str(str::from_utf8(&self.scratch)?),
                 },
                 _ => unreachable!("read_atom should never return anything else"),
             },
@@ -615,7 +614,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_string<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -624,7 +623,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         self.deserialize_str(visitor)
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
     fn deserialize_bytes<V>(self, visitor: V) -> Result<V::Value>
@@ -662,7 +661,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_byte_buf<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -671,7 +670,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         self.deserialize_bytes(visitor)
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_option<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -688,7 +687,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     // In Serde, unit means an anonymous value containing no data.
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_unit<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -703,7 +702,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     }
 
     // Unit struct means a named value containing no data.
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_unit_struct<V>(self, _name: &'static str, visitor: V) -> Result<V::Value>
     where
@@ -715,7 +714,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
     // As is done here, serializers are encouraged to treat newtype structs as
     // insignificant wrappers around the data they contain. That means not
     // parsing anything other than the contained value.
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_newtype_struct<V>(self, _name: &'static str, visitor: V) -> Result<V::Value>
     where
@@ -724,7 +723,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         visitor.visit_newtype_struct(self)
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
     fn deserialize_seq<V>(self, visitor: V) -> Result<V::Value>
@@ -744,7 +743,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_tuple<V>(self, _len: usize, visitor: V) -> Result<V::Value>
     where
@@ -766,7 +765,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         self.deserialize_seq(visitor)
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
     fn deserialize_map<V>(self, visitor: V) -> Result<V::Value>
@@ -784,7 +783,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_struct<V>(
         self,
@@ -798,7 +797,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         self.deserialize_map(visitor)
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_enum<V>(
         self,
@@ -812,7 +811,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         visitor.visit_enum(self)
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
     fn deserialize_identifier<V>(self, visitor: V) -> Result<V::Value>
@@ -824,7 +823,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
             Kind::Symbol => self.visit_symbol(&atom, visitor),
             Kind::Bytes => {
                 if let Some(Nucleus::Bytes(bytes)) = atom.nucleus {
-                    let as_str = std::str::from_utf8(bytes.as_slice(&self.scratch))
+                    let as_str = str::from_utf8(bytes.as_slice(&self.scratch))
                         .map_err(|err| Error::InvalidUtf8(err.to_string()))?;
                     visitor.visit_str(as_str)
                 } else {
@@ -835,7 +834,7 @@ impl<'a, 'de, 's, R: Reader<'de>> de::Deserializer<'de> for &'a mut Deserializer
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn deserialize_ignored_any<V>(self, visitor: V) -> Result<V::Value>
     where
@@ -933,7 +932,7 @@ impl<'a, 's, 'de, R: Reader<'de>> Debug for AtomList<'a, 's, 'de, R> {
 impl<'a, 's, 'de, R: Reader<'de>> SeqAccess<'de> for AtomList<'a, 's, 'de, R> {
     type Error = Error;
 
-    #[cfg_attr(feature = "tracing", instrument(skip(seed)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(seed)))]
     #[inline]
     fn next_element_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>>
     where
@@ -956,7 +955,7 @@ impl<'a, 's, 'de, R: Reader<'de>> SeqAccess<'de> for AtomList<'a, 's, 'de, R> {
 impl<'a, 's, 'de, R: Reader<'de>> MapAccess<'de> for AtomList<'a, 's, 'de, R> {
     type Error = Error;
 
-    #[cfg_attr(feature = "tracing", instrument(skip(seed)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(seed)))]
     #[inline]
     fn next_key_seed<T>(&mut self, seed: T) -> Result<Option<T::Value>>
     where
@@ -970,7 +969,7 @@ impl<'a, 's, 'de, R: Reader<'de>> MapAccess<'de> for AtomList<'a, 's, 'de, R> {
         }
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(seed)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(seed)))]
     #[inline]
     fn next_value_seed<V>(&mut self, seed: V) -> Result<V::Value>
     where
@@ -990,7 +989,7 @@ impl<'a, 's, 'de, R: Reader<'de>> EnumAccess<'de> for &'a mut Deserializer<'s, '
     type Error = Error;
     type Variant = Self;
 
-    #[cfg_attr(feature = "tracing", instrument(skip(seed)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(seed)))]
     #[inline]
     fn variant_seed<V>(self, seed: V) -> Result<(V::Value, Self::Variant)>
     where
@@ -1019,7 +1018,7 @@ impl<'a, 's, 'de, R: Reader<'de>> VariantAccess<'de> for &'a mut Deserializer<'s
         Ok(())
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(seed)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(seed)))]
     #[inline]
     fn newtype_variant_seed<T>(self, seed: T) -> Result<T::Value>
     where
@@ -1028,7 +1027,7 @@ impl<'a, 's, 'de, R: Reader<'de>> VariantAccess<'de> for &'a mut Deserializer<'s
         seed.deserialize(self)
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn tuple_variant<V>(self, _len: usize, visitor: V) -> Result<V::Value>
     where
@@ -1037,7 +1036,7 @@ impl<'a, 's, 'de, R: Reader<'de>> VariantAccess<'de> for &'a mut Deserializer<'s
         de::Deserializer::deserialize_seq(self, visitor)
     }
 
-    #[cfg_attr(feature = "tracing", instrument(skip(visitor)))]
+    #[cfg_attr(feature = "tracing", instrument(level = "trace", skip(visitor)))]
     #[inline]
     fn struct_variant<V>(self, _fields: &'static [&'static str], visitor: V) -> Result<V::Value>
     where
