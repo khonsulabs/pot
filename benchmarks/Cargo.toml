@@ -9,7 +9,7 @@ serde = { version = "1.0.136", features = ["derive"] }
 pot = { path = "../pot" }
 rand = "0.8.4"
 fake = "2.4.3"
-chrono = { version = "0.4.19", features = ["serde"] }
+chrono = { version = "0.4.30", features = ["serde"] }
 anyhow = "1.0.53"
 cli-table = "0.4.6"
 thousands = "0.2.0"

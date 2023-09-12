@@ -7,10 +7,7 @@ vulnerability = "deny"
 unmaintained = "warn"
 yanked = "warn"
 notice = "warn"
-ignore = [
-    "RUSTSEC-2021-0145", # criterion-related, dev-dependency.
-    "RUSTSEC-2020-0071", # chrono-related, dev-dependency.
-]
+ignore = []
 
 [licenses]
 unlicensed = "deny"
