@@ -1837,6 +1837,7 @@
 <a href="#1837" id="1837">1837</a>
 <a href="#1838" id="1838">1838</a>
 <a href="#1839" id="1839">1839</a>
+<a href="#1840" id="1840">1840</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::fmt::Display;
 
 <span class="kw">use </span>byteorder::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
@@ -1994,8 +1995,9 @@
     /// following bytes are the value, stored in little endian.
     </span>UInt = <span class="number">2</span>,
     <span class="doccomment">/// A floating point value. Argument is the byte length, minus one. Must be
-    /// either 4 or 8 bytes. The following bytes are the value, stored in little
-    /// endian.
+    /// either 2, 4 or 8 bytes. The following bytes are the value, stored in
+    /// little endian. The two-byte representation follows the IEEE 754-2008
+    /// standard, implemented by the [`half`] crate.
     </span>Float = <span class="number">3</span>,
     <span class="doccomment">/// A list of atoms. Argument is the count of atoms in the sequence.
     </span>Sequence = <span class="number">4</span>,
