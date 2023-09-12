@@ -155,8 +155,9 @@ pub enum Kind {
     /// following bytes are the value, stored in little endian.
     UInt = 2,
     /// A floating point value. Argument is the byte length, minus one. Must be
-    /// either 4 or 8 bytes. The following bytes are the value, stored in little
-    /// endian.
+    /// either 2, 4 or 8 bytes. The following bytes are the value, stored in
+    /// little endian. The two-byte representation follows the IEEE 754-2008
+    /// standard, implemented by the [`half`] crate.
     Float = 3,
     /// A list of atoms. Argument is the count of atoms in the sequence.
     Sequence = 4,
