@@ -1307,13 +1307,6 @@
 <a href="#1307" id="1307">1307</a>
 <a href="#1308" id="1308">1308</a>
 <a href="#1309" id="1309">1309</a>
-<a href="#1310" id="1310">1310</a>
-<a href="#1311" id="1311">1311</a>
-<a href="#1312" id="1312">1312</a>
-<a href="#1313" id="1313">1313</a>
-<a href="#1314" id="1314">1314</a>
-<a href="#1315" id="1315">1315</a>
-<a href="#1316" id="1316">1316</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::borrow::Cow;
 <span class="kw">use </span>std::collections::VecDeque;
 <span class="kw">use </span>std::fmt::Debug;
@@ -2311,23 +2304,16 @@
     <span class="kw">where
         </span>V: DeserializeSeed&lt;<span class="lifetime">'de</span>&gt;,
     {
-        <span class="comment">// Have the seed deserialize the next atom, which should be the symbol.
+        <span class="comment">// Enum variants that have associated data emit a Named atom followed by
+        // a mapping of the name and associated data. To parse this, we simply
+        // need to skip the Named atom.
         </span><span class="kw">let </span>atom = <span class="self">self</span>.peek_atom()<span class="question-mark">?</span>;
-        <span class="kw">match </span>atom.kind {
-            Kind::Special <span class="kw">if </span><span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Named)) =&gt; {
-                <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
-                <span class="kw">let </span>val = seed.deserialize(<span class="kw-2">&amp;mut *</span><span class="self">self</span>)<span class="question-mark">?</span>;
-                <span class="prelude-val">Ok</span>((val, <span class="self">self</span>))
-            }
-            Kind::Symbol =&gt; {
-                <span class="kw">let </span>val = seed.deserialize(<span class="kw-2">&amp;mut *</span><span class="self">self</span>)<span class="question-mark">?</span>;
-                <span class="prelude-val">Ok</span>((val, <span class="self">self</span>))
-            }
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(
-                <span class="string">"expected Named, got {:?}"</span>,
-                atom.kind
-            ))),
+        <span class="kw">if </span>atom.kind == Kind::Special &amp;&amp; <span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Named)) {
+            <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         }
+
+        <span class="kw">let </span>val = seed.deserialize(<span class="kw-2">&amp;mut *</span><span class="self">self</span>)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>((val, <span class="self">self</span>))
     }
 }
 
