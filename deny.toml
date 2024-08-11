@@ -1,21 +1,14 @@
+[graph]
 targets = []
 
 [advisories]
 db-path = "~/.cargo/advisory-db"
 db-urls = ["https://github.com/rustsec/advisory-db"]
-vulnerability = "deny"
-unmaintained = "warn"
 yanked = "warn"
-notice = "warn"
 ignore = []
 
 [licenses]
-unlicensed = "deny"
-allow = ["MPL-2.0"]
-deny = []
-copyleft = "deny"
-allow-osi-fsf-free = "either"
-default = "deny"
+allow = ["MPL-2.0", "MIT", "Apache-2.0", "Unicode-DFS-2016", "BSD-3-Clause"]
 confidence-threshold = 0.8
 exceptions = []
 
