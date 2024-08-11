@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `pot/src/de.rs`."><title>de.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9bb858ba049f1f21.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pot" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0 (5680fa18f 2023-08-23)" data-channel="1.72.0" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../pot/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `pot/src/de.rs`."><title>de.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pot" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.1 (3f5fd8dd4 2024-08-06)" data-channel="1.80.1" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1308,6 +1308,12 @@
 <a href="#1308" id="1308">1308</a>
 <a href="#1309" id="1309">1309</a>
 <a href="#1310" id="1310">1310</a>
+<a href="#1311" id="1311">1311</a>
+<a href="#1312" id="1312">1312</a>
+<a href="#1313" id="1313">1313</a>
+<a href="#1314" id="1314">1314</a>
+<a href="#1315" id="1315">1315</a>
+<a href="#1316" id="1316">1316</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::borrow::Cow;
 <span class="kw">use </span>std::collections::VecDeque;
 <span class="kw">use </span>std::fmt::Debug;
@@ -1322,7 +1328,7 @@
 };
 <span class="kw">use </span>serde::ser::SerializeSeq;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
-<span class="attr">#[cfg(feature = <span class="string">&quot;tracing&quot;</span>)]
+<span class="attr">#[cfg(feature = <span class="string">"tracing"</span>)]
 </span><span class="kw">use </span>tracing::instrument;
 
 <span class="kw">use </span><span class="kw">crate</span>::format::{
@@ -1332,34 +1338,34 @@
 <span class="kw">use crate</span>::{Error, <span class="prelude-ty">Result</span>};
 
 <span class="doccomment">/// Deserializer for the Pot format.
-</span><span class="kw">pub struct </span>Deserializer&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; {
+</span><span class="kw">pub struct </span>Deserializer&lt;<span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R: Reader&lt;<span class="lifetime">'de</span>&gt;&gt; {
     input: R,
-    symbols: SymbolMapRef&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>&gt;,
-    peeked_atom: VecDeque&lt;Atom&lt;<span class="lifetime">&#39;de</span>&gt;&gt;,
+    symbols: SymbolMapRef&lt;<span class="lifetime">'s</span>, <span class="lifetime">'de</span>&gt;,
+    peeked_atom: VecDeque&lt;Atom&lt;<span class="lifetime">'de</span>&gt;&gt;,
     remaining_budget: usize,
     scratch: Vec&lt;u8&gt;,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; Debug <span class="kw">for </span>Deserializer&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R&gt; {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        f.debug_struct(<span class="string">&quot;Deserializer&quot;</span>)
-            .field(<span class="string">&quot;symbols&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.symbols)
-            .field(<span class="string">&quot;peeked_atom&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.peeked_atom)
-            .field(<span class="string">&quot;remaining_budget&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.remaining_budget)
+<span class="kw">impl</span>&lt;<span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R: Reader&lt;<span class="lifetime">'de</span>&gt;&gt; Debug <span class="kw">for </span>Deserializer&lt;<span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R&gt; {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        f.debug_struct(<span class="string">"Deserializer"</span>)
+            .field(<span class="string">"symbols"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.symbols)
+            .field(<span class="string">"peeked_atom"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.peeked_atom)
+            .field(<span class="string">"remaining_budget"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.remaining_budget)
             .finish()
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>&gt; Deserializer&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, SliceReader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'s</span>, <span class="lifetime">'de</span>&gt; Deserializer&lt;<span class="lifetime">'s</span>, <span class="lifetime">'de</span>, SliceReader&lt;<span class="lifetime">'de</span>&gt;&gt; {
     <span class="doccomment">/// Returns a new deserializer for `input`.
     </span><span class="attr">#[inline]
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_slice(input: <span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span>[u8], maximum_bytes_allocatable: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_slice(input: <span class="kw-2">&amp;</span><span class="lifetime">'de </span>[u8], maximum_bytes_allocatable: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="self">Self</span>::from_slice_with_symbols(input, SymbolMapRef::temporary(), maximum_bytes_allocatable)
     }
 
     <span class="kw">fn </span>from_slice_with_symbols(
-        input: <span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span>[u8],
-        symbols: SymbolMapRef&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>&gt;,
+        input: <span class="kw-2">&amp;</span><span class="lifetime">'de </span>[u8],
+        symbols: SymbolMapRef&lt;<span class="lifetime">'s</span>, <span class="lifetime">'de</span>&gt;,
         maximum_bytes_allocatable: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="self">Self</span>::new(SliceReader::from(input), symbols, maximum_bytes_allocatable)
@@ -1373,23 +1379,23 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: ReadBytesExt&gt; Deserializer&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, IoReader&lt;R&gt;&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R: ReadBytesExt&gt; Deserializer&lt;<span class="lifetime">'s</span>, <span class="lifetime">'de</span>, IoReader&lt;R&gt;&gt; {
     <span class="doccomment">/// Returns a new deserializer for `input`.
     </span><span class="attr">#[inline]
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_read(
         input: R,
-        symbols: SymbolMapRef&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>&gt;,
+        symbols: SymbolMapRef&lt;<span class="lifetime">'s</span>, <span class="lifetime">'de</span>&gt;,
         maximum_bytes_allocatable: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="self">Self</span>::new(IoReader::new(input), symbols, maximum_bytes_allocatable)
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; Deserializer&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R: Reader&lt;<span class="lifetime">'de</span>&gt;&gt; Deserializer&lt;<span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R&gt; {
     <span class="attr">#[inline]
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(
         input: R,
-        symbols: SymbolMapRef&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>&gt;,
+        symbols: SymbolMapRef&lt;<span class="lifetime">'s</span>, <span class="lifetime">'de</span>&gt;,
         maximum_bytes_allocatable: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>deserializer = Deserializer {
@@ -1405,14 +1411,14 @@
 
     <span class="kw">fn </span>read_header(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>version = format::read_header(<span class="kw-2">&amp;mut </span><span class="self">self</span>.input)<span class="question-mark">?</span>;
-        <span class="kw">if </span>version == CURRENT_VERSION {
+        <span class="kw">if </span>version &lt;= CURRENT_VERSION {
             <span class="prelude-val">Ok</span>(())
         } <span class="kw">else </span>{
             <span class="prelude-val">Err</span>(Error::IncompatibleVersion)
         }
     }
 
-    <span class="kw">fn </span>read_atom(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Atom&lt;<span class="lifetime">&#39;de</span>&gt;&gt; {
+    <span class="kw">fn </span>read_atom(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Atom&lt;<span class="lifetime">'de</span>&gt;&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(peeked) = <span class="self">self</span>.peeked_atom.pop_front() {
             <span class="prelude-val">Ok</span>(peeked)
         } <span class="kw">else </span>{
@@ -1425,7 +1431,7 @@
     }
 
     <span class="attr">#[allow(clippy::missing_panics_doc)]
-    </span><span class="kw">fn </span>peek_atom_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>Atom&lt;<span class="lifetime">&#39;_</span>&gt;&gt; {
+    </span><span class="kw">fn </span>peek_atom_at(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>Atom&lt;<span class="lifetime">'_</span>&gt;&gt; {
         <span class="kw">while </span>index &gt;= <span class="self">self</span>.peeked_atom.len() {
             <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
             <span class="self">self</span>.peeked_atom.push_back(atom);
@@ -1435,15 +1441,15 @@
     }
 
     <span class="attr">#[allow(clippy::missing_panics_doc)]
-    </span><span class="kw">fn </span>peek_atom(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>Atom&lt;<span class="lifetime">&#39;_</span>&gt;&gt; {
+    </span><span class="kw">fn </span>peek_atom(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span>Atom&lt;<span class="lifetime">'_</span>&gt;&gt; {
         <span class="self">self</span>.peek_atom_at(<span class="number">0</span>)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
-    </span><span class="kw">fn </span>visit_symbol&lt;V&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, atom: <span class="kw-2">&amp;</span>Atom&lt;<span class="lifetime">&#39;_</span>&gt;, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
+    </span><span class="kw">fn </span>visit_symbol&lt;V&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, atom: <span class="kw-2">&amp;</span>Atom&lt;<span class="lifetime">'_</span>&gt;, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>is_id = atom.arg &amp; <span class="number">0b1 </span>!= <span class="number">0</span>;
         <span class="kw">let </span>arg = atom.arg &gt;&gt; <span class="number">1</span>;
@@ -1471,7 +1477,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;s</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; de::Deserializer&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Deserializer&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, <span class="lifetime">'de</span>, <span class="lifetime">'s</span>, R: Reader&lt;<span class="lifetime">'de</span>&gt;&gt; de::Deserializer&lt;<span class="lifetime">'de</span>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span>Deserializer&lt;<span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R&gt; {
     <span class="kw">type </span>Error = Error;
 
     <span class="attr">#[inline]
@@ -1482,12 +1488,12 @@
     <span class="comment">// Look at the input data to decide what Serde data model type to
     // deserialize as. Not all data formats are able to support this operation.
     // Formats that support `deserialize_any` are known as self-describing.
-    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
     </span><span class="kw">fn </span>deserialize_any&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
 
@@ -1497,9 +1503,9 @@
                 <span class="prelude-val">Some</span>(Nucleus::Unit) =&gt; visitor.visit_unit(),
                 <span class="prelude-val">Some</span>(Nucleus::Named) =&gt; visitor.visit_map(AtomList::new(<span class="self">self</span>, <span class="prelude-val">Some</span>(<span class="number">1</span>))),
                 <span class="prelude-val">Some</span>(Nucleus::DynamicMap) =&gt; visitor.visit_map(AtomList::new(<span class="self">self</span>, <span class="prelude-val">None</span>)),
-                <span class="prelude-val">Some</span>(Nucleus::DynamicEnd) =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="string">&quot;unexpected dynamic end&quot;</span>)),
+                <span class="prelude-val">Some</span>(Nucleus::DynamicEnd) =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="string">"unexpected dynamic end"</span>)),
                 <span class="prelude-val">Some</span>(Nucleus::Bytes(<span class="kw">_</span>) | Nucleus::Integer(<span class="kw">_</span>) | Nucleus::Float(<span class="kw">_</span>)) =&gt; {
-                    <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom can&#39;t return this nucleus as a Special&quot;</span>)
+                    <span class="macro">unreachable!</span>(<span class="string">"read_atom can't return this nucleus as a Special"</span>)
                 }
                 <span class="prelude-val">None </span>=&gt; visitor.visit_none(),
             },
@@ -1517,7 +1523,7 @@
                 <span class="prelude-val">Some</span>(Nucleus::Integer(Integer(InnerInteger::I128(value)))) =&gt; {
                     visitor.visit_i128(value)
                 }
-                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>),
+                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>),
             },
             Kind::UInt =&gt; <span class="kw">match </span>atom.nucleus {
                 <span class="prelude-val">Some</span>(Nucleus::Integer(Integer(InnerInteger::U8(value)))) =&gt; visitor.visit_u8(value),
@@ -1533,12 +1539,12 @@
                 <span class="prelude-val">Some</span>(Nucleus::Integer(Integer(InnerInteger::U128(value)))) =&gt; {
                     visitor.visit_u128(value)
                 }
-                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>),
+                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>),
             },
             Kind::Float =&gt; <span class="kw">match </span>atom.nucleus {
                 <span class="prelude-val">Some</span>(Nucleus::Float(Float(InnerFloat::F32(value)))) =&gt; visitor.visit_f32(value),
                 <span class="prelude-val">Some</span>(Nucleus::Float(Float(InnerFloat::F64(value)))) =&gt; visitor.visit_f64(value),
-                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>),
+                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>),
             },
             Kind::Sequence =&gt; visitor.visit_seq(AtomList::new(<span class="self">self</span>, <span class="prelude-val">Some</span>(atom.arg <span class="kw">as </span>usize))),
             Kind::Map =&gt; visitor.visit_map(AtomList::new(<span class="self">self</span>, <span class="prelude-val">Some</span>(atom.arg <span class="kw">as </span>usize))),
@@ -1567,11 +1573,11 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_bool&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">match </span>atom.kind {
@@ -1580,18 +1586,18 @@
                 <span class="prelude-val">Some</span>(Nucleus::Boolean(b)) =&gt; visitor.visit_bool(b),
                 <span class="prelude-val">Some</span>(Nucleus::Unit) | <span class="prelude-val">None </span>=&gt; visitor.visit_bool(<span class="bool-val">false</span>),
                 other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(
-                    <span class="string">&quot;expected bool nucleus, got {other:?}&quot;
+                    <span class="string">"expected bool nucleus, got {other:?}"
                 </span>))),
             },
-            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected bool, got {other:?}&quot;</span>))),
+            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected bool, got {other:?}"</span>))),
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_i8&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">match </span>atom.kind {
@@ -1599,21 +1605,21 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_i8(integer.as_i8()<span class="question-mark">?</span>)
                 } <span class="kw">else </span>{
-                    <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>)
+                    <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>)
                 }
             }
             Kind::Special <span class="kw">if </span><span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Unit) | <span class="prelude-val">None</span>) =&gt; {
                 visitor.visit_i8(<span class="number">0</span>)
             }
-            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected i8, got {other:?}&quot;</span>))),
+            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected i8, got {other:?}"</span>))),
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_i16&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">match </span>atom.kind {
@@ -1621,21 +1627,21 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_i16(integer.as_i16()<span class="question-mark">?</span>)
                 } <span class="kw">else </span>{
-                    <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>)
+                    <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>)
                 }
             }
             Kind::Special <span class="kw">if </span><span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Unit) | <span class="prelude-val">None</span>) =&gt; {
                 visitor.visit_i16(<span class="number">0</span>)
             }
-            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected i16, got {other:?}&quot;</span>))),
+            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected i16, got {other:?}"</span>))),
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_i32&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">match </span>atom.kind {
@@ -1643,21 +1649,21 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_i32(integer.as_i32()<span class="question-mark">?</span>)
                 } <span class="kw">else </span>{
-                    <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>)
+                    <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>)
                 }
             }
             Kind::Special <span class="kw">if </span><span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Unit) | <span class="prelude-val">None</span>) =&gt; {
                 visitor.visit_i32(<span class="number">0</span>)
             }
-            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected i32, got {other:?}&quot;</span>))),
+            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected i32, got {other:?}"</span>))),
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_i64&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">match </span>atom.kind {
@@ -1665,21 +1671,21 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_i64(integer.as_i64()<span class="question-mark">?</span>)
                 } <span class="kw">else </span>{
-                    <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>)
+                    <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>)
                 }
             }
             Kind::Special <span class="kw">if </span><span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Unit) | <span class="prelude-val">None</span>) =&gt; {
                 visitor.visit_i64(<span class="number">0</span>)
             }
-            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected i64, got {other:?}&quot;</span>))),
+            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected i64, got {other:?}"</span>))),
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_i128&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">match </span>atom.kind {
@@ -1687,21 +1693,21 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_i128(integer.as_i128()<span class="question-mark">?</span>)
                 } <span class="kw">else </span>{
-                    <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>)
+                    <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>)
                 }
             }
             Kind::Special <span class="kw">if </span><span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Unit) | <span class="prelude-val">None</span>) =&gt; {
                 visitor.visit_i128(<span class="number">0</span>)
             }
-            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected i128, got {other:?}&quot;</span>))),
+            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected i128, got {other:?}"</span>))),
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_u8&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">match </span>atom.kind {
@@ -1709,21 +1715,21 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_u8(integer.as_u8()<span class="question-mark">?</span>)
                 } <span class="kw">else </span>{
-                    <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>)
+                    <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>)
                 }
             }
             Kind::Special <span class="kw">if </span><span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Unit) | <span class="prelude-val">None</span>) =&gt; {
                 visitor.visit_u8(<span class="number">0</span>)
             }
-            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected u8, got {other:?}&quot;</span>))),
+            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected u8, got {other:?}"</span>))),
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_u16&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">match </span>atom.kind {
@@ -1731,21 +1737,21 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_u16(integer.as_u16()<span class="question-mark">?</span>)
                 } <span class="kw">else </span>{
-                    <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>)
+                    <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>)
                 }
             }
             Kind::Special <span class="kw">if </span><span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Unit) | <span class="prelude-val">None</span>) =&gt; {
                 visitor.visit_u16(<span class="number">0</span>)
             }
-            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected u16, got {other:?}&quot;</span>))),
+            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected u16, got {other:?}"</span>))),
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_u32&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">match </span>atom.kind {
@@ -1753,21 +1759,21 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_u32(integer.as_u32()<span class="question-mark">?</span>)
                 } <span class="kw">else </span>{
-                    <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>)
+                    <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>)
                 }
             }
             Kind::Special <span class="kw">if </span><span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Unit) | <span class="prelude-val">None</span>) =&gt; {
                 visitor.visit_u32(<span class="number">0</span>)
             }
-            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected u32, got {other:?}&quot;</span>))),
+            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected u32, got {other:?}"</span>))),
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_u64&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">match </span>atom.kind {
@@ -1775,21 +1781,21 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_u64(integer.as_u64()<span class="question-mark">?</span>)
                 } <span class="kw">else </span>{
-                    <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>)
+                    <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>)
                 }
             }
             Kind::Special <span class="kw">if </span><span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Unit) | <span class="prelude-val">None</span>) =&gt; {
                 visitor.visit_u64(<span class="number">0</span>)
             }
-            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected u64, got {other:?}&quot;</span>))),
+            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected u64, got {other:?}"</span>))),
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_u128&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">match </span>atom.kind {
@@ -1797,21 +1803,21 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_u128(integer.as_u128()<span class="question-mark">?</span>)
                 } <span class="kw">else </span>{
-                    <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>)
+                    <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>)
                 }
             }
             Kind::Special <span class="kw">if </span><span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Unit) | <span class="prelude-val">None</span>) =&gt; {
                 visitor.visit_u128(<span class="number">0</span>)
             }
-            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected i64, got {other:?}&quot;</span>))),
+            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected i64, got {other:?}"</span>))),
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_f32&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">match </span>atom.kind {
@@ -1819,7 +1825,7 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_f32(integer.as_f32()<span class="question-mark">?</span>)
                 } <span class="kw">else </span>{
-                    <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>)
+                    <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>)
                 }
             }
 
@@ -1827,21 +1833,21 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(Nucleus::Float(float)) = atom.nucleus {
                     visitor.visit_f32(float.as_f32()<span class="question-mark">?</span>)
                 } <span class="kw">else </span>{
-                    <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>)
+                    <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>)
                 }
             }
             Kind::Special <span class="kw">if </span><span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Unit) | <span class="prelude-val">None</span>) =&gt; {
                 visitor.visit_f32(<span class="number">0.</span>)
             }
-            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected f32, got {other:?}&quot;</span>))),
+            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected f32, got {other:?}"</span>))),
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_f64&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">match </span>atom.kind {
@@ -1849,7 +1855,7 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_f64(integer.as_f64()<span class="question-mark">?</span>)
                 } <span class="kw">else </span>{
-                    <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>)
+                    <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>)
                 }
             }
 
@@ -1857,21 +1863,21 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(Nucleus::Float(float)) = atom.nucleus {
                     visitor.visit_f64(float.as_f64())
                 } <span class="kw">else </span>{
-                    <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>)
+                    <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>)
                 }
             }
             Kind::Special <span class="kw">if </span><span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Unit) | <span class="prelude-val">None</span>) =&gt; {
                 visitor.visit_f64(<span class="number">0.</span>)
             }
-            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected f64, got {other:?}&quot;</span>))),
+            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected f64, got {other:?}"</span>))),
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_char&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">match </span>atom.kind {
@@ -1879,24 +1885,24 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(Nucleus::Integer(integer)) = atom.nucleus {
                     visitor.visit_char(
                         char::from_u32(integer.as_u32()<span class="question-mark">?</span>)
-                            .ok_or_else(|| Error::InvalidUtf8(String::from(<span class="string">&quot;invalid char&quot;</span>)))<span class="question-mark">?</span>,
+                            .ok_or_else(|| Error::InvalidUtf8(String::from(<span class="string">"invalid char"</span>)))<span class="question-mark">?</span>,
                     )
                 } <span class="kw">else </span>{
-                    <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>)
+                    <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>)
                 }
             }
             Kind::Special <span class="kw">if </span><span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Unit) | <span class="prelude-val">None</span>) =&gt; {
-                visitor.visit_char(<span class="string">&#39;\0&#39;</span>)
+                visitor.visit_char(<span class="string">'\0'</span>)
             }
-            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected char, got {other:?}&quot;</span>))),
+            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected char, got {other:?}"</span>))),
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_str&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">match </span>atom.kind {
@@ -1907,7 +1913,7 @@
                     }
                     BufferedBytes::Scratch =&gt; visitor.visit_str(str::from_utf8(<span class="kw-2">&amp;</span><span class="self">self</span>.scratch)<span class="question-mark">?</span>),
                 },
-                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>),
+                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>),
             },
             Kind::Symbol =&gt; <span class="self">self</span>.visit_symbol(<span class="kw-2">&amp;</span>atom, visitor),
             Kind::Special =&gt; {
@@ -1915,30 +1921,30 @@
                     <span class="comment">// If we encounter a named entity here, skip it and trust that serde will decode the following information correctly.
                     </span><span class="self">self</span>.deserialize_str(visitor)
                 } <span class="kw">else if </span><span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Unit) | <span class="prelude-val">None</span>) {
-                    visitor.visit_borrowed_str(<span class="string">&quot;&quot;</span>)
+                    visitor.visit_borrowed_str(<span class="string">""</span>)
                 } <span class="kw">else </span>{
                     <span class="self">self</span>.visit_symbol(<span class="kw-2">&amp;</span>atom, visitor)
                 }
             }
-            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected str, got {other:?}&quot;</span>))),
+            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected str, got {other:?}"</span>))),
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_string&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="self">self</span>.deserialize_str(visitor)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
     </span><span class="kw">fn </span>deserialize_bytes&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">match </span>atom.kind {
@@ -1947,7 +1953,7 @@
                     BufferedBytes::Data(bytes) =&gt; visitor.visit_borrowed_bytes(bytes),
                     BufferedBytes::Scratch =&gt; visitor.visit_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>.scratch),
                 },
-                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom should never return anything else&quot;</span>),
+                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(<span class="string">"read_atom should never return anything else"</span>),
             },
             Kind::Sequence =&gt; {
                 <span class="kw">let </span><span class="kw-2">mut </span>buffer = Vec::with_capacity(atom.arg <span class="kw">as </span>usize);
@@ -1958,33 +1964,33 @@
                         buffer.push(integer.as_u8()<span class="question-mark">?</span>);
                     } <span class="kw">else </span>{
                         <span class="kw">return </span><span class="prelude-val">Err</span>(Error::custom(
-                            <span class="string">&quot;expected byte array, encountered non-integer atom&quot;</span>,
+                            <span class="string">"expected byte array, encountered non-integer atom"</span>,
                         ));
                     }
                 }
                 visitor.visit_byte_buf(buffer)
             }
             Kind::Special <span class="kw">if </span><span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Unit) | <span class="prelude-val">None</span>) =&gt; {
-                visitor.visit_borrowed_bytes(<span class="string">b&quot;&quot;</span>)
+                visitor.visit_borrowed_bytes(<span class="string">b""</span>)
             }
-            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected bytes, got {other:?}&quot;</span>))),
+            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected bytes, got {other:?}"</span>))),
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_byte_buf&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="self">self</span>.deserialize_bytes(visitor)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_option&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.peek_atom()<span class="question-mark">?</span>;
         <span class="kw">if </span><span class="macro">matches!</span>(atom.kind, Kind::Special) &amp;&amp; atom.nucleus.is_none() {
@@ -1997,26 +2003,26 @@
     }
 
     <span class="comment">// In Serde, unit means an anonymous value containing no data.
-    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_unit&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">if </span>atom.kind == Kind::Special &amp;&amp; <span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Unit)) {
             visitor.visit_unit()
         } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected unit, got {:?}&quot;</span>, atom.kind)))
+            <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected unit, got {:?}"</span>, atom.kind)))
         }
     }
 
     <span class="comment">// Unit struct means a named value containing no data.
-    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
-    </span><span class="kw">fn </span>deserialize_unit_struct&lt;V&gt;(<span class="self">self</span>, _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
+    </span><span class="kw">fn </span>deserialize_unit_struct&lt;V&gt;(<span class="self">self</span>, _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="self">self</span>.deserialize_unit(visitor)
     }
@@ -2024,21 +2030,21 @@
     <span class="comment">// As is done here, serializers are encouraged to treat newtype structs as
     // insignificant wrappers around the data they contain. That means not
     // parsing anything other than the contained value.
-    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
-    </span><span class="kw">fn </span>deserialize_newtype_struct&lt;V&gt;(<span class="self">self</span>, _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
+    </span><span class="kw">fn </span>deserialize_newtype_struct&lt;V&gt;(<span class="self">self</span>, _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         visitor.visit_newtype_struct(<span class="self">self</span>)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
     </span><span class="kw">fn </span>deserialize_seq&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">if </span>atom.kind == Kind::Sequence {
@@ -2047,17 +2053,17 @@
             visitor.visit_seq(EmptyList)
         } <span class="kw">else </span>{
             <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(
-                <span class="string">&quot;expected sequence, got {:?}&quot;</span>,
+                <span class="string">"expected sequence, got {:?}"</span>,
                 atom.kind
             )))
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_tuple&lt;V&gt;(<span class="self">self</span>, _len: usize, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="self">self</span>.deserialize_seq(visitor)
     }
@@ -2065,22 +2071,22 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>deserialize_tuple_struct&lt;V&gt;(
         <span class="self">self</span>,
-        _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         _len: usize,
         visitor: V,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="self">self</span>.deserialize_seq(visitor)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
     </span><span class="kw">fn </span>deserialize_map&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">match </span>(atom.kind, atom.nucleus) {
@@ -2089,44 +2095,44 @@
                 visitor.visit_map(AtomList::new(<span class="self">self</span>, <span class="prelude-val">None</span>))
             }
             (Kind::Special, <span class="prelude-val">Some</span>(Nucleus::Unit) | <span class="prelude-val">None</span>) =&gt; visitor.visit_map(EmptyList),
-            (kind, <span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected map, got {kind:?}&quot;</span>))),
+            (kind, <span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected map, got {kind:?}"</span>))),
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_struct&lt;V&gt;(
         <span class="self">self</span>,
-        _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
-        _fields: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str],
+        _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
+        _fields: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>[<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str],
         visitor: V,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="self">self</span>.deserialize_map(visitor)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_enum&lt;V&gt;(
         <span class="self">self</span>,
-        _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
-        _variants: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str],
+        _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
+        _variants: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>[<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str],
         visitor: V,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         visitor.visit_enum(<span class="self">self</span>)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[allow(clippy::cast_possible_truncation)]
     #[inline]
     </span><span class="kw">fn </span>deserialize_identifier&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
         <span class="kw">match </span>atom.kind {
@@ -2137,18 +2143,18 @@
                         .map_err(|err| Error::InvalidUtf8(err.to_string()))<span class="question-mark">?</span>;
                     visitor.visit_str(as_str)
                 } <span class="kw">else </span>{
-                    <span class="macro">unreachable!</span>(<span class="string">&quot;read_atom shouldn&#39;t return anything else&quot;</span>)
+                    <span class="macro">unreachable!</span>(<span class="string">"read_atom shouldn't return anything else"</span>)
                 }
             }
-            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">&quot;expected identifier, got {other:?}&quot;</span>))),
+            other =&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(<span class="string">"expected identifier, got {other:?}"</span>))),
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>deserialize_ignored_any&lt;V&gt;(<span class="self">self</span>, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="self">self</span>.deserialize_any(visitor)
     }
@@ -2156,13 +2162,13 @@
 
 <span class="kw">struct </span>EmptyList;
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; MapAccess&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>EmptyList {
+<span class="kw">impl</span>&lt;<span class="lifetime">'de</span>&gt; MapAccess&lt;<span class="lifetime">'de</span>&gt; <span class="kw">for </span>EmptyList {
     <span class="kw">type </span>Error = Error;
 
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>next_key_seed&lt;K&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _seed: K) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;K::Value&gt;&gt;
     <span class="kw">where
-        </span>K: DeserializeSeed&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>K: DeserializeSeed&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
     }
@@ -2170,33 +2176,33 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>next_value_seed&lt;V&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _seed: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: DeserializeSeed&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: DeserializeSeed&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="macro">unreachable!</span>()
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; SeqAccess&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>EmptyList {
+<span class="kw">impl</span>&lt;<span class="lifetime">'de</span>&gt; SeqAccess&lt;<span class="lifetime">'de</span>&gt; <span class="kw">for </span>EmptyList {
     <span class="kw">type </span>Error = Error;
 
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>next_element_seed&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _seed: T) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;T::Value&gt;&gt;
     <span class="kw">where
-        </span>T: DeserializeSeed&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>T: DeserializeSeed&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
     }
 }
 
-<span class="kw">struct </span>AtomList&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; {
-    de: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Deserializer&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R&gt;,
+<span class="kw">struct </span>AtomList&lt;<span class="lifetime">'a</span>, <span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R: Reader&lt;<span class="lifetime">'de</span>&gt;&gt; {
+    de: <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span>Deserializer&lt;<span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R&gt;,
     consumed: usize,
     count: <span class="prelude-ty">Option</span>&lt;usize&gt;,
     eof: bool,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; AtomList&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R&gt; {
-    <span class="kw">fn </span>new(de: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Deserializer&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R&gt;, count: <span class="prelude-ty">Option</span>&lt;usize&gt;) -&gt; <span class="self">Self </span>{
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, <span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R: Reader&lt;<span class="lifetime">'de</span>&gt;&gt; AtomList&lt;<span class="lifetime">'a</span>, <span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R&gt; {
+    <span class="kw">fn </span>new(de: <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span>Deserializer&lt;<span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R&gt;, count: <span class="prelude-ty">Option</span>&lt;usize&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             de,
             count,
@@ -2228,25 +2234,25 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; Debug <span class="kw">for </span>AtomList&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R&gt; {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        f.debug_struct(<span class="string">&quot;AtomList&quot;</span>)
-            .field(<span class="string">&quot;de&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.de)
-            .field(<span class="string">&quot;consumed&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.consumed)
-            .field(<span class="string">&quot;count&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.count)
-            .field(<span class="string">&quot;eof&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.eof)
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, <span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R: Reader&lt;<span class="lifetime">'de</span>&gt;&gt; Debug <span class="kw">for </span>AtomList&lt;<span class="lifetime">'a</span>, <span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R&gt; {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        f.debug_struct(<span class="string">"AtomList"</span>)
+            .field(<span class="string">"de"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.de)
+            .field(<span class="string">"consumed"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.consumed)
+            .field(<span class="string">"count"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.count)
+            .field(<span class="string">"eof"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.eof)
             .finish()
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; SeqAccess&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>AtomList&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, <span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R: Reader&lt;<span class="lifetime">'de</span>&gt;&gt; SeqAccess&lt;<span class="lifetime">'de</span>&gt; <span class="kw">for </span>AtomList&lt;<span class="lifetime">'a</span>, <span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R&gt; {
     <span class="kw">type </span>Error = Error;
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(seed)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(seed)))]
     #[inline]
     </span><span class="kw">fn </span>next_element_seed&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, seed: T) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;T::Value&gt;&gt;
     <span class="kw">where
-        </span>T: DeserializeSeed&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>T: DeserializeSeed&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">if </span><span class="self">self</span>.check_is_eof()<span class="question-mark">? </span>{
             <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
@@ -2262,14 +2268,14 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; MapAccess&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>AtomList&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, <span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R: Reader&lt;<span class="lifetime">'de</span>&gt;&gt; MapAccess&lt;<span class="lifetime">'de</span>&gt; <span class="kw">for </span>AtomList&lt;<span class="lifetime">'a</span>, <span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R&gt; {
     <span class="kw">type </span>Error = Error;
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(seed)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(seed)))]
     #[inline]
     </span><span class="kw">fn </span>next_key_seed&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, seed: T) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;T::Value&gt;&gt;
     <span class="kw">where
-        </span>T: DeserializeSeed&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>T: DeserializeSeed&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">if </span><span class="self">self</span>.check_is_eof()<span class="question-mark">? </span>{
             <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
@@ -2279,11 +2285,11 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(seed)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(seed)))]
     #[inline]
     </span><span class="kw">fn </span>next_value_seed&lt;V&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, seed: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: DeserializeSeed&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: DeserializeSeed&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="comment">// Deserialize a map value.
         </span>seed.deserialize(<span class="kw-2">&amp;mut *</span><span class="self">self</span>.de)
@@ -2295,62 +2301,68 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; EnumAccess&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Deserializer&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, <span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R: Reader&lt;<span class="lifetime">'de</span>&gt;&gt; EnumAccess&lt;<span class="lifetime">'de</span>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span>Deserializer&lt;<span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R&gt; {
     <span class="kw">type </span>Error = Error;
     <span class="kw">type </span>Variant = <span class="self">Self</span>;
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(seed)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(seed)))]
     #[inline]
     </span><span class="kw">fn </span>variant_seed&lt;V&gt;(<span class="self">self</span>, seed: V) -&gt; <span class="prelude-ty">Result</span>&lt;(V::Value, <span class="self">Self</span>::Variant)&gt;
     <span class="kw">where
-        </span>V: DeserializeSeed&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: DeserializeSeed&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="comment">// Have the seed deserialize the next atom, which should be the symbol.
-        </span><span class="kw">let </span>atom = <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
-        <span class="kw">if </span>atom.kind == Kind::Special &amp;&amp; <span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Named)) {
-            <span class="kw">let </span>val = seed.deserialize(<span class="kw-2">&amp;mut *</span><span class="self">self</span>)<span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>((val, <span class="self">self</span>))
-        } <span class="kw">else </span>{
-            <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(
-                <span class="string">&quot;expected Named, got {:?}&quot;</span>,
+        </span><span class="kw">let </span>atom = <span class="self">self</span>.peek_atom()<span class="question-mark">?</span>;
+        <span class="kw">match </span>atom.kind {
+            Kind::Special <span class="kw">if </span><span class="macro">matches!</span>(atom.nucleus, <span class="prelude-val">Some</span>(Nucleus::Named)) =&gt; {
+                <span class="self">self</span>.read_atom()<span class="question-mark">?</span>;
+                <span class="kw">let </span>val = seed.deserialize(<span class="kw-2">&amp;mut *</span><span class="self">self</span>)<span class="question-mark">?</span>;
+                <span class="prelude-val">Ok</span>((val, <span class="self">self</span>))
+            }
+            Kind::Symbol =&gt; {
+                <span class="kw">let </span>val = seed.deserialize(<span class="kw-2">&amp;mut *</span><span class="self">self</span>)<span class="question-mark">?</span>;
+                <span class="prelude-val">Ok</span>((val, <span class="self">self</span>))
+            }
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(Error::custom(<span class="macro">format!</span>(
+                <span class="string">"expected Named, got {:?}"</span>,
                 atom.kind
-            )))
+            ))),
         }
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt; VariantAccess&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>Deserializer&lt;<span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;de</span>, R&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, <span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R: Reader&lt;<span class="lifetime">'de</span>&gt;&gt; VariantAccess&lt;<span class="lifetime">'de</span>&gt; <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span>Deserializer&lt;<span class="lifetime">'s</span>, <span class="lifetime">'de</span>, R&gt; {
     <span class="kw">type </span>Error = Error;
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>unit_variant(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(seed)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(seed)))]
     #[inline]
     </span><span class="kw">fn </span>newtype_variant_seed&lt;T&gt;(<span class="self">self</span>, seed: T) -&gt; <span class="prelude-ty">Result</span>&lt;T::Value&gt;
     <span class="kw">where
-        </span>T: DeserializeSeed&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>T: DeserializeSeed&lt;<span class="lifetime">'de</span>&gt;,
     {
         seed.deserialize(<span class="self">self</span>)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
     </span><span class="kw">fn </span>tuple_variant&lt;V&gt;(<span class="self">self</span>, _len: usize, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         de::Deserializer::deserialize_seq(<span class="self">self</span>, visitor)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(visitor)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(visitor)))]
     #[inline]
-    </span><span class="kw">fn </span>struct_variant&lt;V&gt;(<span class="self">self</span>, _fields: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str], visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
+    </span><span class="kw">fn </span>struct_variant&lt;V&gt;(<span class="self">self</span>, _fields: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>[<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str], visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         de::Deserializer::deserialize_map(<span class="self">self</span>, visitor)
     }
@@ -2358,19 +2370,19 @@
 
 <span class="doccomment">/// A reference to a [`SymbolList`].
 </span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub struct </span>SymbolMapRef&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>&gt;(SymbolMapRefPrivate&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>&gt;);
+</span><span class="kw">pub struct </span>SymbolMapRef&lt;<span class="lifetime">'a</span>, <span class="lifetime">'de</span>&gt;(SymbolMapRefPrivate&lt;<span class="lifetime">'a</span>, <span class="lifetime">'de</span>&gt;);
 
 <span class="attr">#[derive(Debug)]
-</span><span class="kw">enum </span>SymbolMapRefPrivate&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>&gt; {
+</span><span class="kw">enum </span>SymbolMapRefPrivate&lt;<span class="lifetime">'a</span>, <span class="lifetime">'de</span>&gt; {
     <span class="doccomment">/// A reference to a temporary symbol list, which is able to borrow from the
     /// source data.
-    </span>Temporary(SymbolList&lt;<span class="lifetime">&#39;de</span>&gt;),
+    </span>Temporary(SymbolList&lt;<span class="lifetime">'de</span>&gt;),
     <span class="doccomment">/// A reference to a persistent symbol list that retains symbols across
     /// multiple deserialization sessions.
-    </span>Persistent(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>SymbolMap),
+    </span>Persistent(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span>SymbolMap),
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>&gt; SymbolMapRef&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, <span class="lifetime">'de</span>&gt; SymbolMapRef&lt;<span class="lifetime">'a</span>, <span class="lifetime">'de</span>&gt; {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const fn </span>temporary() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>(SymbolMapRefPrivate::Temporary(SymbolList::new()))
     }
@@ -2378,7 +2390,7 @@
     <span class="attr">#[allow(clippy::cast_possible_truncation)]
     </span><span class="kw">fn </span>visit_symbol_id&lt;V&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, symbol_id: u64, visitor: V) -&gt; <span class="prelude-ty">Result</span>&lt;V::Value&gt;
     <span class="kw">where
-        </span>V: Visitor&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>V: Visitor&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0 </span>{
             SymbolMapRefPrivate::Temporary(vec) =&gt; {
@@ -2407,7 +2419,7 @@
         }
     }
 
-    <span class="kw">fn </span>push_borrowed(<span class="kw-2">&amp;mut </span><span class="self">self</span>, symbol: <span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span>str) {
+    <span class="kw">fn </span>push_borrowed(<span class="kw-2">&amp;mut </span><span class="self">self</span>, symbol: <span class="kw-2">&amp;</span><span class="lifetime">'de </span>str) {
         <span class="kw">match </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.<span class="number">0 </span>{
             SymbolMapRefPrivate::Temporary(vec) =&gt; vec.push_borrowed(symbol),
             SymbolMapRefPrivate::Persistent(vec) =&gt; vec.push(symbol),
@@ -2417,19 +2429,19 @@
 
 <span class="doccomment">/// A collection of symbols accumulated during deserialization.
 </span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub struct </span>SymbolList&lt;<span class="lifetime">&#39;de</span>&gt; {
+</span><span class="kw">pub struct </span>SymbolList&lt;<span class="lifetime">'de</span>&gt; {
     buffer: String,
-    entries: Vec&lt;SymbolListEntry&lt;<span class="lifetime">&#39;de</span>&gt;&gt;,
+    entries: Vec&lt;SymbolListEntry&lt;<span class="lifetime">'de</span>&gt;&gt;,
 }
 
-<span class="kw">impl </span>Default <span class="kw">for </span>SymbolList&lt;<span class="lifetime">&#39;_</span>&gt; {
+<span class="kw">impl </span>Default <span class="kw">for </span>SymbolList&lt;<span class="lifetime">'_</span>&gt; {
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::new()
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; SymbolList&lt;<span class="lifetime">&#39;de</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'de</span>&gt; SymbolList&lt;<span class="lifetime">'de</span>&gt; {
     <span class="doccomment">/// Returns a new, empty symbol list.
     </span><span class="attr">#[inline]
     #[must_use]
@@ -2442,7 +2454,7 @@
 
     <span class="doccomment">/// Push a symbol that has been borrowed from the deserialization source.
     </span><span class="attr">#[inline]
-    </span><span class="kw">pub fn </span>push_borrowed(<span class="kw-2">&amp;mut </span><span class="self">self</span>, borrowed: <span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span>str) {
+    </span><span class="kw">pub fn </span>push_borrowed(<span class="kw-2">&amp;mut </span><span class="self">self</span>, borrowed: <span class="kw-2">&amp;</span><span class="lifetime">'de </span>str) {
         <span class="self">self</span>.entries.push(SymbolListEntry::Borrowed(borrowed));
     }
 
@@ -2456,7 +2468,7 @@
     }
 
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>resolve_entry(<span class="kw-2">&amp;</span><span class="self">self</span>, entry: <span class="kw-2">&amp;</span>SymbolListEntry&lt;<span class="lifetime">&#39;de</span>&gt;) -&gt; SymbolStr&lt;<span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;_</span>&gt; {
+    </span><span class="kw">fn </span>resolve_entry(<span class="kw-2">&amp;</span><span class="self">self</span>, entry: <span class="kw-2">&amp;</span>SymbolListEntry&lt;<span class="lifetime">'de</span>&gt;) -&gt; SymbolStr&lt;<span class="lifetime">'de</span>, <span class="lifetime">'_</span>&gt; {
         <span class="kw">match </span>entry {
             SymbolListEntry::Buffer(range) =&gt; SymbolStr::InList(<span class="kw-2">&amp;</span><span class="self">self</span>.buffer[range.clone()]),
             SymbolListEntry::Borrowed(str) =&gt; SymbolStr::Data(str),
@@ -2467,7 +2479,7 @@
     /// bounds.
     </span><span class="attr">#[inline]
     #[must_use]
-    </span><span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Option</span>&lt;SymbolStr&lt;<span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;_</span>&gt;&gt; {
+    </span><span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, index: usize) -&gt; <span class="prelude-ty">Option</span>&lt;SymbolStr&lt;<span class="lifetime">'de</span>, <span class="lifetime">'_</span>&gt;&gt; {
         <span class="self">self</span>.entries
             .get(index)
             .map(|entry| <span class="self">self</span>.resolve_entry(entry))
@@ -2490,7 +2502,7 @@
 
 <span class="doccomment">/// An alias to a [`SymbolList`] with a static lifetime. This type persists
 /// symbols referenced across multiple deserialization sessions.
-</span><span class="kw">pub type </span>SymbolMap = SymbolList&lt;<span class="lifetime">&#39;static</span>&gt;;
+</span><span class="kw">pub type </span>SymbolMap = SymbolList&lt;<span class="lifetime">'static</span>&gt;;
 
 <span class="kw">impl </span>SymbolMap {
     <span class="doccomment">/// Returns a deserializer for `slice` that reuses symbol ids.
@@ -2498,10 +2510,10 @@
     /// This should only be used with data generated by using a persistent
     /// [`ser::SymbolMap`](crate::ser::SymbolMap).
     </span><span class="attr">#[inline]
-    </span><span class="kw">pub fn </span>deserializer_for_slice&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>&gt;(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span><span class="self">self</span>,
-        slice: <span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span>[u8],
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Deserializer&lt;<span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;de</span>, SliceReader&lt;<span class="lifetime">&#39;de</span>&gt;&gt;&gt; {
+    </span><span class="kw">pub fn </span>deserializer_for_slice&lt;<span class="lifetime">'a</span>, <span class="lifetime">'de</span>&gt;(
+        <span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span><span class="self">self</span>,
+        slice: <span class="kw-2">&amp;</span><span class="lifetime">'de </span>[u8],
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Deserializer&lt;<span class="lifetime">'a</span>, <span class="lifetime">'de</span>, SliceReader&lt;<span class="lifetime">'de</span>&gt;&gt;&gt; {
         Deserializer::from_slice_with_symbols(slice, <span class="self">self</span>.persistent(), usize::MAX)
     }
 
@@ -2510,10 +2522,10 @@
     /// This should only be used with data generated by using a persistent
     /// [`ser::SymbolMap`](crate::ser::SymbolMap).
     </span><span class="attr">#[inline]
-    </span><span class="kw">pub fn </span>deserializer_for&lt;<span class="lifetime">&#39;de</span>, R&gt;(
+    </span><span class="kw">pub fn </span>deserializer_for&lt;<span class="lifetime">'de</span>, R&gt;(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         reader: R,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Deserializer&lt;<span class="lifetime">&#39;_</span>, <span class="lifetime">&#39;de</span>, IoReader&lt;R&gt;&gt;&gt;
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Deserializer&lt;<span class="lifetime">'_</span>, <span class="lifetime">'de</span>, IoReader&lt;R&gt;&gt;&gt;
     <span class="kw">where
         </span>R: Read,
     {
@@ -2524,9 +2536,9 @@
     ///
     /// This should only be used with data generated by using a persistent
     /// [`ser::SymbolMap`](crate::ser::SymbolMap).
-    </span><span class="kw">pub fn </span>deserialize_slice&lt;<span class="lifetime">&#39;de</span>, T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, slice: <span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;T&gt;
+    </span><span class="kw">pub fn </span>deserialize_slice&lt;<span class="lifetime">'de</span>, T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, slice: <span class="kw-2">&amp;</span><span class="lifetime">'de </span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;T&gt;
     <span class="kw">where
-        </span>T: Deserialize&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>T: Deserialize&lt;<span class="lifetime">'de</span>&gt;,
     {
         T::deserialize(<span class="kw-2">&amp;mut </span><span class="self">self</span>.deserializer_for_slice(slice)<span class="question-mark">?</span>)
     }
@@ -2535,15 +2547,15 @@
     ///
     /// This should only be used with data generated by using a persistent
     /// [`ser::SymbolMap`](crate::ser::SymbolMap).
-    </span><span class="kw">pub fn </span>deserialize_from&lt;<span class="lifetime">&#39;de</span>, T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, reader: <span class="kw">impl </span>Read) -&gt; <span class="prelude-ty">Result</span>&lt;T&gt;
+    </span><span class="kw">pub fn </span>deserialize_from&lt;<span class="lifetime">'de</span>, T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, reader: <span class="kw">impl </span>Read) -&gt; <span class="prelude-ty">Result</span>&lt;T&gt;
     <span class="kw">where
-        </span>T: Deserialize&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>T: Deserialize&lt;<span class="lifetime">'de</span>&gt;,
     {
         T::deserialize(<span class="kw-2">&amp;mut </span><span class="self">self</span>.deserializer_for(reader)<span class="question-mark">?</span>)
     }
 
     <span class="attr">#[must_use]
-    </span><span class="kw">fn </span>persistent&lt;<span class="lifetime">&#39;de</span>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; SymbolMapRef&lt;<span class="lifetime">&#39;_</span>, <span class="lifetime">&#39;de</span>&gt; {
+    </span><span class="kw">fn </span>persistent&lt;<span class="lifetime">'de</span>&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; SymbolMapRef&lt;<span class="lifetime">'_</span>, <span class="lifetime">'de</span>&gt; {
         SymbolMapRef(SymbolMapRefPrivate::Persistent(<span class="self">self</span>))
     }
 }
@@ -2561,10 +2573,10 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>SymbolMap {
+<span class="kw">impl</span>&lt;<span class="lifetime">'de</span>&gt; Deserialize&lt;<span class="lifetime">'de</span>&gt; <span class="kw">for </span>SymbolMap {
     <span class="kw">fn </span>deserialize&lt;D&gt;(deserializer: D) -&gt; std::result::Result&lt;<span class="self">Self</span>, D::Error&gt;
     <span class="kw">where
-        </span>D: serde::Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>D: serde::Deserializer&lt;<span class="lifetime">'de</span>&gt;,
     {
         deserializer.deserialize_seq(SymbolMapVisitor)
     }
@@ -2572,22 +2584,22 @@
 
 <span class="kw">struct </span>SymbolMapVisitor;
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Visitor&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>SymbolMapVisitor {
+<span class="kw">impl</span>&lt;<span class="lifetime">'de</span>&gt; Visitor&lt;<span class="lifetime">'de</span>&gt; <span class="kw">for </span>SymbolMapVisitor {
     <span class="kw">type </span>Value = SymbolMap;
 
-    <span class="kw">fn </span>expecting(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        formatter.write_str(<span class="string">&quot;symbol map&quot;</span>)
+    <span class="kw">fn </span>expecting(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        formatter.write_str(<span class="string">"symbol map"</span>)
     }
 
     <span class="kw">fn </span>visit_seq&lt;A&gt;(<span class="self">self</span>, <span class="kw-2">mut </span>seq: A) -&gt; std::result::Result&lt;<span class="self">Self</span>::Value, A::Error&gt;
     <span class="kw">where
-        </span>A: SeqAccess&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>A: SeqAccess&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span><span class="kw-2">mut </span>map = SymbolMap::new();
         <span class="kw">if let </span><span class="prelude-val">Some</span>(hint) = seq.size_hint() {
             map.entries.reserve(hint);
         }
-        <span class="kw">while let </span><span class="prelude-val">Some</span>(element) = seq.next_element::&lt;Cow&lt;<span class="lifetime">&#39;_</span>, str&gt;&gt;()<span class="question-mark">? </span>{
+        <span class="kw">while let </span><span class="prelude-val">Some</span>(element) = seq.next_element::&lt;Cow&lt;<span class="lifetime">'_</span>, str&gt;&gt;()<span class="question-mark">? </span>{
             map.push(<span class="kw-2">&amp;</span>element);
         }
         <span class="prelude-val">Ok</span>(map)
@@ -2595,14 +2607,14 @@
 }
 
 <span class="doccomment">/// A symbol stored in a [`SymbolList`].
-</span><span class="kw">pub enum </span>SymbolStr&lt;<span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;ephemeral</span>&gt; {
+</span><span class="kw">pub enum </span>SymbolStr&lt;<span class="lifetime">'de</span>, <span class="lifetime">'ephemeral</span>&gt; {
     <span class="doccomment">/// A symbol that has been borrowed from the data being deserialized.
-    </span>Data(<span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span>str),
+    </span>Data(<span class="kw-2">&amp;</span><span class="lifetime">'de </span>str),
     <span class="doccomment">/// A symbol that is stored inside of the [`SymbolList`].
-    </span>InList(<span class="kw-2">&amp;</span><span class="lifetime">&#39;ephemeral </span>str),
+    </span>InList(<span class="kw-2">&amp;</span><span class="lifetime">'ephemeral </span>str),
 }
 
-<span class="kw">impl </span>Deref <span class="kw">for </span>SymbolStr&lt;<span class="lifetime">&#39;_</span>, <span class="lifetime">&#39;_</span>&gt; {
+<span class="kw">impl </span>Deref <span class="kw">for </span>SymbolStr&lt;<span class="lifetime">'_</span>, <span class="lifetime">'_</span>&gt; {
     <span class="kw">type </span>Target = str;
 
     <span class="attr">#[inline]
@@ -2614,8 +2626,8 @@
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">enum </span>SymbolListEntry&lt;<span class="lifetime">&#39;de</span>&gt; {
+</span><span class="kw">enum </span>SymbolListEntry&lt;<span class="lifetime">'de</span>&gt; {
     Buffer(Range&lt;usize&gt;),
-    Borrowed(<span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span>str),
+    Borrowed(<span class="kw-2">&amp;</span><span class="lifetime">'de </span>str),
 }
 </code></pre></div></section></main></body></html>

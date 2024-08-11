@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `pot/src/ser.rs`."><title>ser.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9bb858ba049f1f21.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pot" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0 (5680fa18f 2023-08-23)" data-channel="1.72.0" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../pot/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `pot/src/ser.rs`."><title>ser.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pot" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.1 (3f5fd8dd4 2024-08-06)" data-channel="1.80.1" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1222,6 +1222,41 @@
 <a href="#1222" id="1222">1222</a>
 <a href="#1223" id="1223">1223</a>
 <a href="#1224" id="1224">1224</a>
+<a href="#1225" id="1225">1225</a>
+<a href="#1226" id="1226">1226</a>
+<a href="#1227" id="1227">1227</a>
+<a href="#1228" id="1228">1228</a>
+<a href="#1229" id="1229">1229</a>
+<a href="#1230" id="1230">1230</a>
+<a href="#1231" id="1231">1231</a>
+<a href="#1232" id="1232">1232</a>
+<a href="#1233" id="1233">1233</a>
+<a href="#1234" id="1234">1234</a>
+<a href="#1235" id="1235">1235</a>
+<a href="#1236" id="1236">1236</a>
+<a href="#1237" id="1237">1237</a>
+<a href="#1238" id="1238">1238</a>
+<a href="#1239" id="1239">1239</a>
+<a href="#1240" id="1240">1240</a>
+<a href="#1241" id="1241">1241</a>
+<a href="#1242" id="1242">1242</a>
+<a href="#1243" id="1243">1243</a>
+<a href="#1244" id="1244">1244</a>
+<a href="#1245" id="1245">1245</a>
+<a href="#1246" id="1246">1246</a>
+<a href="#1247" id="1247">1247</a>
+<a href="#1248" id="1248">1248</a>
+<a href="#1249" id="1249">1249</a>
+<a href="#1250" id="1250">1250</a>
+<a href="#1251" id="1251">1251</a>
+<a href="#1252" id="1252">1252</a>
+<a href="#1253" id="1253">1253</a>
+<a href="#1254" id="1254">1254</a>
+<a href="#1255" id="1255">1255</a>
+<a href="#1256" id="1256">1256</a>
+<a href="#1257" id="1257">1257</a>
+<a href="#1258" id="1258">1258</a>
+<a href="#1259" id="1259">1259</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::borrow::Cow;
 <span class="kw">use </span>std::cmp::Ordering;
 <span class="kw">use </span>std::fmt::{Debug, Display};
@@ -1232,49 +1267,68 @@
 <span class="kw">use </span>byteorder::WriteBytesExt;
 <span class="kw">use </span>serde::de::{SeqAccess, Visitor};
 <span class="kw">use </span>serde::{ser, Deserialize, Serialize};
-<span class="attr">#[cfg(feature = <span class="string">&quot;tracing&quot;</span>)]
+<span class="attr">#[cfg(feature = <span class="string">"tracing"</span>)]
 </span><span class="kw">use </span>tracing::instrument;
 
-<span class="kw">use </span><span class="kw">crate</span>::format::{<span class="self">self</span>, Kind, Special, CURRENT_VERSION};
-<span class="kw">use crate</span>::{Error, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span><span class="kw">crate</span>::format::{<span class="self">self</span>, Kind, Special, INITIAL_VERSION, V4_VERSION};
+<span class="kw">use crate</span>::{Compatibility, Error, <span class="prelude-ty">Result</span>};
 
 <span class="doccomment">/// A Pot serializer.
-</span><span class="kw">pub struct </span>Serializer&lt;<span class="lifetime">&#39;a</span>, W: WriteBytesExt&gt; {
-    symbol_map: SymbolMapRef&lt;<span class="lifetime">&#39;a</span>&gt;,
+</span><span class="kw">pub struct </span>Serializer&lt;<span class="lifetime">'a</span>, W: WriteBytesExt&gt; {
+    symbol_map: SymbolMapRef&lt;<span class="lifetime">'a</span>&gt;,
+    compatibility: Compatibility,
     output: W,
     bytes_written: usize,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, W: WriteBytesExt&gt; Debug <span class="kw">for </span>Serializer&lt;<span class="lifetime">&#39;a</span>, W&gt; {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        f.debug_struct(<span class="string">&quot;Serializer&quot;</span>)
-            .field(<span class="string">&quot;symbol_map&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.symbol_map)
-            .field(<span class="string">&quot;bytes_written&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.bytes_written)
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, W: WriteBytesExt&gt; Debug <span class="kw">for </span>Serializer&lt;<span class="lifetime">'a</span>, W&gt; {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        f.debug_struct(<span class="string">"Serializer"</span>)
+            .field(<span class="string">"symbol_map"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.symbol_map)
+            .field(<span class="string">"bytes_written"</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.bytes_written)
             .finish()
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, W: WriteBytesExt&gt; Serializer&lt;<span class="lifetime">&#39;a</span>, W&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, W: WriteBytesExt&gt; Serializer&lt;<span class="lifetime">'a</span>, W&gt; {
     <span class="doccomment">/// Returns a new serializer outputting written bytes into `output`.
     </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>new(output: W) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="self">Self</span>::new_with_compatibility(output, Compatibility::default())
+    }
+
+    <span class="doccomment">/// Returns a new serializer outputting written bytes into `output`.
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>new_with_compatibility(output: W, compatibility: Compatibility) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="self">Self</span>::new_with_symbol_map(
             output,
             SymbolMapRef::Ephemeral(EphemeralSymbolMap::default()),
+            compatibility,
         )
     }
 
-    <span class="kw">fn </span>new_with_symbol_map(<span class="kw-2">mut </span>output: W, symbol_map: SymbolMapRef&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>bytes_written = format::write_header(<span class="kw-2">&amp;mut </span>output, CURRENT_VERSION)<span class="question-mark">?</span>;
+    <span class="kw">fn </span>new_with_symbol_map(
+        <span class="kw-2">mut </span>output: W,
+        symbol_map: SymbolMapRef&lt;<span class="lifetime">'a</span>&gt;,
+        compatibility: Compatibility,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span>bytes_written = format::write_header(
+            <span class="kw-2">&amp;mut </span>output,
+            <span class="kw">match </span>compatibility {
+                Compatibility::Full =&gt; INITIAL_VERSION,
+                Compatibility::V4 =&gt; V4_VERSION,
+            },
+        )<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+            compatibility,
             symbol_map,
             output,
             bytes_written,
         })
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
-    </span><span class="kw">fn </span>write_symbol(<span class="kw-2">&amp;mut </span><span class="self">self</span>, symbol: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
+    </span><span class="kw">fn </span>write_symbol(<span class="kw-2">&amp;mut </span><span class="self">self</span>, symbol: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>registered_symbol = <span class="self">self</span>.symbol_map.find_or_add(symbol);
         <span class="kw">if </span>registered_symbol.new {
             <span class="comment">// The arg is the length followed by a 0 bit.
@@ -1294,13 +1348,13 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;a</span>: <span class="lifetime">&#39;de</span>, W: WriteBytesExt + <span class="lifetime">&#39;a</span>&gt; ser::Serializer <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span><span class="kw-2">mut </span>Serializer&lt;<span class="lifetime">&#39;a</span>, W&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'de</span>, <span class="lifetime">'a</span>: <span class="lifetime">'de</span>, W: WriteBytesExt + <span class="lifetime">'a</span>&gt; ser::Serializer <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'de </span><span class="kw-2">mut </span>Serializer&lt;<span class="lifetime">'a</span>, W&gt; {
     <span class="kw">type </span>Error = Error;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
-    <span class="kw">type </span>SerializeMap = MapSerializer&lt;<span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;a</span>, W&gt;;
+    <span class="kw">type </span>SerializeMap = MapSerializer&lt;<span class="lifetime">'de</span>, <span class="lifetime">'a</span>, W&gt;;
     <span class="kw">type </span>SerializeSeq = <span class="self">Self</span>;
-    <span class="kw">type </span>SerializeStruct = MapSerializer&lt;<span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;a</span>, W&gt;;
-    <span class="kw">type </span>SerializeStructVariant = MapSerializer&lt;<span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;a</span>, W&gt;;
+    <span class="kw">type </span>SerializeStruct = MapSerializer&lt;<span class="lifetime">'de</span>, <span class="lifetime">'a</span>, W&gt;;
+    <span class="kw">type </span>SerializeStructVariant = MapSerializer&lt;<span class="lifetime">'de</span>, <span class="lifetime">'a</span>, W&gt;;
     <span class="kw">type </span>SerializeTuple = <span class="self">Self</span>;
     <span class="kw">type </span>SerializeTupleStruct = <span class="self">Self</span>;
     <span class="kw">type </span>SerializeTupleVariant = <span class="self">Self</span>;
@@ -1310,126 +1364,126 @@
         <span class="bool-val">false
     </span>}
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_bool(<span class="self">self</span>, v: bool) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_bool(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_i8(<span class="self">self</span>, v: i8) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_i8(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_i16(<span class="self">self</span>, v: i16) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_i16(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_i32(<span class="self">self</span>, v: i32) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_i32(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_i64(<span class="self">self</span>, v: i64) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_i64(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_i128(<span class="self">self</span>, v: i128) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_i128(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_u8(<span class="self">self</span>, v: u8) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_u8(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_u16(<span class="self">self</span>, v: u16) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_u16(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_u32(<span class="self">self</span>, v: u32) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_u32(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_u64(<span class="self">self</span>, v: u64) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_u64(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_u128(<span class="self">self</span>, v: u128) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_u128(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_f32(<span class="self">self</span>, v: f32) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_f32(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_f64(<span class="self">self</span>, v: f64) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_f64(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_char(<span class="self">self</span>, v: char) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_u32(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v <span class="kw">as </span>u32)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_str(<span class="self">self</span>, v: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_str(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_bytes(<span class="self">self</span>, v: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_bytes(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output, v)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_none(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_none(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(value)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(value)))]
     #[inline]
     </span><span class="kw">fn </span>serialize_some&lt;T&gt;(<span class="self">self</span>, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
@@ -1438,48 +1492,50 @@
         value.serialize(<span class="self">self</span>)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_unit(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.bytes_written += format::write_unit(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
-    </span><span class="kw">fn </span>serialize_unit_struct(<span class="self">self</span>, _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    </span><span class="kw">fn </span>serialize_unit_struct(<span class="self">self</span>, _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.serialize_unit()
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_unit_variant(
         <span class="self">self</span>,
-        _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         _variant_index: u32,
-        variant: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        variant: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        format::write_named(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output)<span class="question-mark">?</span>;
+        <span class="kw">if </span><span class="macro">matches!</span>(<span class="self">self</span>.compatibility, Compatibility::Full) {
+            <span class="self">self</span>.bytes_written += format::write_named(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output)<span class="question-mark">?</span>;
+        }
         <span class="self">self</span>.write_symbol(variant)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(value)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(value)))]
     #[inline]
-    </span><span class="kw">fn </span>serialize_newtype_struct&lt;T&gt;(<span class="self">self</span>, _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    </span><span class="kw">fn </span>serialize_newtype_struct&lt;T&gt;(<span class="self">self</span>, _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>T: <span class="question-mark">?</span>Sized + Serialize,
     {
         value.serialize(<span class="self">self</span>)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument(level = <span class="string">&quot;trace&quot;</span>, skip(value)))]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument(level = <span class="string">"trace"</span>, skip(value)))]
     #[inline]
     </span><span class="kw">fn </span>serialize_newtype_variant&lt;T&gt;(
         <span class="self">self</span>,
-        _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         _variant_index: u32,
-        variant: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        variant: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         value: <span class="kw-2">&amp;</span>T,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
@@ -1491,7 +1547,7 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_seq(<span class="self">self</span>, len: <span class="prelude-ty">Option</span>&lt;usize&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::SerializeSeq&gt; {
         <span class="kw">let </span>len = len.ok_or(Error::SequenceSizeMustBeKnown)<span class="question-mark">?</span>;
@@ -1500,29 +1556,29 @@
         <span class="prelude-val">Ok</span>(<span class="self">self</span>)
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_tuple(<span class="self">self</span>, len: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::SerializeTuple&gt; {
         <span class="self">self</span>.serialize_seq(<span class="prelude-val">Some</span>(len))
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_tuple_struct(
         <span class="self">self</span>,
-        _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         len: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::SerializeTupleStruct&gt; {
         <span class="self">self</span>.serialize_seq(<span class="prelude-val">Some</span>(len))
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_tuple_variant(
         <span class="self">self</span>,
-        _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         _variant_index: u32,
-        variant: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        variant: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         len: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::SerializeTupleVariant&gt; {
         format::write_named(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output)<span class="question-mark">?</span>;
@@ -1530,7 +1586,7 @@
         <span class="self">self</span>.serialize_seq(<span class="prelude-val">Some</span>(len))
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_map(<span class="self">self</span>, len: <span class="prelude-ty">Option</span>&lt;usize&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::SerializeMap&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(len) = len {
@@ -1549,19 +1605,19 @@
         }
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
-    </span><span class="kw">fn </span>serialize_struct(<span class="self">self</span>, _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, len: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::SerializeStruct&gt; {
+    </span><span class="kw">fn </span>serialize_struct(<span class="self">self</span>, _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str, len: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::SerializeStruct&gt; {
         <span class="self">self</span>.serialize_map(<span class="prelude-val">Some</span>(len))
     }
 
-    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;tracing&quot;</span>, instrument)]
+    <span class="attr">#[cfg_attr(feature = <span class="string">"tracing"</span>, instrument)]
     #[inline]
     </span><span class="kw">fn </span>serialize_struct_variant(
         <span class="self">self</span>,
-        name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         _variant_index: u32,
-        variant: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        variant: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         len: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::SerializeStructVariant&gt; {
         format::write_named(<span class="kw-2">&amp;mut </span><span class="self">self</span>.output)<span class="question-mark">?</span>;
@@ -1570,7 +1626,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;a</span>: <span class="lifetime">&#39;de</span>, W: WriteBytesExt + <span class="lifetime">&#39;a</span>&gt; ser::SerializeSeq <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span><span class="kw-2">mut </span>Serializer&lt;<span class="lifetime">&#39;a</span>, W&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'de</span>, <span class="lifetime">'a</span>: <span class="lifetime">'de</span>, W: WriteBytesExt + <span class="lifetime">'a</span>&gt; ser::SerializeSeq <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'de </span><span class="kw-2">mut </span>Serializer&lt;<span class="lifetime">'a</span>, W&gt; {
     <span class="kw">type </span>Error = Error;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
@@ -1588,7 +1644,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;a</span>: <span class="lifetime">&#39;de</span>, W: WriteBytesExt + <span class="lifetime">&#39;a</span>&gt; ser::SerializeTuple <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span><span class="kw-2">mut </span>Serializer&lt;<span class="lifetime">&#39;a</span>, W&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'de</span>, <span class="lifetime">'a</span>: <span class="lifetime">'de</span>, W: WriteBytesExt + <span class="lifetime">'a</span>&gt; ser::SerializeTuple <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'de </span><span class="kw-2">mut </span>Serializer&lt;<span class="lifetime">'a</span>, W&gt; {
     <span class="kw">type </span>Error = Error;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
@@ -1606,7 +1662,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;a</span>: <span class="lifetime">&#39;de</span>, W: WriteBytesExt + <span class="lifetime">&#39;a</span>&gt; ser::SerializeTupleStruct <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span><span class="kw-2">mut </span>Serializer&lt;<span class="lifetime">&#39;a</span>, W&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'de</span>, <span class="lifetime">'a</span>: <span class="lifetime">'de</span>, W: WriteBytesExt + <span class="lifetime">'a</span>&gt; ser::SerializeTupleStruct <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'de </span><span class="kw-2">mut </span>Serializer&lt;<span class="lifetime">'a</span>, W&gt; {
     <span class="kw">type </span>Error = Error;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
@@ -1624,8 +1680,8 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;a</span>: <span class="lifetime">&#39;de</span>, W: WriteBytesExt + <span class="lifetime">&#39;a</span>&gt; ser::SerializeTupleVariant
-    <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span><span class="kw-2">mut </span>Serializer&lt;<span class="lifetime">&#39;a</span>, W&gt;
+<span class="kw">impl</span>&lt;<span class="lifetime">'de</span>, <span class="lifetime">'a</span>: <span class="lifetime">'de</span>, W: WriteBytesExt + <span class="lifetime">'a</span>&gt; ser::SerializeTupleVariant
+    <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'de </span><span class="kw-2">mut </span>Serializer&lt;<span class="lifetime">'a</span>, W&gt;
 {
     <span class="kw">type </span>Error = Error;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
@@ -1645,12 +1701,12 @@
 }
 
 <span class="doccomment">/// Serializes map-like values.
-</span><span class="kw">pub struct </span>MapSerializer&lt;<span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;a</span>, W: WriteBytesExt&gt; {
-    serializer: <span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span><span class="kw-2">mut </span>Serializer&lt;<span class="lifetime">&#39;a</span>, W&gt;,
+</span><span class="kw">pub struct </span>MapSerializer&lt;<span class="lifetime">'de</span>, <span class="lifetime">'a</span>, W: WriteBytesExt&gt; {
+    serializer: <span class="kw-2">&amp;</span><span class="lifetime">'de </span><span class="kw-2">mut </span>Serializer&lt;<span class="lifetime">'a</span>, W&gt;,
     known_length: bool,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;a</span>: <span class="lifetime">&#39;de</span>, W: WriteBytesExt + <span class="lifetime">&#39;a</span>&gt; ser::SerializeMap <span class="kw">for </span>MapSerializer&lt;<span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;a</span>, W&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'de</span>, <span class="lifetime">'a</span>: <span class="lifetime">'de</span>, W: WriteBytesExt + <span class="lifetime">'a</span>&gt; ser::SerializeMap <span class="kw">for </span>MapSerializer&lt;<span class="lifetime">'de</span>, <span class="lifetime">'a</span>, W&gt; {
     <span class="kw">type </span>Error = Error;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
@@ -1679,12 +1735,12 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;a</span>: <span class="lifetime">&#39;de</span>, W: WriteBytesExt + <span class="lifetime">&#39;a</span>&gt; ser::SerializeStruct <span class="kw">for </span>MapSerializer&lt;<span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;a</span>, W&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'de</span>, <span class="lifetime">'a</span>: <span class="lifetime">'de</span>, W: WriteBytesExt + <span class="lifetime">'a</span>&gt; ser::SerializeStruct <span class="kw">for </span>MapSerializer&lt;<span class="lifetime">'de</span>, <span class="lifetime">'a</span>, W&gt; {
     <span class="kw">type </span>Error = Error;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>serialize_field&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    </span><span class="kw">fn </span>serialize_field&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>T: <span class="question-mark">?</span>Sized + Serialize,
     {
@@ -1701,14 +1757,14 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;a</span>: <span class="lifetime">&#39;de</span>, W: WriteBytesExt + <span class="lifetime">&#39;a</span>&gt; ser::SerializeStructVariant
-    <span class="kw">for </span>MapSerializer&lt;<span class="lifetime">&#39;de</span>, <span class="lifetime">&#39;a</span>, W&gt;
+<span class="kw">impl</span>&lt;<span class="lifetime">'de</span>, <span class="lifetime">'a</span>: <span class="lifetime">'de</span>, W: WriteBytesExt + <span class="lifetime">'a</span>&gt; ser::SerializeStructVariant
+    <span class="kw">for </span>MapSerializer&lt;<span class="lifetime">'de</span>, <span class="lifetime">'a</span>, W&gt;
 {
     <span class="kw">type </span>Error = Error;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
     <span class="attr">#[inline]
-    </span><span class="kw">fn </span>serialize_field&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+    </span><span class="kw">fn </span>serialize_field&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str, value: <span class="kw-2">&amp;</span>T) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
     <span class="kw">where
         </span>T: <span class="question-mark">?</span>Sized + Serialize,
     {
@@ -1727,7 +1783,7 @@
 
 <span class="attr">#[derive(Default)]
 </span><span class="kw">struct </span>EphemeralSymbolMap {
-    symbols: Vec&lt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, u32)&gt;,
+    symbols: Vec&lt;(<span class="kw-2">&amp;</span><span class="lifetime">'static </span>str, u32)&gt;,
 }
 
 <span class="kw">struct </span>RegisteredSymbol {
@@ -1737,9 +1793,9 @@
 
 <span class="kw">impl </span>EphemeralSymbolMap {
     <span class="attr">#[allow(clippy::cast_possible_truncation)]
-    </span><span class="kw">fn </span>find_or_add(<span class="kw-2">&amp;mut </span><span class="self">self</span>, symbol: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) -&gt; RegisteredSymbol {
+    </span><span class="kw">fn </span>find_or_add(<span class="kw-2">&amp;mut </span><span class="self">self</span>, symbol: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str) -&gt; RegisteredSymbol {
         <span class="comment">// Symbols have to be static strings, and so we can rely on the addres
-        // not changing. To avoid string comparisons, we&#39;re going to use the
+        // not changing. To avoid string comparisons, we're going to use the
         // address of the str in the map.
         </span><span class="kw">let </span>symbol_address = symbol.as_ptr() <span class="kw">as </span>usize;
         <span class="comment">// Perform a binary search to find this existing element.
@@ -1761,7 +1817,7 @@
 }
 
 <span class="kw">impl </span>Debug <span class="kw">for </span>EphemeralSymbolMap {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
         <span class="kw">let </span><span class="kw-2">mut </span>set = f.debug_set();
         <span class="kw">for </span>index <span class="kw">in </span>SymbolIdSorter::new(<span class="kw-2">&amp;</span><span class="self">self</span>.symbols, |sym| sym.<span class="number">1</span>) {
             set.entry(<span class="kw-2">&amp;</span><span class="self">self</span>.symbols[index].<span class="number">0</span>);
@@ -1775,10 +1831,11 @@
     symbols: String,
     entries: Vec&lt;(Range&lt;usize&gt;, u32)&gt;,
     static_lookup: Vec&lt;(usize, u32)&gt;,
+    compatibility: Compatibility,
 }
 
 <span class="kw">impl </span>Debug <span class="kw">for </span>SymbolMap {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
         <span class="kw">let </span><span class="kw-2">mut </span>s = f.debug_set();
         <span class="kw">for </span>entry <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.entries {
             s.entry(&amp;&amp;<span class="self">self</span>.symbols[entry.<span class="number">0</span>.clone()]);
@@ -1802,14 +1859,27 @@
             symbols: String::new(),
             entries: Vec::new(),
             static_lookup: Vec::new(),
+            compatibility: Compatibility::const_default(),
         }
+    }
+
+    <span class="doccomment">/// Sets the compatibility mode for serializing and returns self.
+    </span><span class="kw">pub const fn </span>with_compatibility(<span class="kw-2">mut </span><span class="self">self</span>, compatibility: Compatibility) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.compatibility = compatibility;
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Sets the compatibility mode for serializing.
+    </span><span class="kw">pub fn </span>set_compatibility(<span class="kw-2">&amp;mut </span><span class="self">self</span>, compatibility: Compatibility) {
+        <span class="self">self</span>.compatibility = compatibility;
     }
 
     <span class="doccomment">/// Returns a serializer that writes into `output` and persists symbols
     /// into `self`.
     </span><span class="attr">#[inline]
-    </span><span class="kw">pub fn </span>serializer_for&lt;W: WriteBytesExt&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, output: W) -&gt; <span class="prelude-ty">Result</span>&lt;Serializer&lt;<span class="lifetime">&#39;_</span>, W&gt;&gt; {
-        Serializer::new_with_symbol_map(output, SymbolMapRef::Persistent(<span class="self">self</span>))
+    </span><span class="kw">pub fn </span>serializer_for&lt;W: WriteBytesExt&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, output: W) -&gt; <span class="prelude-ty">Result</span>&lt;Serializer&lt;<span class="lifetime">'_</span>, W&gt;&gt; {
+        <span class="kw">let </span>compatibility = <span class="self">self</span>.compatibility;
+        Serializer::new_with_symbol_map(output, SymbolMapRef::Persistent(<span class="self">self</span>), compatibility)
     }
 
     <span class="doccomment">/// Serializes `value` into `writer` while persisting symbols into `self`.
@@ -1832,9 +1902,9 @@
         <span class="prelude-val">Ok</span>(output)
     }
 
-    <span class="kw">fn </span>find_or_add(<span class="kw-2">&amp;mut </span><span class="self">self</span>, symbol: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) -&gt; RegisteredSymbol {
+    <span class="kw">fn </span>find_or_add(<span class="kw-2">&amp;mut </span><span class="self">self</span>, symbol: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str) -&gt; RegisteredSymbol {
         <span class="comment">// Symbols have to be static strings, and so we can rely on the addres
-        // not changing. To avoid string comparisons, we&#39;re going to use the
+        // not changing. To avoid string comparisons, we're going to use the
         // address of the str in the map.
         </span><span class="kw">let </span>symbol_address = symbol.as_ptr() <span class="kw">as </span>usize;
         <span class="comment">// Perform a binary search to find this existing element.
@@ -1847,7 +1917,7 @@
                 new: <span class="bool-val">false</span>,
             },
             <span class="prelude-val">Err</span>(position) =&gt; {
-                <span class="comment">// This static symbol hasn&#39;t been encountered before.
+                <span class="comment">// This static symbol hasn't been encountered before.
                 </span><span class="kw">let </span>symbol = <span class="self">self</span>.find_entry_by_str(symbol);
                 <span class="self">self</span>.static_lookup
                     .insert(position, (symbol_address, symbol.id));
@@ -1930,11 +2000,11 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>SymbolMap {
+<span class="kw">impl</span>&lt;<span class="lifetime">'de</span>&gt; Deserialize&lt;<span class="lifetime">'de</span>&gt; <span class="kw">for </span>SymbolMap {
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>deserialize&lt;D&gt;(deserializer: D) -&gt; std::result::Result&lt;<span class="self">Self</span>, D::Error&gt;
     <span class="kw">where
-        </span>D: serde::Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>D: serde::Deserializer&lt;<span class="lifetime">'de</span>&gt;,
     {
         deserializer.deserialize_seq(SymbolMapVisitor)
     }
@@ -1942,24 +2012,24 @@
 
 <span class="kw">struct </span>SymbolMapVisitor;
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Visitor&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>SymbolMapVisitor {
+<span class="kw">impl</span>&lt;<span class="lifetime">'de</span>&gt; Visitor&lt;<span class="lifetime">'de</span>&gt; <span class="kw">for </span>SymbolMapVisitor {
     <span class="kw">type </span>Value = SymbolMap;
 
-    <span class="kw">fn </span>expecting(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        formatter.write_str(<span class="string">&quot;symbol map&quot;</span>)
+    <span class="kw">fn </span>expecting(<span class="kw-2">&amp;</span><span class="self">self</span>, formatter: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        formatter.write_str(<span class="string">"symbol map"</span>)
     }
 
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>visit_seq&lt;A&gt;(<span class="self">self</span>, <span class="kw-2">mut </span>seq: A) -&gt; std::result::Result&lt;<span class="self">Self</span>::Value, A::Error&gt;
     <span class="kw">where
-        </span>A: SeqAccess&lt;<span class="lifetime">&#39;de</span>&gt;,
+        </span>A: SeqAccess&lt;<span class="lifetime">'de</span>&gt;,
     {
         <span class="kw">let </span><span class="kw-2">mut </span>map = SymbolMap::new();
         <span class="kw">if let </span><span class="prelude-val">Some</span>(hint) = seq.size_hint() {
             map.entries.reserve(hint);
         }
         <span class="kw">let </span><span class="kw-2">mut </span>id = <span class="number">0</span>;
-        <span class="kw">while let </span><span class="prelude-val">Some</span>(element) = seq.next_element::&lt;Cow&lt;<span class="lifetime">&#39;_</span>, str&gt;&gt;()<span class="question-mark">? </span>{
+        <span class="kw">while let </span><span class="prelude-val">Some</span>(element) = seq.next_element::&lt;Cow&lt;<span class="lifetime">'_</span>, str&gt;&gt;()<span class="question-mark">? </span>{
             <span class="kw">let </span>start = map.symbols.len();
             map.symbols.push_str(<span class="kw-2">&amp;</span>element);
             map.entries.push((start..map.symbols.len(), id));
@@ -1974,13 +2044,13 @@
 }
 
 <span class="attr">#[derive(Debug)]
-</span><span class="kw">enum </span>SymbolMapRef&lt;<span class="lifetime">&#39;a</span>&gt; {
+</span><span class="kw">enum </span>SymbolMapRef&lt;<span class="lifetime">'a</span>&gt; {
     Ephemeral(EphemeralSymbolMap),
-    Persistent(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>SymbolMap),
+    Persistent(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span>SymbolMap),
 }
 
-<span class="kw">impl </span>SymbolMapRef&lt;<span class="lifetime">&#39;_</span>&gt; {
-    <span class="kw">fn </span>find_or_add(<span class="kw-2">&amp;mut </span><span class="self">self</span>, symbol: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) -&gt; RegisteredSymbol {
+<span class="kw">impl </span>SymbolMapRef&lt;<span class="lifetime">'_</span>&gt; {
+    <span class="kw">fn </span>find_or_add(<span class="kw-2">&amp;mut </span><span class="self">self</span>, symbol: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str) -&gt; RegisteredSymbol {
         <span class="kw">match </span><span class="self">self </span>{
             SymbolMapRef::Ephemeral(map) =&gt; map.find_or_add(symbol),
             SymbolMapRef::Persistent(map) =&gt; map.find_or_add(symbol),
@@ -1988,9 +2058,9 @@
     }
 }
 
-<span class="kw">struct </span>SymbolMapPopulator&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw-2">mut </span>SymbolMap);
+<span class="kw">struct </span>SymbolMapPopulator&lt;<span class="lifetime">'a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span>SymbolMap);
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;ser</span>, <span class="lifetime">&#39;a</span>&gt; serde::ser::Serializer <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;ser </span><span class="kw-2">mut </span>SymbolMapPopulator&lt;<span class="lifetime">&#39;a</span>&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">'ser</span>, <span class="lifetime">'a</span>&gt; serde::ser::Serializer <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">'ser </span><span class="kw-2">mut </span>SymbolMapPopulator&lt;<span class="lifetime">'a</span>&gt; {
     <span class="kw">type </span>Error = SymbolMapPopulationError;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
     <span class="kw">type </span>SerializeMap = <span class="self">Self</span>;
@@ -2102,7 +2172,7 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>serialize_unit_struct(
         <span class="self">self</span>,
-        _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
     ) -&gt; std::result::Result&lt;<span class="self">Self</span>::Ok, <span class="self">Self</span>::Error&gt; {
         <span class="prelude-val">Ok</span>(())
     }
@@ -2110,9 +2180,9 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>serialize_unit_variant(
         <span class="self">self</span>,
-        _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         _variant_index: u32,
-        variant: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        variant: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
     ) -&gt; std::result::Result&lt;<span class="self">Self</span>::Ok, <span class="self">Self</span>::Error&gt; {
         <span class="self">self</span>.<span class="number">0</span>.find_or_add(variant);
         <span class="prelude-val">Ok</span>(())
@@ -2121,7 +2191,7 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>serialize_newtype_struct&lt;T: <span class="question-mark">?</span>Sized&gt;(
         <span class="self">self</span>,
-        _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         value: <span class="kw-2">&amp;</span>T,
     ) -&gt; std::result::Result&lt;<span class="self">Self</span>::Ok, <span class="self">Self</span>::Error&gt;
     <span class="kw">where
@@ -2133,9 +2203,9 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>serialize_newtype_variant&lt;T: <span class="question-mark">?</span>Sized&gt;(
         <span class="self">self</span>,
-        _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         _variant_index: u32,
-        variant: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        variant: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         value: <span class="kw-2">&amp;</span>T,
     ) -&gt; std::result::Result&lt;<span class="self">Self</span>::Ok, <span class="self">Self</span>::Error&gt;
     <span class="kw">where
@@ -2164,7 +2234,7 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>serialize_tuple_struct(
         <span class="self">self</span>,
-        _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         _len: usize,
     ) -&gt; std::result::Result&lt;<span class="self">Self</span>::SerializeTupleStruct, <span class="self">Self</span>::Error&gt; {
         <span class="prelude-val">Ok</span>(<span class="self">self</span>)
@@ -2173,9 +2243,9 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>serialize_tuple_variant(
         <span class="self">self</span>,
-        _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         _variant_index: u32,
-        variant: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        variant: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         _len: usize,
     ) -&gt; std::result::Result&lt;<span class="self">Self</span>::SerializeTupleVariant, <span class="self">Self</span>::Error&gt; {
         <span class="self">self</span>.<span class="number">0</span>.find_or_add(variant);
@@ -2193,7 +2263,7 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>serialize_struct(
         <span class="self">self</span>,
-        _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         _len: usize,
     ) -&gt; std::result::Result&lt;<span class="self">Self</span>::SerializeStruct, <span class="self">Self</span>::Error&gt; {
         <span class="prelude-val">Ok</span>(<span class="self">self</span>)
@@ -2202,9 +2272,9 @@
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>serialize_struct_variant(
         <span class="self">self</span>,
-        _name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        _name: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         _variant_index: u32,
-        variant: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        variant: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         _len: usize,
     ) -&gt; std::result::Result&lt;<span class="self">Self</span>::SerializeStructVariant, <span class="self">Self</span>::Error&gt; {
         <span class="self">self</span>.<span class="number">0</span>.find_or_add(variant);
@@ -2212,7 +2282,7 @@
     }
 }
 
-<span class="kw">impl </span>serde::ser::SerializeMap <span class="kw">for </span><span class="kw-2">&amp;mut </span>SymbolMapPopulator&lt;<span class="lifetime">&#39;_</span>&gt; {
+<span class="kw">impl </span>serde::ser::SerializeMap <span class="kw">for </span><span class="kw-2">&amp;mut </span>SymbolMapPopulator&lt;<span class="lifetime">'_</span>&gt; {
     <span class="kw">type </span>Error = SymbolMapPopulationError;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
@@ -2238,7 +2308,7 @@
     }
 }
 
-<span class="kw">impl </span>serde::ser::SerializeSeq <span class="kw">for </span><span class="kw-2">&amp;mut </span>SymbolMapPopulator&lt;<span class="lifetime">&#39;_</span>&gt; {
+<span class="kw">impl </span>serde::ser::SerializeSeq <span class="kw">for </span><span class="kw-2">&amp;mut </span>SymbolMapPopulator&lt;<span class="lifetime">'_</span>&gt; {
     <span class="kw">type </span>Error = SymbolMapPopulationError;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
@@ -2256,14 +2326,14 @@
     }
 }
 
-<span class="kw">impl </span>serde::ser::SerializeStruct <span class="kw">for </span><span class="kw-2">&amp;mut </span>SymbolMapPopulator&lt;<span class="lifetime">&#39;_</span>&gt; {
+<span class="kw">impl </span>serde::ser::SerializeStruct <span class="kw">for </span><span class="kw-2">&amp;mut </span>SymbolMapPopulator&lt;<span class="lifetime">'_</span>&gt; {
     <span class="kw">type </span>Error = SymbolMapPopulationError;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>serialize_field&lt;T: <span class="question-mark">?</span>Sized&gt;(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        key: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        key: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         value: <span class="kw-2">&amp;</span>T,
     ) -&gt; std::result::Result&lt;(), <span class="self">Self</span>::Error&gt;
     <span class="kw">where
@@ -2279,14 +2349,14 @@
     }
 }
 
-<span class="kw">impl </span>serde::ser::SerializeStructVariant <span class="kw">for </span><span class="kw-2">&amp;mut </span>SymbolMapPopulator&lt;<span class="lifetime">&#39;_</span>&gt; {
+<span class="kw">impl </span>serde::ser::SerializeStructVariant <span class="kw">for </span><span class="kw-2">&amp;mut </span>SymbolMapPopulator&lt;<span class="lifetime">'_</span>&gt; {
     <span class="kw">type </span>Error = SymbolMapPopulationError;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
     <span class="attr">#[inline]
     </span><span class="kw">fn </span>serialize_field&lt;T: <span class="question-mark">?</span>Sized&gt;(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        key: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+        key: <span class="kw-2">&amp;</span><span class="lifetime">'static </span>str,
         value: <span class="kw-2">&amp;</span>T,
     ) -&gt; std::result::Result&lt;(), <span class="self">Self</span>::Error&gt;
     <span class="kw">where
@@ -2302,7 +2372,7 @@
     }
 }
 
-<span class="kw">impl </span>serde::ser::SerializeTuple <span class="kw">for </span><span class="kw-2">&amp;mut </span>SymbolMapPopulator&lt;<span class="lifetime">&#39;_</span>&gt; {
+<span class="kw">impl </span>serde::ser::SerializeTuple <span class="kw">for </span><span class="kw-2">&amp;mut </span>SymbolMapPopulator&lt;<span class="lifetime">'_</span>&gt; {
     <span class="kw">type </span>Error = SymbolMapPopulationError;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
@@ -2319,7 +2389,7 @@
         <span class="prelude-val">Ok</span>(())
     }
 }
-<span class="kw">impl </span>serde::ser::SerializeTupleStruct <span class="kw">for </span><span class="kw-2">&amp;mut </span>SymbolMapPopulator&lt;<span class="lifetime">&#39;_</span>&gt; {
+<span class="kw">impl </span>serde::ser::SerializeTupleStruct <span class="kw">for </span><span class="kw-2">&amp;mut </span>SymbolMapPopulator&lt;<span class="lifetime">'_</span>&gt; {
     <span class="kw">type </span>Error = SymbolMapPopulationError;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
@@ -2336,7 +2406,7 @@
         <span class="prelude-val">Ok</span>(())
     }
 }
-<span class="kw">impl </span>serde::ser::SerializeTupleVariant <span class="kw">for </span><span class="kw-2">&amp;mut </span>SymbolMapPopulator&lt;<span class="lifetime">&#39;_</span>&gt; {
+<span class="kw">impl </span>serde::ser::SerializeTupleVariant <span class="kw">for </span><span class="kw-2">&amp;mut </span>SymbolMapPopulator&lt;<span class="lifetime">'_</span>&gt; {
     <span class="kw">type </span>Error = SymbolMapPopulationError;
     <span class="kw">type </span><span class="prelude-val">Ok </span>= ();
 
@@ -2359,7 +2429,7 @@
 </span><span class="kw">pub struct </span>SymbolMapPopulationError(String);
 
 <span class="kw">impl </span>Display <span class="kw">for </span>SymbolMapPopulationError {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
         f.write_str(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>)
     }
 }
@@ -2375,18 +2445,18 @@
     }
 }
 
-<span class="kw">struct </span>SymbolIdSorter&lt;<span class="lifetime">&#39;a</span>, T, F&gt; {
-    source: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T],
+<span class="kw">struct </span>SymbolIdSorter&lt;<span class="lifetime">'a</span>, T, F&gt; {
+    source: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T],
     map: F,
     min: usize,
     id: u32,
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T, F&gt; SymbolIdSorter&lt;<span class="lifetime">&#39;a</span>, T, F&gt;
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T, F&gt; SymbolIdSorter&lt;<span class="lifetime">'a</span>, T, F&gt;
 <span class="kw">where
     </span>F: FnMut(<span class="kw-2">&amp;</span>T) -&gt; u32,
 {
-    <span class="kw">pub fn </span>new(source: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[T], map: F) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub fn </span>new(source: <span class="kw-2">&amp;</span><span class="lifetime">'a </span>[T], map: F) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             source,
             map,
@@ -2395,7 +2465,7 @@
         }
     }
 }
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T, F&gt; Iterator <span class="kw">for </span>SymbolIdSorter&lt;<span class="lifetime">&#39;a</span>, T, F&gt;
+<span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, T, F&gt; Iterator <span class="kw">for </span>SymbolIdSorter&lt;<span class="lifetime">'a</span>, T, F&gt;
 <span class="kw">where
     </span>F: FnMut(<span class="kw-2">&amp;</span>T) -&gt; u32,
     T: Clone,
@@ -2429,8 +2499,8 @@
 <span class="attr">#[test]
 </span><span class="kw">fn </span>symbol_map_debug() {
     <span class="kw">let </span><span class="kw-2">mut </span>map = EphemeralSymbolMap::default();
-    <span class="comment">// To force the order, we&#39;re splitting a single string into multiple parts.
-    </span><span class="kw">let </span>full_source = <span class="string">&quot;abcd&quot;</span>;
+    <span class="comment">// To force the order, we're splitting a single string into multiple parts.
+    </span><span class="kw">let </span>full_source = <span class="string">"abcd"</span>;
 
     map.find_or_add(<span class="kw-2">&amp;</span>full_source[<span class="number">1</span>..<span class="number">2</span>]);
     map.find_or_add(<span class="kw-2">&amp;</span>full_source[<span class="number">0</span>..<span class="number">1</span>]);
@@ -2438,12 +2508,12 @@
     map.find_or_add(<span class="kw-2">&amp;</span>full_source[<span class="number">3</span>..<span class="number">4</span>]);
 
     <span class="comment">// Verify the map sorted the symbols correctly (by memory address).
-    </span><span class="macro">assert_eq!</span>(map.symbols[<span class="number">0</span>].<span class="number">0</span>, <span class="string">&quot;a&quot;</span>);
-    <span class="macro">assert_eq!</span>(map.symbols[<span class="number">1</span>].<span class="number">0</span>, <span class="string">&quot;b&quot;</span>);
-    <span class="macro">assert_eq!</span>(map.symbols[<span class="number">2</span>].<span class="number">0</span>, <span class="string">&quot;c&quot;</span>);
-    <span class="macro">assert_eq!</span>(map.symbols[<span class="number">3</span>].<span class="number">0</span>, <span class="string">&quot;d&quot;</span>);
+    </span><span class="macro">assert_eq!</span>(map.symbols[<span class="number">0</span>].<span class="number">0</span>, <span class="string">"a"</span>);
+    <span class="macro">assert_eq!</span>(map.symbols[<span class="number">1</span>].<span class="number">0</span>, <span class="string">"b"</span>);
+    <span class="macro">assert_eq!</span>(map.symbols[<span class="number">2</span>].<span class="number">0</span>, <span class="string">"c"</span>);
+    <span class="macro">assert_eq!</span>(map.symbols[<span class="number">3</span>].<span class="number">0</span>, <span class="string">"d"</span>);
 
     <span class="comment">// Verify the debug output printed the correct order.
-    </span><span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">&quot;{map:?}&quot;</span>), <span class="string">r#&quot;{&quot;b&quot;, &quot;a&quot;, &quot;c&quot;, &quot;d&quot;}&quot;#</span>);
+    </span><span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">"{map:?}"</span>), <span class="string">r#"{"b", "a", "c", "d"}"#</span>);
 }
 </code></pre></div></section></main></body></html>

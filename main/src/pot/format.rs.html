@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `pot/src/format.rs`."><title>format.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-9bb858ba049f1f21.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pot" data-themes="" data-resource-suffix="" data-rustdoc-version="1.72.0 (5680fa18f 2023-08-23)" data-channel="1.72.0" data-search-js="search-f6292fe389d70017.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ><script src="../../static.files/storage-59fd9b8ccb335783.js"></script><script defer src="../../static.files/source-script-106908c7a7964ba4.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../pot/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `pot/src/format.rs`."><title>format.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-dd39b87e5fcfba68.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="pot" data-themes="" data-resource-suffix="" data-rustdoc-version="1.80.1 (3f5fd8dd4 2024-08-06)" data-channel="1.80.1" data-search-js="search-d52510db62a78183.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-118b08c4c78b968e.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-20a3ad099b048cf2.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-df360f571f6edeae.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer"></div><main><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1838,12 +1838,16 @@
 <a href="#1838" id="1838">1838</a>
 <a href="#1839" id="1839">1839</a>
 <a href="#1840" id="1840">1840</a>
+<a href="#1841" id="1841">1841</a>
+<a href="#1842" id="1842">1842</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::fmt::Display;
 
 <span class="kw">use </span>byteorder::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
 <span class="kw">use </span>half::f16;
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const </span>CURRENT_VERSION: u8 = <span class="number">0</span>;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const </span>INITIAL_VERSION: u8 = <span class="number">0</span>;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const </span>V4_VERSION: u8 = <span class="number">1</span>;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const </span>CURRENT_VERSION: u8 = V4_VERSION;
 
 <span class="kw">use </span><span class="kw">crate</span>::reader::{BufferedBytes, Reader};
 <span class="kw">use </span><span class="kw">crate</span>::Error;
@@ -1880,7 +1884,7 @@
         <span class="comment">// Kind is the 3 bits.
         </span><span class="kw">let </span><span class="kw-2">mut </span>first_byte = (kind <span class="kw">as </span>u8) &lt;&lt; <span class="number">5</span>;
         <span class="comment">// The last 4 bits are the first 4 bits of the arg. We also know
-        // that we&#39;re longer than one byte, due to the original match.
+        // that we're longer than one byte, due to the original match.
         </span>first_byte |= arg <span class="kw">as </span>u8 &amp; <span class="number">0b1111</span>;
         arg &gt;&gt;= <span class="number">4</span>;
         first_byte |= <span class="number">0b10000</span>;
@@ -2079,7 +2083,7 @@
 </span><span class="kw">fn </span>unknown_special() {
     <span class="kw">let </span>err = Special::try_from(u64::MAX).unwrap_err();
     <span class="macro">assert_eq!</span>(err, UnknownSpecial(u64::MAX));
-    <span class="macro">assert!</span>(err.to_string().contains(<span class="string">&quot;unknown special&quot;</span>));
+    <span class="macro">assert!</span>(err.to_string().contains(<span class="string">"unknown special"</span>));
 }
 
 <span class="doccomment">/// An unknown [`Special`] was encountered.
@@ -2087,13 +2091,13 @@
 </span><span class="kw">pub struct </span>UnknownSpecial(<span class="kw">pub </span>u64);
 
 <span class="kw">impl </span>Display <span class="kw">for </span>UnknownSpecial {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        <span class="macro">write!</span>(f, <span class="string">&quot;unknown special id: {}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>)
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">"unknown special id: {}"</span>, <span class="self">self</span>.<span class="number">0</span>)
     }
 }
 
 <span class="doccomment">/// Writes the Pot header. A u32 written in big endian. The first three bytes
-/// are &#39;Pot&#39; (`0x506F74`), and the fourth byte is the version. The first
+/// are 'Pot' (`0x506F74`), and the fourth byte is the version. The first
 /// version of Pot is 0.
 </span><span class="attr">#[inline]
 </span><span class="kw">pub fn </span>write_header&lt;W: WriteBytesExt&gt;(<span class="kw-2">mut </span>writer: W, version: u8) -&gt; std::io::Result&lt;usize&gt; {
@@ -2414,7 +2418,7 @@
 }
 
 <span class="kw">impl </span>Display <span class="kw">for </span>Integer {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
         <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0 </span>{
             InnerInteger::I8(value) =&gt; Display::fmt(value, f),
             InnerInteger::I16(value) =&gt; Display::fmt(value, f),
@@ -2450,7 +2454,7 @@
     }
 
     <span class="doccomment">/// Returns the contained value as an i8, or an error if the value is unable to fit.
-    </span><span class="comment">// clippy::checked_conversions: try_from isn&#39;t const, and it would demote this from a const fn.
+    </span><span class="comment">// clippy::checked_conversions: try_from isn't const, and it would demote this from a const fn.
     </span><span class="attr">#[allow(clippy::cast_possible_wrap)]
     #[allow(clippy::checked_conversions)]
     #[inline]
@@ -2830,7 +2834,7 @@
     }
 }
 
-<span class="macro">macro_rules! </span>impl_from_unsigned_integer {
+<span class="macro">macro_rules!</span> impl_from_unsigned_integer {
     (<span class="macro-nonterminal">$primitive</span>:ty, <span class="macro-nonterminal">$smaller_primitive</span>:ty, <span class="macro-nonterminal">$variant</span>:ident) =&gt; {
         <span class="kw">impl </span>From&lt;<span class="macro-nonterminal">$primitive</span>&gt; <span class="kw">for </span>Integer {
             <span class="attr">#[inline]
@@ -2857,7 +2861,7 @@
     }
 }
 
-<span class="macro">macro_rules! </span>impl_from_unsigned_integer {
+<span class="macro">macro_rules!</span> impl_from_unsigned_integer {
     (<span class="macro-nonterminal">$primitive</span>:ty, <span class="macro-nonterminal">$smaller_primitive</span>:ty, <span class="macro-nonterminal">$smaller_unsigned_primitive</span>:ty, <span class="macro-nonterminal">$variant</span>:ident) =&gt; {
         <span class="kw">impl </span>From&lt;<span class="macro-nonterminal">$primitive</span>&gt; <span class="kw">for </span>Integer {
             <span class="attr">#[inline]
@@ -2882,11 +2886,11 @@
 <span class="doccomment">/// Reads an atom.
 </span><span class="attr">#[allow(clippy::cast_possible_truncation)]
 #[inline]
-</span><span class="kw">pub fn </span>read_atom&lt;<span class="lifetime">&#39;de</span>, R: Reader&lt;<span class="lifetime">&#39;de</span>&gt;&gt;(
+</span><span class="kw">pub fn </span>read_atom&lt;<span class="lifetime">'de</span>, R: Reader&lt;<span class="lifetime">'de</span>&gt;&gt;(
     reader: <span class="kw-2">&amp;mut </span>R,
     remaining_budget: <span class="kw-2">&amp;mut </span>usize,
     scratch: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;Atom&lt;<span class="lifetime">&#39;de</span>&gt;, Error&gt; {
+) -&gt; <span class="prelude-ty">Result</span>&lt;Atom&lt;<span class="lifetime">'de</span>&gt;, Error&gt; {
     <span class="kw">let </span>(kind, arg) = read_atom_header(reader)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(<span class="kw">match </span>kind {
         Kind::Sequence | Kind::Map | Kind::Symbol =&gt; Atom {
@@ -2960,13 +2964,13 @@
 
 <span class="doccomment">/// An encoded [`Kind`], argument, and optional contained value.
 </span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub struct </span>Atom&lt;<span class="lifetime">&#39;de</span>&gt; {
+</span><span class="kw">pub struct </span>Atom&lt;<span class="lifetime">'de</span>&gt; {
     <span class="doccomment">/// The type of atom.
     </span><span class="kw">pub </span>kind: Kind,
     <span class="doccomment">/// The argument contained in the atom header.
     </span><span class="kw">pub </span>arg: u64,
     <span class="doccomment">/// The contained value, if any.
-    </span><span class="kw">pub </span>nucleus: <span class="prelude-ty">Option</span>&lt;Nucleus&lt;<span class="lifetime">&#39;de</span>&gt;&gt;,
+    </span><span class="kw">pub </span>nucleus: <span class="prelude-ty">Option</span>&lt;Nucleus&lt;<span class="lifetime">'de</span>&gt;&gt;,
 }
 
 <span class="doccomment">/// A floating point number that can safely convert between other number types using compile-time evaluation when possible.
@@ -3008,7 +3012,7 @@
 }
 
 <span class="kw">impl </span>Display <span class="kw">for </span>Float {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">'_</span>&gt;) -&gt; std::fmt::Result {
         <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0 </span>{
             InnerFloat::F32(value) =&gt; Display::fmt(value, f),
             InnerFloat::F64(value) =&gt; Display::fmt(value, f),
@@ -3109,7 +3113,7 @@
 
 <span class="doccomment">/// A value contained within an [`Atom`].
 </span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub enum </span>Nucleus&lt;<span class="lifetime">&#39;de</span>&gt; {
+</span><span class="kw">pub enum </span>Nucleus&lt;<span class="lifetime">'de</span>&gt; {
     <span class="doccomment">/// A boolean value.
     </span>Boolean(bool),
     <span class="doccomment">/// An integer value.
@@ -3117,7 +3121,7 @@
     <span class="doccomment">/// A floating point value.
     </span>Float(Float),
     <span class="doccomment">/// A buffer of bytes.
-    </span>Bytes(BufferedBytes&lt;<span class="lifetime">&#39;de</span>&gt;),
+    </span>Bytes(BufferedBytes&lt;<span class="lifetime">'de</span>&gt;),
     <span class="doccomment">/// A unit.
     </span>Unit,
     <span class="doccomment">/// A named value.
@@ -3177,7 +3181,7 @@
         <span class="kw">for </span>arg <span class="kw">in </span><span class="number">1</span>..=<span class="number">64 </span>{
             <span class="kw">let </span>arg = <span class="number">2_u64</span>.saturating_pow(arg);
             write_atom_header(<span class="kw-2">&amp;mut </span>out, Kind::Map, arg).unwrap();
-            <span class="macro">println!</span>(<span class="string">&quot;header: {out:?}&quot;</span>);
+            <span class="macro">println!</span>(<span class="string">"header: {out:?}"</span>);
             <span class="kw">let </span>(kind, read_arg) = read_atom_header(<span class="kw-2">&amp;mut </span>out.as_slice()).unwrap();
             <span class="macro">assert_eq!</span>(kind, Kind::Map);
             <span class="macro">assert_eq!</span>(read_arg, arg);
@@ -3360,12 +3364,12 @@
         <span class="macro">assert!</span>(!Integer::from(u128::MAX).is_zero());
     }
 
-    <span class="macro">macro_rules! </span>test_conversion_succeeds {
+    <span class="macro">macro_rules!</span> test_conversion_succeeds {
         (<span class="macro-nonterminal">$host</span>:ty, <span class="macro-nonterminal">$value</span>:expr, <span class="macro-nonterminal">$method</span>:ident) =&gt; {{
             <span class="macro">assert!</span>(&lt;<span class="macro-nonterminal">$host</span>&gt;::from(<span class="macro-nonterminal">$value</span>).<span class="macro-nonterminal">$method</span>().is_ok())
         }};
     }
-    <span class="macro">macro_rules! </span>test_conversion_fails {
+    <span class="macro">macro_rules!</span> test_conversion_fails {
         (<span class="macro-nonterminal">$host</span>:ty, <span class="macro-nonterminal">$value</span>:expr, <span class="macro-nonterminal">$method</span>:ident) =&gt; {{
             <span class="macro">assert!</span>(<span class="macro">matches!</span>(
                 &lt;<span class="macro-nonterminal">$host</span>&gt;::from(<span class="macro-nonterminal">$value</span>).<span class="macro-nonterminal">$method</span>(),
@@ -3377,7 +3381,7 @@
     <span class="attr">#[test]
     #[allow(clippy::cognitive_complexity, clippy::too_many_lines)]
     </span><span class="kw">fn </span>integer_casts() {
-        <span class="macro">macro_rules! </span>test_negative_fails {
+        <span class="macro">macro_rules!</span> test_negative_fails {
             (<span class="macro-nonterminal">$method</span>:ident) =&gt; {{
                 <span class="macro">test_conversion_fails!</span>(Integer, i8::MIN, <span class="macro-nonterminal">$method</span>);
                 <span class="macro">test_conversion_fails!</span>(Integer, i16::MIN, <span class="macro-nonterminal">$method</span>);
@@ -3660,21 +3664,21 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>integer_display() {
-        <span class="macro">assert_eq!</span>(Integer::from(i8::MAX).to_string(), <span class="string">&quot;127&quot;</span>);
-        <span class="macro">assert_eq!</span>(Integer::from(i16::MAX).to_string(), <span class="string">&quot;32767&quot;</span>);
-        <span class="macro">assert_eq!</span>(Integer::from(i32::MAX).to_string(), <span class="string">&quot;2147483647&quot;</span>);
-        <span class="macro">assert_eq!</span>(Integer::from(i64::MAX).to_string(), <span class="string">&quot;9223372036854775807&quot;</span>);
+        <span class="macro">assert_eq!</span>(Integer::from(i8::MAX).to_string(), <span class="string">"127"</span>);
+        <span class="macro">assert_eq!</span>(Integer::from(i16::MAX).to_string(), <span class="string">"32767"</span>);
+        <span class="macro">assert_eq!</span>(Integer::from(i32::MAX).to_string(), <span class="string">"2147483647"</span>);
+        <span class="macro">assert_eq!</span>(Integer::from(i64::MAX).to_string(), <span class="string">"9223372036854775807"</span>);
         <span class="macro">assert_eq!</span>(
             Integer::from(i128::MAX).to_string(),
-            <span class="string">&quot;170141183460469231731687303715884105727&quot;
+            <span class="string">"170141183460469231731687303715884105727"
         </span>);
-        <span class="macro">assert_eq!</span>(Integer::from(u8::MAX).to_string(), <span class="string">&quot;255&quot;</span>);
-        <span class="macro">assert_eq!</span>(Integer::from(u16::MAX).to_string(), <span class="string">&quot;65535&quot;</span>);
-        <span class="macro">assert_eq!</span>(Integer::from(u32::MAX).to_string(), <span class="string">&quot;4294967295&quot;</span>);
-        <span class="macro">assert_eq!</span>(Integer::from(u64::MAX).to_string(), <span class="string">&quot;18446744073709551615&quot;</span>);
+        <span class="macro">assert_eq!</span>(Integer::from(u8::MAX).to_string(), <span class="string">"255"</span>);
+        <span class="macro">assert_eq!</span>(Integer::from(u16::MAX).to_string(), <span class="string">"65535"</span>);
+        <span class="macro">assert_eq!</span>(Integer::from(u32::MAX).to_string(), <span class="string">"4294967295"</span>);
+        <span class="macro">assert_eq!</span>(Integer::from(u64::MAX).to_string(), <span class="string">"18446744073709551615"</span>);
         <span class="macro">assert_eq!</span>(
             Integer::from(u128::MAX).to_string(),
-            <span class="string">&quot;340282366920938463463374607431768211455&quot;
+            <span class="string">"340282366920938463463374607431768211455"
         </span>);
     }
 }
