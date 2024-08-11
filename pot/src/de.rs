@@ -95,7 +95,7 @@ impl<'s, 'de, R: Reader<'de>> Deserializer<'s, 'de, R> {
 
     fn read_header(&mut self) -> Result<()> {
         let version = format::read_header(&mut self.input)?;
-        if version == CURRENT_VERSION {
+        if version <= CURRENT_VERSION {
             Ok(())
         } else {
             Err(Error::IncompatibleVersion)
@@ -996,15 +996,21 @@ impl<'a, 's, 'de, R: Reader<'de>> EnumAccess<'de> for &'a mut Deserializer<'s, '
         V: DeserializeSeed<'de>,
     {
         // Have the seed deserialize the next atom, which should be the symbol.
-        let atom = self.read_atom()?;
-        if atom.kind == Kind::Special && matches!(atom.nucleus, Some(Nucleus::Named)) {
-            let val = seed.deserialize(&mut *self)?;
-            Ok((val, self))
-        } else {
-            Err(Error::custom(format!(
+        let atom = self.peek_atom()?;
+        match atom.kind {
+            Kind::Special if matches!(atom.nucleus, Some(Nucleus::Named)) => {
+                self.read_atom()?;
+                let val = seed.deserialize(&mut *self)?;
+                Ok((val, self))
+            }
+            Kind::Symbol => {
+                let val = seed.deserialize(&mut *self)?;
+                Ok((val, self))
+            }
+            _ => Err(Error::custom(format!(
                 "expected Named, got {:?}",
                 atom.kind
-            )))
+            ))),
         }
     }
 }

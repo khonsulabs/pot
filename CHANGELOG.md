@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Added
+
+- `Compatibility` is a new enum that controls compatibility of serialization and
+  deserialization. `Compatibility::Full` is the default compatibility level in
+  `v3.x`, and it serializes data in a way that even Pot `v1.0` deserializers can
+  deserialize.
+
+  `Compatibility::V4` is a new serialization format that serializes enum
+  variants without associated data in a way that allows `Value` deserialization
+  to be done unambiguously. See [#11][11] for an example of this issue. This bug
+  only affected `deserialize_any`-type deserialization. Typical deserialization
+  works correctly.
+
+  Compatibility can be configured using these new APIs:
+
+  - `Config::compatibility`
+  - `Serializer::new_with_compatibility`
+  - `SymbolMap::with_compatibility`
+  - `SymbolMap::set_compatibility`
+
+[11]: https://github.com/khonsulabs/pot/issues/11
+
+
 ## 3.0.0
 
 ### Breaking Changes

@@ -3,7 +3,9 @@ use std::fmt::Display;
 use byteorder::{BigEndian, LittleEndian, ReadBytesExt, WriteBytesExt};
 use half::f16;
 
-pub(crate) const CURRENT_VERSION: u8 = 0;
+pub(crate) const INITIAL_VERSION: u8 = 0;
+pub(crate) const V4_VERSION: u8 = 1;
+pub(crate) const CURRENT_VERSION: u8 = V4_VERSION;
 
 use crate::reader::{BufferedBytes, Reader};
 use crate::Error;

@@ -11,12 +11,13 @@ use serde::{ser, Deserialize, Serialize};
 #[cfg(feature = "tracing")]
 use tracing::instrument;
 
-use crate::format::{self, Kind, Special, CURRENT_VERSION};
-use crate::{Error, Result};
+use crate::format::{self, Kind, Special, INITIAL_VERSION, V4_VERSION};
+use crate::{Compatibility, Error, Result};
 
 /// A Pot serializer.
 pub struct Serializer<'a, W: WriteBytesExt> {
     symbol_map: SymbolMapRef<'a>,
+    compatibility: Compatibility,
     output: W,
     bytes_written: usize,
 }
@@ -34,15 +35,33 @@ impl<'a, W: WriteBytesExt> Serializer<'a, W> {
     /// Returns a new serializer outputting written bytes into `output`.
     #[inline]
     pub fn new(output: W) -> Result<Self> {
+        Self::new_with_compatibility(output, Compatibility::default())
+    }
+
+    /// Returns a new serializer outputting written bytes into `output`.
+    #[inline]
+    pub fn new_with_compatibility(output: W, compatibility: Compatibility) -> Result<Self> {
         Self::new_with_symbol_map(
             output,
             SymbolMapRef::Ephemeral(EphemeralSymbolMap::default()),
+            compatibility,
         )
     }
 
-    fn new_with_symbol_map(mut output: W, symbol_map: SymbolMapRef<'a>) -> Result<Self> {
-        let bytes_written = format::write_header(&mut output, CURRENT_VERSION)?;
+    fn new_with_symbol_map(
+        mut output: W,
+        symbol_map: SymbolMapRef<'a>,
+        compatibility: Compatibility,
+    ) -> Result<Self> {
+        let bytes_written = format::write_header(
+            &mut output,
+            match compatibility {
+                Compatibility::Full => INITIAL_VERSION,
+                Compatibility::V4 => V4_VERSION,
+            },
+        )?;
         Ok(Self {
+            compatibility,
             symbol_map,
             output,
             bytes_written,
@@ -235,7 +254,9 @@ impl<'de, 'a: 'de, W: WriteBytesExt + 'a> ser::Serializer for &'de mut Serialize
         _variant_index: u32,
         variant: &'static str,
     ) -> Result<()> {
-        format::write_named(&mut self.output)?;
+        if matches!(self.compatibility, Compatibility::Full) {
+            self.bytes_written += format::write_named(&mut self.output)?;
+        }
         self.write_symbol(variant)?;
         Ok(())
     }
@@ -551,6 +572,7 @@ pub struct SymbolMap {
     symbols: String,
     entries: Vec<(Range<usize>, u32)>,
     static_lookup: Vec<(usize, u32)>,
+    compatibility: Compatibility,
 }
 
 impl Debug for SymbolMap {
@@ -578,14 +600,27 @@ impl SymbolMap {
             symbols: String::new(),
             entries: Vec::new(),
             static_lookup: Vec::new(),
+            compatibility: Compatibility::const_default(),
         }
+    }
+
+    /// Sets the compatibility mode for serializing and returns self.
+    pub const fn with_compatibility(mut self, compatibility: Compatibility) -> Self {
+        self.compatibility = compatibility;
+        self
+    }
+
+    /// Sets the compatibility mode for serializing.
+    pub fn set_compatibility(&mut self, compatibility: Compatibility) {
+        self.compatibility = compatibility;
     }
 
     /// Returns a serializer that writes into `output` and persists symbols
     /// into `self`.
     #[inline]
     pub fn serializer_for<W: WriteBytesExt>(&mut self, output: W) -> Result<Serializer<'_, W>> {
-        Serializer::new_with_symbol_map(output, SymbolMapRef::Persistent(self))
+        let compatibility = self.compatibility;
+        Serializer::new_with_symbol_map(output, SymbolMapRef::Persistent(self), compatibility)
     }
 
     /// Serializes `value` into `writer` while persisting symbols into `self`.
