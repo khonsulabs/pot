@@ -764,3 +764,39 @@ fn backwards_compatible() {
     let parsed: Canary = crate::from_slice(&v1_canary).unwrap();
     assert_eq!(canary, parsed);
 }
+
+#[test]
+fn unit_enum_fix() {
+    let test_payload = vec![EnumVariants::Unit, EnumVariants::Tuple(0)];
+    let ambiguous = Config::new()
+        .compatibility(Compatibility::Full)
+        .serialize(&test_payload)
+        .unwrap();
+    let fixed = Config::new()
+        .compatibility(Compatibility::V4)
+        .serialize(&test_payload)
+        .unwrap();
+    assert_ne!(ambiguous, fixed);
+
+    let bad_value: Value<'_> = crate::from_slice(&ambiguous).unwrap();
+    let good_value: Value<'_> = crate::from_slice(&fixed).unwrap();
+    match bad_value {
+        Value::Sequence(sequence) => {
+            assert_eq!(sequence[1], Value::None);
+        }
+        other => unreachable!("Unexpected value: {other:?}"),
+    }
+    match good_value {
+        Value::Sequence(sequence) => {
+            assert_eq!(sequence.len(), 2);
+            assert_eq!(
+                sequence[1],
+                Value::Mappings(vec![(
+                    Value::String(Cow::Borrowed("Tuple")),
+                    Value::from(0_u8)
+                )])
+            );
+        }
+        other => unreachable!("Unexpected value: {other:?}"),
+    }
+}

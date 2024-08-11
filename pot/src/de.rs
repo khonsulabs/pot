@@ -995,23 +995,16 @@ impl<'a, 's, 'de, R: Reader<'de>> EnumAccess<'de> for &'a mut Deserializer<'s, '
     where
         V: DeserializeSeed<'de>,
     {
-        // Have the seed deserialize the next atom, which should be the symbol.
+        // Enum variants that have associated data emit a Named atom followed by
+        // a mapping of the name and associated data. To parse this, we simply
+        // need to skip the Named atom.
         let atom = self.peek_atom()?;
-        match atom.kind {
-            Kind::Special if matches!(atom.nucleus, Some(Nucleus::Named)) => {
-                self.read_atom()?;
-                let val = seed.deserialize(&mut *self)?;
-                Ok((val, self))
-            }
-            Kind::Symbol => {
-                let val = seed.deserialize(&mut *self)?;
-                Ok((val, self))
-            }
-            _ => Err(Error::custom(format!(
-                "expected Named, got {:?}",
-                atom.kind
-            ))),
+        if atom.kind == Kind::Special && matches!(atom.nucleus, Some(Nucleus::Named)) {
+            self.read_atom()?;
         }
+
+        let val = seed.deserialize(&mut *self)?;
+        Ok((val, self))
     }
 }
 
