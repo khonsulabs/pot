@@ -6,6 +6,8 @@ use std::ops::Range;
 use std::usize;
 
 use byteorder::WriteBytesExt;
+use indexmap::IndexMap;
+use rustc_hash::FxBuildHasher;
 use serde::de::{SeqAccess, Visitor};
 use serde::{ser, Deserialize, Serialize};
 #[cfg(feature = "tracing")]
@@ -571,7 +573,7 @@ impl Debug for EphemeralSymbolMap {
 pub struct SymbolMap {
     symbols: String,
     entries: Vec<(Range<usize>, u32)>,
-    static_lookup: Vec<(usize, u32)>,
+    static_lookup: IndexMap<usize, u32, FxBuildHasher>,
     compatibility: Compatibility,
 }
 
@@ -599,7 +601,7 @@ impl SymbolMap {
         Self {
             symbols: String::new(),
             entries: Vec::new(),
-            static_lookup: Vec::new(),
+            static_lookup: IndexMap::with_hasher(FxBuildHasher),
             compatibility: Compatibility::const_default(),
         }
     }
@@ -649,40 +651,36 @@ impl SymbolMap {
         // address of the str in the map.
         let symbol_address = symbol.as_ptr() as usize;
         // Perform a binary search to find this existing element.
-        match self
-            .static_lookup
-            .binary_search_by(|check| symbol_address.cmp(&check.0))
-        {
-            Ok(position) => RegisteredSymbol {
-                id: self.static_lookup[position].1,
+        match self.static_lookup.entry(symbol_address) {
+            indexmap::map::Entry::Occupied(position) => RegisteredSymbol {
+                id: *position.get(),
                 new: false,
             },
-            Err(position) => {
+            indexmap::map::Entry::Vacant(position) => {
                 // This static symbol hasn't been encountered before.
-                let symbol = self.find_entry_by_str(symbol);
-                self.static_lookup
-                    .insert(position, (symbol_address, symbol.id));
+                let symbol = Self::find_entry_by_str(&mut self.entries, &mut self.symbols, symbol);
+                position.insert(symbol.id);
                 symbol
             }
         }
     }
 
     #[allow(clippy::cast_possible_truncation)]
-    fn find_entry_by_str(&mut self, symbol: &str) -> RegisteredSymbol {
-        match self
-            .entries
-            .binary_search_by(|check| self.symbols[check.0.clone()].cmp(symbol))
-        {
+    fn find_entry_by_str(
+        entries: &mut Vec<(Range<usize>, u32)>,
+        symbols: &mut String,
+        symbol: &str,
+    ) -> RegisteredSymbol {
+        match entries.binary_search_by(|check| symbols[check.0.clone()].cmp(symbol)) {
             Ok(index) => RegisteredSymbol {
-                id: self.entries[index].1,
+                id: entries[index].1,
                 new: false,
             },
             Err(insert_at) => {
-                let id = self.entries.len() as u32;
-                let start = self.symbols.len();
-                self.symbols.push_str(symbol);
-                self.entries
-                    .insert(insert_at, (start..self.symbols.len(), id));
+                let id = entries.len() as u32;
+                let start = symbols.len();
+                symbols.push_str(symbol);
+                entries.insert(insert_at, (start..symbols.len(), id));
                 RegisteredSymbol { id, new: true }
             }
         }
@@ -693,7 +691,7 @@ impl SymbolMap {
     /// Returns true if this symbol had not previously been registered. Returns
     /// false if the symbol was already included in the map.
     pub fn insert(&mut self, symbol: &str) -> bool {
-        self.find_entry_by_str(symbol).new
+        Self::find_entry_by_str(&mut self.entries, &mut self.symbols, symbol).new
     }
 
     /// Returns the number of entries in this map.
